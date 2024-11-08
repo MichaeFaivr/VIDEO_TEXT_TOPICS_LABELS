@@ -1,0 +1,1 @@
+this is a video for testing the package for speech recognition I wrote yesterday in a Brighton project so this enables me to see if the text can be extracted from the video I'm taking right now

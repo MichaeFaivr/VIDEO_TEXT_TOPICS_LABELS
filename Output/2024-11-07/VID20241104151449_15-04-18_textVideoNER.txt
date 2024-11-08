@@ -1,0 +1,1 @@
+[('IDE', 'ORG'), ('four', 'CARDINAL'), ('8-month', 'DATE'), ('ASUS', 'ORG'), ('VivoBook 17', 'PRODUCT'), ('AI', 'ORG'), ('Google Cloud', 'PRODUCT')]

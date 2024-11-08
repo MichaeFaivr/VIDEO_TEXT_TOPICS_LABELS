@@ -1,0 +1,1 @@
+Could not request results from Google Web Speech API; recognition connection failed: [Errno -3] Temporary failure in name resolution

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Analysis</title>
+    <!--
+    <link rel="stylesheet" href="/static/styles.css">
+-->
+</head>
+<body>
+    <h1>Video Analysis</h1>
+    <div id="videoPath">
+        <h2>Video Path</h2>
+        <p>{{ video_path }}</p>
+    </div>
+    <div id="extractedText">
+        <h2>Extracted Text</h2>
+        <p>{{ extracted_text }}</p>
+    </div>
+    <div id="summaryText">
+        <h2>Summary Text</h2>
+        <p>{{ summary_text }}</p>
+    </div>
+    <div id="nerText">
+        <h2>NER Text</h2>
+        <p>{{ ner_text }}</p>
+    </div>
+    <body>
+        <h1>Upload a Video for Analysis</h1>
+        <form action="/objectdetection/" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="video_path" value="{{ video_path }}">
+            <!-- <input type="file" name="video" accept="video/*"> -->
+            <button type="submit">ObjectDetection</button>
+        </form>
+    </body>
+</body>
+</html>
