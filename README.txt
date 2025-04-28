@@ -4,8 +4,10 @@ The project VIDEO_TEXT_LABELS_TOPICS aim at providing a toolbox for Video analys
 The steps are as follows:
 
 HOW TO LAUNCH THE APP?
-The project can be run locally by using : python main.py from the main directory
-Or it can be run online by using: python app.py from Video_Analysis_Webapp
+The project can be run locally by using : python main.py 
+from the main directory
+Or it can be run online by using: python app.py 
+from Video_Analysis_Webapp
 
 INPUT:
 A mp4 video with one speaker in English.
