@@ -1,8 +1,12 @@
 import pickle
+import os
+from datetime import datetime
 from flask import Flask, render_template, request
 
 from model.class_video_copilot import VideoCopilot, VideoToSpeechCopilot, VideoToObjectsCopilot, VideoTopicsSummaryCopilot
 
+from verifications.check_policy_compliance import read_json_file, check_policy_compliance
+from verifications.build_analysis_json import *
 
 app = Flask(__name__)
 
@@ -27,12 +31,15 @@ def result():
         video_file.save(DIRECTORY_VIDEOS + video_file.filename)
 
         # OPERATION.1: Extract the text from the video
+        # Attention: Need the punctuation marks in the text
         video_path = DIRECTORY_VIDEOS + video_file.filename
         videoToSpeech = VideoToSpeechCopilot(video_path)
-        text_video = videoToSpeech.extract_speech()
+        _ = videoToSpeech.extract_speech()
+        text_video = videoToSpeech.process_text()
 
         # Save the text in a file in Outputs avec date et time
-        videoToSpeech.save_speech_from_video(video_path,text_video)
+        # TO FIX: marks are missing in the text
+        videoToSpeech.save_speech_from_video(video_path, text_video)
 
         # OPERATION.2: Summarize the text extracted from the video
         videoTopicsSummary = VideoTopicsSummaryCopilot(text_video, ['test'], 'test.json')
@@ -43,6 +50,51 @@ def result():
         text_NER = videoTopicsSummary.perform_ner_analysis()
         text_NER = str(text_NER)
         # save NER in a file
+
+        # OPERATION.4: TOPICS from summary
+        #videoTopicsSummary.topic_modeling_LSA()
+        #list_topics = videoTopicsSummary.list_topics_from_summary
+        #print(f'list_topics: {list_topics}')
+
+        # OPERATION.5: SENTIMENT ANALYSIS from summary
+        # save Json file in same directory as the text file from video
+        current_date = datetime.now().strftime('%Y-%m-%d')
+        current_time = datetime.now().strftime('%H-%M-%S')
+        output_dir = os.path.join('Output', current_date)
+        os.makedirs(output_dir, exist_ok=True)
+        json_sentiments_filename = os.path.splitext(video_file.filename)[0] + '_' + current_time + '_json_sentiments_per_sentence.json'
+        output_json_sentiments = os.path.join(output_dir, json_sentiments_filename)
+        videoTopicsSummary.sentiment_analysis_per_summary_sentence(output_json_sentiments)
+        print(f'videoTextTopics.sentiment_scores: {videoTopicsSummary.sentiment_scores}')   
+
+        # OPERATION.6: Save the analysis data in a Json file
+        analysis_json_filename = os.path.splitext(video_file.filename)[0] + '_' + current_time + '_json_video_analysis.json'
+        output_json_analysis = os.path.join(output_dir, analysis_json_filename)
+        # Save the analysis data in a Json file
+        write_json_file = read_fill_save_json_file(output_json_analysis, video_path, text_video, summary_text, text_NER)
+        if write_json_file:
+            print(f'Json file saved: {output_json_analysis}')
+        else:
+            print(f'Error: Unable to save the JSON file: {output_json_analysis}')
+        # Save the analysis data in a pickle file
+
+
+        # OPERATION.7: Check the compliance of the text with the policy
+        # Attention: need priorly to have stored the analysis data in a Json file !
+        policy_data_file = 'verifications/cahier_des_charges.json'
+        video_analysis_file = 'verifications/video_analysis_for_testing.json'
+
+        # Read the policy JSON file
+        policy_data = read_json_file(policy_data_file)
+        if policy_data:
+            # Read the data JSON file
+            analysis_data = read_json_file(video_analysis_file)
+
+            # computation of the compliance metrics
+            ##compliance_df = pd.DataFrame()
+            compliance_dict, compliance_metrics = check_policy_compliance(policy_data, analysis_data)
+            print('compliance_dict filled:', compliance_dict)
+            print('compliance_metrics computed:', compliance_metrics)
 
         # DISPLAY RESULTS FROM THE VIDEO ANALYSIS
         return render_template('video_analysis.html', video_path=video_path, extracted_text=text_video, summary_text=summary_text, ner_text=text_NER)

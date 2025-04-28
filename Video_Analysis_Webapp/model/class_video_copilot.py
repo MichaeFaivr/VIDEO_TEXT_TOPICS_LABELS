@@ -54,6 +54,7 @@ import numpy as np
 import pandas as pd
 import random
 import speech_recognition as sr
+
 #from deepmultilingualpunctuation import PunctuationModel
 import cv2
 import torch
@@ -75,7 +76,8 @@ from sklearn.decomposition import TruncatedSVD
 from textblob import TextBlob
 from datetime import datetime
 import os
-
+##from punctuator import Punctuator
+##from deepmultilingualpunctuation import PunctuationModel
 
 # The reason gensim no longer has a summarization module is that it was 
 # deprecated and eventually removed in more recent versions of the library.
@@ -87,6 +89,78 @@ import os
 # Import of deepmultilingualpunctuation is not working.
 # This point has to be fixed.
 
+"""
+def add_punctuation(text):
+    p = Punctuator('Demo-Europarl-EN.pcl')
+    punctuated_text = p.punctuate(text)
+    return punctuated_text
+"""
+
+"""
+def add_punctuation(text):
+    # Load the punctuation model
+    try:
+        model = PunctuationModel()
+    except OSError:
+        from deepmultilingualpunctuation import download
+        download('deepmultilingualpunctuation')
+        model = PunctuationModel()
+
+    # Add punctuation to the text
+    punctuated_text = model.restore_punctuation(text)
+    return punctuated_text
+"""
+
+"""
+def add_punctuation(text):
+    # Simple punctuation addition using basic rules
+    sentences = sent_tokenize(text)
+    punctuated_text = ' '.join([sentence.capitalize() + '.' if not sentence.endswith(('.', '!', '?')) else sentence for sentence in sentences])
+    return punctuated_text
+"""
+
+"""
+def add_punctuation(text):
+    # TEST text
+    text = "The Kärcher WD 3 is a versatile and robust wet and dry vacuum cleaner designed to handle tough cleaning tasks both indoors and outdoors " \
+        "it features an intelligent cartridge filter system that allows seamless switching between wet and dry debris, making it ideal for various environments such as the car, garage, and basement2 " \
+        "the vacuum also includes a blower function, which is useful for dislodging dirt from hard-to-reach areas, adding to its overall convenience and flexibility2" \
+        "with a 4.5-gallon capacity and a powerful 1000-watt motor, the WD 3 offers strong suction power and energy efficiency, ensuring thorough cleaning results " \
+        "its compact design and convenient storage options for the hose and accessories make it easy to store and use5."
+    
+    # Load the SpaCy model
+    nlp = spacy.load("en_core_web_sm")
+
+    # Process the text
+    doc = nlp(text)
+
+    # Add punctuation based on the model's predictions
+    punctuated_text = []
+    for sent in doc.sents:
+        punctuated_text.append(sent.text.capitalize() + "... ")
+
+    # Join the sentences with spaces
+    return " ".join(punctuated_text)
+"""
+
+def add_punctuation(text):
+    # TEST text
+    text = "The Kärcher WD 3 is a versatile and robust wet and dry vacuum cleaner designed to handle tough cleaning tasks both indoors and outdoors " \
+        "it features an intelligent cartridge filter system that allows seamless switching between wet and dry debris, making it ideal for various environments such as the car, garage, and basement2 " \
+        "the vacuum also includes a blower function, which is useful for dislodging dirt from hard-to-reach areas, adding to its overall convenience and flexibility2" \
+        "with a 4.5-gallon capacity and a powerful 1000-watt motor, the WD 3 offers strong suction power and energy efficiency, ensuring thorough cleaning results " \
+        "its compact design and convenient storage options for the hose and accessories make it easy to store and use5."
+    # Add punctuation using spaCy: under assumption of English language
+    try:
+        nlp = spacy.load('en_core_web_sm')
+    except OSError:
+        from spacy.cli import download
+        download('en_core_web_sm')
+        nlp = spacy.load('en_core_web_sm')
+    doc = nlp(text)
+    punctuated_text = ''.join([token.text_with_ws for token in doc])
+    return punctuated_text
+    
 # define a method for extracting speech from a video
 def extract_speech(video_path):
     # simulate speech extraction
@@ -117,23 +191,68 @@ def extract_speech(video_path):
         # Transcribe audio to text
         text = recognizer.recognize_google(audio_data)
         # Add punctuation
+        #punctuated_text = add_punctuation(text)
+        #text = punctuated_text
         ##punctuated_text = punct_model.restore_punctuation(text)
-        # Add punctuation using spaCy: under assumption of English language
-        try:
-            nlp = spacy.load('en_core_web_sm')
-        except OSError:
-            from spacy.cli import download
-            download('en_core_web_sm')
-            nlp = spacy.load('en_core_web_sm')
-        doc = nlp(text)
-        punctuated_text = ''.join([token.text_with_ws for token in doc])
-        text = punctuated_text
+        
+        # TEST text from Mistral
+        """
+        text = "The Kärcher WD 3 is a versatile and robust wet and dry vacuum cleaner designed to handle tough cleaning tasks both indoors and outdoors. " \
+        "It features an intelligent cartridge filter system that allows seamless switching between wet and dry debris, making it ideal for various environments such as the car, garage, and basement2. " \
+        "The vacuum also includes a blower function, which is useful for dislodging dirt from hard-to-reach areas, adding to its overall convenience and flexibility2. With a 4.5-gallon capacity and a powerful 1000-watt motor, the WD 3 offers strong suction power and energy efficiency, ensuring thorough cleaning results34." \
+        "Its compact design and convenient storage options for the hose and accessories make it easy to store and use5."
+        
+        """
+        text = "The brand is Kering. The Kärcher Pro HD 700 X Plus is a professional-grade cold water pressure washer designed for heavy-duty cleaning tasks." \
+        "With a maximum pressure of 190 bar and a water flow rate of 590 liters per hour, it delivers powerful and efficient cleaning performance." \
+        "Its robust build quality and reliable German engineering ensure durability and longevity, making it suitable for various professional applications." \
+        "The pressure washer is equipped with a high-pressure hose reel and convenient features like compartments for storing accessories, enhancing its usability and convenience." \
+        "Additionally, its compact design and extendable handle make it easy to maneuver and store, further adding to its practicality." \
+        "The recommended price is 1200 euros and it is available for purchase at various retailers."
+
+        # ATTENTION: in the text from the video, make a first treatment to convert currencies in letters to symbols followed by the amount
+        # e.g. "one hundred euros" to "€100.00"
         return text
     except sr.UnknownValueError:
         return "Speech recognition could not understand the audio"
     except sr.RequestError as e:
         return f"Could not request results from Google Web Speech API; {e}"
 
+def format_price_strings(text_video):
+    """
+    Get the currency of the speech of the video.
+    1. Find all prices strings in the text
+    2. Modify the price strings as follow: '200 dollars' -> '$200' ; '200 euros' -> '€200'
+    """
+    # ATTENTION: échec dans le cas de strings de prix avec des ponctuations : 1200 euros. -> word = 'euros.': échec
+    # !!!! CODE ci-dessous à corriger !!!!!
+    dict_currency = {'dollars': '$', 'euros': '€', 'pounds': '£', 'yen': '¥', 'francs': '₣'}
+
+    # "The price of the item is 200 euros" -> "The price of the item is €200"
+    modified_text = ""
+    word_count = 1
+    list_words = text_video.split()
+    print(f"list_words: {list_words}")
+    currency = 'unknown'
+    for word in list_words:
+        if word in dict_currency.keys() or word in dict_currency.values():
+            print(f"word in dict_currency: {word}")
+            if word in dict_currency.keys():
+                currency = word
+                symbol = dict_currency[word]
+            else:
+                currency = [key for key, val in dict_currency.items() if val == word][0]
+                symbol = word
+            # remove the preceding string
+            print(f"symbol: {symbol}, list_words[word_count-1]: {list_words[word_count-1]}, modified_text[-3:-2]: {modified_text[-3:-2]}")
+            modified_text = " ".join(list_words[:word_count-2])
+            modified_text += " " + symbol + list_words[word_count-2] + " " # TODO: remove preceding string
+        else:
+            modified_text += word + " "
+        word_count += 1
+            ##currency = word # see to take the most frequent currency
+    text_video = modified_text
+    return text_video
 
 # BASE CLASS: empty methods to fill in child classes
 class VideoCopilot:
@@ -175,6 +294,12 @@ class VideoToSpeechCopilot(VideoCopilot):
     def extract_speech(self):
         # Extract the speech from the video from the video file path
         textVideo = extract_speech(self.video_path)
+        self.output_text = textVideo
+        return textVideo
+    
+    def process_text(self):
+        textVideo = format_price_strings(self.output_text)
+        self.output_text = textVideo
         return textVideo
     
     def create_output_path_text(self, video_path_uploaded, text_video):
@@ -270,8 +395,32 @@ class VideoTopicsSummaryCopilot():
     """
     NAMED ENTITY RECOGNITION (NER)
     """
+    """
     def perform_ner_analysis(self):
-        # Perform Named Entity Recognition (NER) on the summary
+        # Perform Named Entity Recognition (NER) on the text
+        try:
+            nlp = spacy.load('en_core_web_sm')
+        except OSError:
+            from spacy.cli import download
+            download('en_core_web_sm')
+            nlp = spacy.load('en_core_web_sm')
+
+        doc = nlp(self.text)
+        ner_analysis = defaultdict(list)
+
+        # Extract named entities and group them by their labels
+        for ent in doc.ents:
+            ner_analysis[ent.label_].append(ent.text)
+
+        # Convert defaultdict to a regular dictionary
+        ner_analysis = dict(ner_analysis)
+        # Store the entities in an attribute
+        self.entities = ner_analysis
+        return ner_analysis
+    """
+
+    def perform_ner_analysis(self):
+        # Perform Named Entity Recognition (NER) on the text or the summary
         self.entities = []
         try:
             nlp = spacy.load('en_core_web_sm')
@@ -280,16 +429,16 @@ class VideoTopicsSummaryCopilot():
             download('en_core_web_sm')
             nlp = spacy.load('en_core_web_sm')
         
-        doc = nlp(self.summary)
+        doc = nlp(self.text) # self.summary
             
         # Extract named entities -> str
-        entities = [(ent.text, ent.label_) for ent in doc.ents]
+        spaces_count = self.text.count(' ')
+        entities = [(ent.text, 'PRODUCT' if ent.label_=='PERSON' and ent.text.count(' ') > 0 else 'ORG' if ent.label_=='PERSON' else ent.label_) for ent in doc.ents]
         print(f'entities: {entities}')
         
         # Store the entities in an attribute
         self.entities = entities
         return entities
-    
 
     """
     TOPIC MODELING
@@ -351,7 +500,6 @@ class VideoTopicsSummaryCopilot():
                 topic = doc[0].text
             self.one_word_topics.append(topic)
            
-
 
     def sentences_per_topic(self):
         # split the full text into list of texts per topic

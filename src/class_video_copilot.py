@@ -73,6 +73,7 @@ from heapq import nlargest
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import TruncatedSVD
 from textblob import TextBlob
+from punctuator import Punctuator
 
 
 # The reason gensim no longer has a summarization module is that it was 
@@ -84,6 +85,13 @@ from textblob import TextBlob
 # 04Nov. Punctuation is critical in the text retrieved from the audio of the video.
 # Import of deepmultilingualpunctuation is not working.
 # This point has to be fixed.
+
+
+def add_punctuation(text):
+    p = Punctuator('Demo-Europarl-EN.pcl')
+    punctuated_text = p.punctuate(text)
+    return punctuated_text
+
 
 # define a method for extracting speech from a video
 def extract_speech(video_path):
@@ -110,13 +118,19 @@ def extract_speech(video_path):
     # Recognize speech using Google Web Speech API
     # if French language spoken: specify language="fr-FR"
     # add in attributes !!
-    # Attention: il manque la ponctuation dans le texte extrait de la vidéo
+    # Attention: Still need to add punctuation marks in the text
     try:
         # Transcribe audio to text
         text = recognizer.recognize_google(audio_data)
         # Add punctuation
         ##punctuated_text = punct_model.restore_punctuation(text)
+        # TEST:
+        text = "Hello how are you doing today I am fine thank you You are welcome"
+        punctuated_text = add_punctuation(text)
+        text = punctuated_text
+        print(f"punctuated_text: {punctuated_text}")
         # Add punctuation using spaCy: under assumption of English language
+        """
         try:
             nlp = spacy.load('en_core_web_sm')
         except OSError:
@@ -126,6 +140,7 @@ def extract_speech(video_path):
         doc = nlp(text)
         punctuated_text = ''.join([token.text_with_ws for token in doc])
         text = punctuated_text
+        """
         return text
     except sr.UnknownValueError:
         return "Speech recognition could not understand the audio"
