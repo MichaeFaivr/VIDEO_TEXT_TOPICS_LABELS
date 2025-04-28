@@ -1,0 +1,38 @@
+{
+    "metadata": {
+        "format": "",
+        "duration_secs": 0,
+        "geoloc":
+            {
+                "latitude": 0.0,
+                "longitude": 0.0
+            },
+        "date": "",
+        "number_of_words": 0
+    },
+    "context": {
+        "crm_video_type": "",
+        "nb_speakers": 1,
+        "language": "",
+        "adult_speaker": 0,
+        "type_environment": ""
+    },
+    "speech": "",
+    "summary": "",
+    "sentiment": {
+        "positive_points": [],
+        "negative_points": [],
+        "main_sentiment": ""
+    },
+    "content": {
+        "product": [],
+        "brand": [],
+        "brand_tag": 0,
+        "serial_number": "",
+        "NER_tags": [],
+        "upcoming_purchase_new_item": 0,
+        "budget_for_new_item": "",
+        "currency": "euro",
+        "auth_AI_training_usage": 1
+    }
+}

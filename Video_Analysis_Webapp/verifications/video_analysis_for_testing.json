@@ -1,0 +1,49 @@
+{
+    "metadata": {
+        "format": "MP4",
+        "duration_secs": 220,
+        "geoloc":
+            {
+                "latitude": 44.656,
+                "longitude": -5.564
+            },
+        "date": "01-01-2026",
+        "number_of_words": 800
+    },
+    "context": {
+        "crm_video_type": "consumer review",
+        "nb_speakers": 1,
+        "language": "english",
+        "adult_speaker": 0,
+        "type_environment": "kitchen"
+    },
+    "speech": "Today, I will review my smartphone I owned for 2 years. I love its camera and battery life, but the screen is too small for my liking. I would recommend it to anyone looking for a reliable phone.",
+    "summary": "This smartphone has a great camera and battery life, but the screen is too small. I recommend it to anyone looking for a reliable phone.",
+    "sentiment": {
+        "positive_points": [
+            "great camera",
+            "long battery life",
+            "reliable"
+        ],
+        "negative_points": [
+            "small screen"
+        ],
+        "main_sentiment": "positive",
+        "upcoming_purchase_new_item": 1,
+        "budget_for_new_item": 500,
+        "currency": "euro"
+    },
+    "content": {
+        "product": "",
+        "brand_tag": 0,
+        "brand": "",
+        "serial_number": "",
+        "list_positive_points": [],
+        "list_negative_points": [],
+        "main_sentiment": "",
+        "upcoming_purchase_new_item": 0,
+        "budget_for_new_item": "",
+        "currency": "euro",
+        "auth_AI_training_usage": 1
+    }
+}
