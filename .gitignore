@@ -1,0 +1,10 @@
+# Ignore environment files
+.venv1
+
+# Ignore Python compiled files
+__pycache__/
+*.pyc
+
+# Ignore Output directories
+Output/
+
