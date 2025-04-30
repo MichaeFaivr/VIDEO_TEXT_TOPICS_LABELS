@@ -12,3 +12,8 @@ Output/
 # Ignore runs folders
 runs/
 
+# Ignore mp4 files
+**/*.mp4
+
+# Ignore wav files
+**/*.wav
