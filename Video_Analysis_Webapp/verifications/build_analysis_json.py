@@ -52,6 +52,7 @@ import exifread
     }
 """
 
+# TODO: Serialize the data to JSON
 balises_analyse_video = {"metadata": ["format", "duration_secs", "date", "number_of_words"], 
                          "context":  ["crm_video_type", "nb_speakers", "language", "adult_speaker", "type_environment"],
                          "sentiment":["positive_points", "negative_points", "main_sentiment"],
@@ -82,7 +83,7 @@ def get_duration_video(video_path):
 
 def get_date_video(video_path):
     # Get the date of the video file
-    # ATTTENTION: the processing modifies the creation date of the file to current date
+    # ATTENTION: the processing modifies the creation date of the file to current date
     creation_time = os.path.getctime(video_path)
     creation_date = datetime.fromtimestamp(creation_time).strftime('%Y-%m-%d %H:%M:%S')
     return creation_date

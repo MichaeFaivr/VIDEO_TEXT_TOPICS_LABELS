@@ -1,0 +1,70 @@
+{
+    "type_product" : [  
+        "smartphone", 
+        "laptop", 
+        "software",
+        "TV", 
+        "PC", 
+        "bicycle", 
+        "car",
+        "food"
+    ],
+
+    "brand" : {  
+        "smartphone" : [
+            "Apple", "Oppo", "Xiaomi", "Sony", "Samsung", "Huawei", "Nokia", "Motorola", "Google"
+        ],
+        "operating_system" : [
+            "Android", "iOS", "Windows", "Linux", "macOS"
+        ],
+        "Chip": [
+            "Apple", "Qualcomm", "Intel", "AMD", "NVIDIA"
+        ],
+        "TV" : [
+            "LG", "Samsung", "Sony"
+        ],
+        "desktop" : [
+            "Apple", "Asus","Dell", "HP", "Lenovo", "Acer", "Microsoft"
+        ],
+        "laptop" : [
+            "Apple", "Asus","Dell", "HP", "Lenovo", "Acer", "Microsoft"
+        ],
+        "software" : [
+            "Adobe", "Windows", "Google", "Apple", "Autodesk", "Corel", "Intuit", "VMware", "Android", "Office 365"
+        ],
+        "cloud": [
+            "Google Cloud", "Amazon AWS", "Microsoft Azur", "IBM", "Oracle", "Salesforce"
+        ],
+        "bicycle" : [
+            "Giant", "Trek", "Cannondale"
+        ],
+        "car" : [
+            "Toyota", "Honda", "Ford"
+        ]
+    },
+    "model" : {  
+        "smartphone" : [
+            "iPhone 14", "Find X5", "Redmi Note 11", "Xperia 1 III", "Galaxy S21", "P40 Pro", "Nokia G50", "Moto G Power", "Pixel 6", "Razor 7"
+        ],
+        "TV" : [
+            "LG OLED C1", "Samsung QN90A", "Sony A80J"
+        ],
+        "laptop" : [
+            "MacBook Pro 16", "Asus ROG Zephyrus", "Lenovo ThinkPad X1", "Asus Vivobook", "Dell XPS 13", "HP Spectre x360", "Acer Swift 3", "Microsoft Surface Laptop"
+        ],
+        "software" : [
+            "Photoshop CC", "Microsoft Office 365", "Google Workspace"
+        ],
+        "bicycle" : [
+            "Giant TCR Advanced", "Trek Domane SL", "Cannondale Synapse"
+        ],
+        "desktop" : [
+            "Dell XPS 8940", "HP Omen 30L", "Lenovo Legion Tower 5"
+        ],
+        "car" : [
+            "Toyota Camry", "Honda Accord", "Ford Mustang"
+        ]
+    }
+
+}
+  

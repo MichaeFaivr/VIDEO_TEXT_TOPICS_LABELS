@@ -30,7 +30,9 @@ def result():
         # Save the video file in Uploads folder
         video_file.save(DIRECTORY_VIDEOS + video_file.filename)
 
+        # ==========================
         # OPERATION.1: Extract the text from the video
+        # ==========================
         # Attention: Need the punctuation marks in the text
         video_path = DIRECTORY_VIDEOS + video_file.filename
         videoToSpeech = VideoToSpeechCopilot(video_path)
@@ -40,23 +42,38 @@ def result():
         # Save the text in a file in Outputs avec date et time
         # TO FIX: marks are missing in the text
         videoToSpeech.save_speech_from_video(video_path, text_video)
-
+        # ===========================
         # OPERATION.2: Summarize the text extracted from the video
+        # ===========================
         videoTopicsSummary = VideoTopicsSummaryCopilot(text_video, ['test'], 'test.json')
         summary_text = videoTopicsSummary.text_summary()
         # save summary in a file
 
+        # ===========================
         # OPERATION.3: NER of the text from the video
-        text_NER = videoTopicsSummary.perform_ner_analysis()
+        # ===========================
+        # ** Analysis.1: Key infos from the text with NER
+        text_NER = videoTopicsSummary.perform_ner_analysis_second()
         text_NER = str(text_NER)
         # save NER in a file
 
+        # ** Analysis.2: NER entities with surrounding text
+        text_NER_surrounding = videoTopicsSummary.get_entities_surrounding_infos(window_size=3) # needs a window size sufficiently large to get the context of the entity
+        text_NER_surrounding = str(text_NER_surrounding)
+
+        # ** Analysis.3: Key topics from the text with Complementary Content Analysis
+        _ = videoTopicsSummary.extract_key_infos()
+
+        # ==========================
         # OPERATION.4: TOPICS from summary
+        # ==========================
         #videoTopicsSummary.topic_modeling_LSA()
         #list_topics = videoTopicsSummary.list_topics_from_summary
         #print(f'list_topics: {list_topics}')
 
+        # ===========================
         # OPERATION.5: SENTIMENT ANALYSIS from summary
+        # ===========================
         # save Json file in same directory as the text file from video
         current_date = datetime.now().strftime('%Y-%m-%d')
         current_time = datetime.now().strftime('%H-%M-%S')
@@ -67,7 +84,9 @@ def result():
         videoTopicsSummary.sentiment_analysis_per_summary_sentence(output_json_sentiments)
         print(f'videoTextTopics.sentiment_scores: {videoTopicsSummary.sentiment_scores}')   
 
+        # ===========================
         # OPERATION.6: Save the analysis data in a Json file
+        # ===========================
         analysis_json_filename = os.path.splitext(video_file.filename)[0] + '_' + current_time + '_json_video_analysis.json'
         output_json_analysis = os.path.join(output_dir, analysis_json_filename)
         # Save the analysis data in a Json file
@@ -78,8 +97,9 @@ def result():
             print(f'Error: Unable to save the JSON file: {output_json_analysis}')
         # Save the analysis data in a pickle file
 
-
+        # ===========================
         # OPERATION.7: Check the compliance of the text with the policy
+        # ===========================
         # Attention: need priorly to have stored the analysis data in a Json file !
         policy_data_file = 'verifications/cahier_des_charges.json'
         video_analysis_file = 'verifications/video_analysis_for_testing.json'
@@ -97,7 +117,12 @@ def result():
             print('compliance_metrics computed:', compliance_metrics)
 
         # DISPLAY RESULTS FROM THE VIDEO ANALYSIS
-        return render_template('video_analysis.html', video_path=video_path, extracted_text=text_video, summary_text=summary_text, ner_text=text_NER)
+        return render_template('video_analysis.html', 
+                               video_path=video_path, 
+                               extracted_text=text_video, 
+                               summary_text=summary_text, 
+                               ner_text=text_NER,
+                               ner_surrounding_text=text_NER_surrounding)
 
 
 @app.route('/objectdetection/', methods=['POST'])

@@ -143,6 +143,27 @@ def add_punctuation(text):
     return " ".join(punctuated_text)
 """
 
+### TODO : usual tool funuctions like below to be declared in toolbox/ directory
+def read_json_file(json_file):
+    with open(json_file, 'r') as f:
+        data = json.load(f)
+    return data
+
+# Use the save_json_file
+def save_json_file(json_data, json_filename):
+    current_date = datetime.now().strftime('%Y-%m-%d')
+    output_dir = os.path.join('../Output', current_date)
+    os.makedirs(output_dir, exist_ok=True)
+    # Create a text filename based on the name from video_path and current time
+    current_time = datetime.now().strftime('%H-%M-%S')
+    json_path = os.path.basename(json_filename)
+    json_path = os.path.splitext(json_path)[0] + '_' + current_time + '_' + json_filename
+    output_path = os.path.join(output_dir, json_path)
+    # Save file
+    with open(output_path, 'w', encoding='utf-8') as json_file:
+        json.dump(json_data, json_file, indent=4, ensure_ascii=False)
+    return True
+
 def add_punctuation(text):
     # TEST text
     text = "The Kärcher WD 3 is a versatile and robust wet and dry vacuum cleaner designed to handle tough cleaning tasks both indoors and outdoors " \
@@ -203,13 +224,14 @@ def extract_speech(video_path):
         "Its compact design and convenient storage options for the hose and accessories make it easy to store and use5."
         
         """
-        text = "The brand is Kering. The Kärcher Pro HD 700 X Plus is a professional-grade cold water pressure washer designed for heavy-duty cleaning tasks." \
+        """
+        text = "The brand is Karcher. The Kärcher Pro HD 700 X Plus is a professional-grade cold water pressure washer designed for heavy-duty cleaning tasks." \
         "With a maximum pressure of 190 bar and a water flow rate of 590 liters per hour, it delivers powerful and efficient cleaning performance." \
         "Its robust build quality and reliable German engineering ensure durability and longevity, making it suitable for various professional applications." \
         "The pressure washer is equipped with a high-pressure hose reel and convenient features like compartments for storing accessories, enhancing its usability and convenience." \
         "Additionally, its compact design and extendable handle make it easy to maneuver and store, further adding to its practicality." \
         "The recommended price is 1200 euros and it is available for purchase at various retailers."
-
+        """
         # ATTENTION: in the text from the video, make a first treatment to convert currencies in letters to symbols followed by the amount
         # e.g. "one hundred euros" to "€100.00"
         return text
@@ -341,9 +363,9 @@ class VideoTopicsSummaryCopilot():
         nltk.download('punkt_tab')
 
 
-    """
-    TEXT SUMMARY
-    """
+    # ===========================
+    # TEXT SUMMARY
+    # ===========================
     def text_summary(self):
         # Summarize the text using spaCy lib
         # 1. get most relevant sentences of the text
@@ -392,11 +414,11 @@ class VideoTopicsSummaryCopilot():
         return summary
 
 
-    """
-    NAMED ENTITY RECOGNITION (NER)
-    """
-    """
-    def perform_ner_analysis(self):
+    # ===========================
+    # NAMED ENTITY RECOGNITION (NER)
+    # ===========================
+    """ 04/28/2025 reactivate the code below to get the list of entities"""
+    def perform_ner_analysis_second(self):
         # Perform Named Entity Recognition (NER) on the text
         try:
             nlp = spacy.load('en_core_web_sm')
@@ -417,8 +439,9 @@ class VideoTopicsSummaryCopilot():
         # Store the entities in an attribute
         self.entities = ner_analysis
         return ner_analysis
-    """
 
+    """ ok on 73MB Nov.24; not complete on other test vidos """
+    """ Need a complementary method to get the list of entities """
     def perform_ner_analysis(self):
         # Perform Named Entity Recognition (NER) on the text or the summary
         self.entities = []
@@ -439,9 +462,105 @@ class VideoTopicsSummaryCopilot():
         # Store the entities in an attribute
         self.entities = entities
         return entities
+    
+    def _get_surrounding_text(self, entity, doc, window_size=2):
+        start = max(0, entity.start - window_size)
+        end = min(len(doc), entity.end + window_size)
+        return doc[start:end].text
 
+    def get_entities_surrounding_infos(self, window_size=2):
+        # Get the surrounding information of the entities
+        # Prompt: get the surrounding information of the entities
+        # Initialize spaCy model
+        try:
+            nlp = spacy.load('en_core_web_sm')
+        except OSError:
+            from spacy.cli import download
+            download('en_core_web_sm')
+            nlp = spacy.load('en_core_web_sm')
+
+        # Process the text
+        doc = nlp(self.text)
+        surrounding_infos = {}
+
+        for ent in doc.ents:
+            sub_sentence = self._get_surrounding_text(ent, doc, window_size)
+            blob = TextBlob(sub_sentence)
+            sentiment = blob.sentiment
+            sentiment_label = "positive" if sentiment.polarity > 0 else "negative" if sentiment.polarity < 0 else "neutral"
+            surrounding_infos[ent.text] = {
+                "label": ent.label_,
+                #"start": ent.start_char,
+                #"end": ent.end_char,
+                "sentence": sub_sentence,
+                "sentiment": {
+                    "label": sentiment_label,
+                    "polarity": round(blob.polarity, 3),
+                    "subjectivity": round(blob.subjectivity, 3)
+                }, 
+                #ent.sent.text
+            }
+        
+        return surrounding_infos
+    
+    # ===========================
+    # KEY INFOS EXTRACTION
+    # ===========================
+    # complementary method to get the list of entities / key infos
+    def extract_key_infos(self):
+        # read Json file: verifications/content_analysis_reference.json
+        # ATTENTION: ne pas passer le nom de fichier en dur dans le code
+        # Use a serialization or other method to get the reference file
+        reference_analysis_file = read_json_file('verifications/content_analysis_reference.json')
+        if not reference_analysis_file:
+            print(f'Error: Unable to read the reference JSON file: verifications/content_analysis_reference.json')
+            return None
+        
+        # text in lower case
+        text_lower_case = self.text.lower()
+
+        # Extract the key infos from the reference analysis file
+        key_infos = {}
+        for key, value in reference_analysis_file.items():
+            if isinstance(value, list):
+                # Fetch the values from the list present in self.text
+                list_infos = [item for item in value if item in self.text]
+                if list_infos:
+                    key_infos[key] = list_infos
+            elif isinstance(value, str):
+                # Fetch the value from the string present in self.text
+                if value in self.text:
+                    key_infos[key] = value
+            elif isinstance(value, dict):
+                # Fetch the values from the dictionary present in self.text
+                # all lists
+                print(f"extract_key_infos key: {key}, value: {value}")
+                for sub_key, sub_value in value.items():
+                    if not key in key_infos.keys():
+                        key_infos[key] = {}
+                    if isinstance(sub_value, list):
+                        list_infos = [item for item in sub_value if item.lower() in text_lower_case]
+                        if list_infos:
+                            key_infos[key][sub_key] = list_infos
+                    elif isinstance(sub_value, str):
+                        if sub_value in self.text:
+                            key_infos[key][sub_key] = sub_value
+                    else:
+                        print(f"Unsupported data type for key: {sub_key}")
+            else:
+                print(f"Unsupported data type for key: {key}")
+        # Store the key infos in an attribute
+        self.key_infos = key_infos
+        # Save the key infos to a JSON file
+        json_filename = 'content_analysis_key_infos.json'
+        save_json_file(key_infos, json_filename)
+
+        return key_infos
+
+    # ===========================
+    # TOPIC MODELING
+    # ===========================
     """
-    TOPIC MODELING
     perform topic modeling using LDA in Python with the gensim library. 
     You can modify the documents list to analyze your own text data. 
     Once you run the code, you'll see the identified topics printed in the console and a visual representation of 
@@ -527,9 +646,9 @@ class VideoTopicsSummaryCopilot():
         return topic_sentences
     
 
-    """
-    SENTIMENT ANALYSIS
-    """
+    # ===========================
+    # SENTIMENT ANALYSIS
+    # ===========================
     def sentiment_analysis_per_summary_sentence(self, output_json_file):
         self.sentiment_scores = []
 
