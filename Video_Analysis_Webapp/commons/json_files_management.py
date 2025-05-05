@@ -22,7 +22,7 @@ def save_json_file(json_data, json_filename):
     # Create a text filename based on the name from video_path and current time
     current_time = datetime.now().strftime('%H-%M-%S')
     json_path = os.path.basename(json_filename)
-    json_path = os.path.splitext(json_path)[0] + '_' + current_time + '_' + json_filename
+    json_path = os.path.splitext(json_path)[0] + '_' + current_time + '_' + '.json'
     output_path = os.path.join(output_dir, json_path)
     # Save file
     with open(output_path, 'w', encoding='utf-8') as json_file:

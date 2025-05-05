@@ -3,7 +3,7 @@
         "format": ["MP4", "AVI", "MOV"],
         "date": ["01-01-2025", "12-31-2050"],
         "duration_secs": [120, 1800],
-        "number_of_words": [300, 1500]
+        "number_of_words": [200, 1500]
     },
     "context": {
         "crm_video_type": ["consumer review","cooking","home"],
@@ -11,10 +11,10 @@
         "language": ["english", "french", "spain", "german", "mandarin", "portuguese"]
     },
     "content": {
-        "product": 1,
-        "brand_tag": 1,
-        "brand": 1,
-        "serial_number": 1,
+        "type_product": [],
+        "product": [],
+        "brand": [],
+        "serial_number": [],
         "nb_positive_points": [3, 20],
         "nb_negative_points": [3, 20],
         "upcoming_purchase_new_item": 1,

@@ -16,6 +16,8 @@ import os
 from datetime import datetime
 import exifread
 
+from commons.json_files_management import *
+
 # Voir si utile de faire une classe ici
 """
         "crm_video_type": "consumer review",
@@ -59,14 +61,12 @@ balises_analyse_video = {"metadata": ["format", "duration_secs", "date", "number
                          "content":  ["product", "brand_tag", "brand", "serial_number", "list_positive_points", 
                                       "list_negative_points", "main_sentiment", "upcoming_purchase_new_item",
                                       "budget_for_new_item", "currency", "auth_AI_training_usage"]}
-
+"""
 def read_json_file(json_file):
-    """
-    Read the Json file
-    """
     with open(json_file, 'r') as f:
         data = json.load(f)
     return data
+"""
 
 def get_format_video(video_path):
     """
@@ -149,6 +149,18 @@ def get_language(text_video):
     Get the language of the speech of the video.
     """
     language = detect(text_video)
+    if language == 'en':
+        language = 'english'
+    elif language == 'fr':
+        language = 'french'
+    elif language == 'es':
+        language = 'spanish'
+    elif language == 'de':
+        language = 'german'
+    elif language == 'it':
+        language = 'italian'
+    elif language == 'pt':
+        language = 'portuguese'
     return language
 
 
@@ -214,33 +226,27 @@ def get_positive_sentiments(text_video):
     pass
 
 
-def get_brand_product(text_NER):
+def get_brand_product(dict_NER):
     """
     Get the brand and product of the speech of the video.
     """
-    # TEST: NER Text
-    #print('text_NER:', text_NER)
-    #print('text_NER type:', type(text_NER))
-    # convert text_NER to a list of tuples
-    list_NER = eval(text_NER)
-
-    #list_NER = [('IDE', 'ORG'), ('four', 'CARDINAL'), ('8-month', 'DATE'), ('ASUS', 'ORG'), ('VivoBook 17', 'PRODUCT'), ('AI', 'ORG'), ('Google Cloud', 'PRODUCT')]
+    #dict_NER = {'ORG': ['ASUS VivoBook', 'ASUS', 'Intel', 'Office 365', 'IDE', 'ASUS', 'AI'], 'DATE': ['April 2024', '8 months', '8-month'], 'GPE': ['Italy', 'Paris'], 'PRODUCT': ['VivoBook 17', 'VivoBook 17', 'Google Cloud'], 'CARDINAL': ['680', '60', 'four'], 'QUANTITY': ['17 inches'], 'PERSON': ['Iris']}
     brand = []
     product = []
-    # coded auto by copilot
-    for entity in list_NER:
-        #print(f'entity: {entity}')
-        #print(f'entity[0]: {entity[0]}')
-        if entity[1] == 'ORG':
-            brand.append(entity[0])
-        elif entity[1] == 'PRODUCT':
-            product.append(entity[0])
+    if "ORG" in dict_NER.keys():
+        brand = list(set(dict_NER["ORG"]))
+    if "PRODUCT" in dict_NER.keys():
+        # get unique elements from entity["PRODUCT"]
+        product = list(set(dict_NER["PRODUCT"]))
+
+    # complete the list of brand and product with content analysis result
+
     brand = list(set(brand))
     product = list(set(product))
     return brand, product
 
 
-def read_fill_save_json_file(json_file, video_path, text_video, summary_text, text_NER):
+def read_fill_save_json_file(json_file, video_path, text_video, dict_NER, key_infos):
     # read the template analysis Json file
     video_analysis_template = 'verifications/video_analysis_template.json'
     json_data = read_json_file(video_analysis_template)
@@ -260,12 +266,13 @@ def read_fill_save_json_file(json_file, video_path, text_video, summary_text, te
     json_data['context']['language'] = get_language(text_video)
     json_data['context']['adult_speaker'] = 0
     # fill content infos of json_data
-    brand, product = get_brand_product(text_NER)
+    brand, product = get_brand_product(dict_NER)
+    json_data['content']['type_product'] = key_infos['type_product']
     json_data['content']['product'] = product
     json_data['content']['brand_tag'] = 0
     json_data['content']['brand'] = brand
     json_data['content']['serial_number'] = ""
-    json_data['content']['NER_tags'] = text_NER
+    json_data['content']['NER_tags'] = str(dict_NER)
     json_data['content']['upcoming_purchase_new_item'] = 0
     json_data['content']['budget_for_new_item'] = ""
     json_data['content']['currency'] = get_currency(text_video)
@@ -274,7 +281,6 @@ def read_fill_save_json_file(json_file, video_path, text_video, summary_text, te
     json_data['sentiment']['positive_points'] = []
     json_data['sentiment']['negative_points'] = []
     json_data['sentiment']['main_sentiment'] = ""
-
 
     with open(json_file, 'w') as f:
         json.dump(json_data, f, indent=4)

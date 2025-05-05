@@ -20,7 +20,7 @@ ALGO for validation and notation of the uploaded Video w/r the policy Json file:
 import json
 from commons.json_files_management import *
 
-reward_for_authorization = 4 # voir comment le sortir du code !!
+REWARD_FOR_AUTH = 3 # voir comment le sortir du code !!
 
 """
 def read_json_file(file_path):
@@ -51,25 +51,26 @@ def check_entry_value(section, key, policy_data, analysis_data):
                         if "date" in key:
                             # Check if the value is between the two values in the list
                             validation = policy_data[section][key][0] <= analysis_data[section][key]
-                            return [analysis_data[section][key], validation]
+                            return [analysis_data[section][key], 1 if validation else 0]
                         else:
                             # Check if the value is between the two values in the list
                             validation = policy_data[section][key][0] <= analysis_data[section][key] <= policy_data[section][key][1]
-                            return [analysis_data[section][key], validation]
-                return [analysis_data[section][key], validation]
+                            return [analysis_data[section][key], 1 if validation else 0]
+                    elif len(policy_data[section][key]) == 0 and len(analysis_data[section][key]) >= 1:
+                        validation = True
+                return [analysis_data[section][key], 1 if validation else 0]
             elif analysis_data[section][key] != "":
                 if "auth" in key:
-                    validation = analysis_data[section][key] * reward_for_authorization # autorisations doivent être "True" ou "False"
+                    validation = analysis_data[section][key] * REWARD_FOR_AUTH
                     return [analysis_data[section][key], validation]
                 else:
-                    validation = True
-                    return [analysis_data[section][key], validation]
+                    return [analysis_data[section][key], 1]
             else:
-                return [analysis_data[section][key], False]
+                return [analysis_data[section][key], 0]
         else:
-            return [None, False]
+            return [None, 0]
     else:
-        return [None, False]
+        return [None, 0]
             
 
 def check_policy_compliance(policy_data, analysis_data):
@@ -95,7 +96,7 @@ def check_policy_compliance(policy_data, analysis_data):
     print(f"num_policy_checked: {num_policy_checked}")
     # get the first values of the compliance_dict lists values
 
-    compliance_metrics = sum([val[1]==True for val in compliance_dict.values()]) / num_policy_checked if num_policy_checked > 0 else 0
+    compliance_metrics = sum([val[1] for val in compliance_dict.values()]) / num_policy_checked if num_policy_checked > 0 else 0
     compliance_dict['compliance_metrics'] = compliance_metrics
     # Save compliance dict and metrics in a json file
     compliance_file = 'compliance_metrics.json'

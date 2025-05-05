@@ -30,9 +30,10 @@
         "brand_tag": 0,
         "serial_number": "",
         "NER_tags": [],
-        "upcoming_purchase_new_item": 0,
+        "price": 0,
         "budget_for_new_item": "",
         "currency": "euro",
+        "upcoming_purchase_new_item": 0,
         "auth_AI_training_usage": 1
     }
 }

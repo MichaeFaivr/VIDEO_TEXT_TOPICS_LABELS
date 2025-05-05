@@ -339,6 +339,7 @@ class VideoToSpeechCopilot(VideoCopilot):
             ##punctuated_text = add_punctuation(text_video)
             ##text_video = punctuated_text
             ### TEST
+            """
             self.output_text = "I am looking for a new laptop for a price range of €1000 to €1200. " \
             "The brands I like are : Asus, Microsoft, Lenovo." \
             "I need a screen size of at least 17 inches." \
@@ -347,6 +348,7 @@ class VideoToSpeechCopilot(VideoCopilot):
             "The storage should be at least 512 GB SSD. " \
             "I will use the laptop mostly for work as a developer, so for software coding. " \
             "Yet, I will also use it for gaming and digital art creation."
+            """
             return text_video
         except sr.UnknownValueError:
             return "Speech recognition could not understand the audio"

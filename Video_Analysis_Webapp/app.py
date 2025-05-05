@@ -100,8 +100,8 @@ def result():
         # ===========================
         analysis_json_filename = os.path.splitext(video_file.filename)[0] + '_' + current_time + '_json_video_analysis.json'
         output_json_analysis = os.path.join(output_dir, analysis_json_filename)
-        # Save the analysis data in a Json file
-        write_json_file = read_fill_save_json_file(output_json_analysis, video_path, text_video, summary_text, text_NER)
+        # Save the analysis data in a Json file with the function from build_analysis_json.py
+        write_json_file = read_fill_save_json_file(output_json_analysis, video_path, text_video, videoTopicsSummary.entities, videoTopicsSummary.key_infos)
         if write_json_file:
             print(f'Json file saved: {output_json_analysis}')
         else:
@@ -113,7 +113,8 @@ def result():
         # ===========================
         # Attention: need priorly to have stored the analysis data in a Json file !
         policy_data_file = 'verifications/cahier_des_charges.json'
-        video_analysis_file = 'verifications/video_analysis_for_testing.json'
+        ###video_analysis_file = 'verifications/video_analysis_for_testing.json'
+        video_analysis_file = output_json_analysis
 
         # Read the policy JSON file
         policy_data = read_json_file(policy_data_file)
