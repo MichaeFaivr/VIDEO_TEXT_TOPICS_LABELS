@@ -33,6 +33,7 @@
 # - classe fille #1: VideoToSpeechCopilot
 # - classe fille #2: VideoToObjectsCopilot
 
+# ATTENTION: Responsibilité Dev / DS : portabilité du package avec les paths flexibles / best practices
 
 """
  ____________________________
@@ -53,13 +54,15 @@
 import numpy as np
 import pandas as pd
 import random
-import speech_recognition as sr
 
-#from deepmultilingualpunctuation import PunctuationModel
+# Image analysis
 import cv2
 import torch
 from torchvision import transforms
 from PIL import Image
+
+# Text analysis
+import speech_recognition as sr
 import json
 from collections import defaultdict
 import nltk
@@ -76,8 +79,17 @@ from sklearn.decomposition import TruncatedSVD
 from textblob import TextBlob
 from datetime import datetime
 import os
-##from punctuator import Punctuator
-##from deepmultilingualpunctuation import PunctuationModel
+## ATTENTION aux paths !!!!
+## NO USE OF GOOGLE SERVICES API FOR NOW
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "" # path to the Google API credentials to add
+from google.cloud import speech
+from pydub import AudioSegment
+
+###from distutils import msvccompiler
+###from punctuator import Punctuator
+###from deepmultilingualpunctuation import PunctuationModel ## implies transformers
+
+from commons.json_files_management import *
 
 # The reason gensim no longer has a summarization module is that it was 
 # deprecated and eventually removed in more recent versions of the library.
@@ -89,13 +101,25 @@ import os
 # Import of deepmultilingualpunctuation is not working.
 # This point has to be fixed.
 
+# APPROACH: implement several methods for speech recognition and punctuation:
+# 1. Use the Google API for speech recognition and punctuation
+# 2. Use the nlp library for speech recognition and punctuation
+# 3. Find another library for speech recognition and punctuation
+
+## ATTENTION: check with the senior Dev how to handle the audio file
+###TEMP_AUDIO_FILE = "temp_audio.wav"
+###TEMP_MONO_AUDIO_FILE = "temp_mono_audio.wav"
+
+# ATTENTION:
+# use a config file to store the paths
+# and the credentials for the Google API : Json key
+
 """
 def add_punctuation(text):
     p = Punctuator('Demo-Europarl-EN.pcl')
     punctuated_text = p.punctuate(text)
     return punctuated_text
 """
-
 """
 def add_punctuation(text):
     # Load the punctuation model
@@ -113,21 +137,22 @@ def add_punctuation(text):
 
 """
 def add_punctuation(text):
-    # Simple punctuation addition using basic rules
-    sentences = sent_tokenize(text)
-    punctuated_text = ' '.join([sentence.capitalize() + '.' if not sentence.endswith(('.', '!', '?')) else sentence for sentence in sentences])
+    # NOT WORKING and lowercase the entities
+    # Add punctuation using spaCy: under assumption of English language
+    try:
+        nlp = spacy.load('en_core_web_sm')
+    except OSError:
+        from spacy.cli import download
+        download('en_core_web_sm')
+        nlp = spacy.load('en_core_web_sm')
+    doc = nlp(text)
+    punctuated_text = ''.join([token.text_with_ws for token in doc])
     return punctuated_text
 """
 
 """
 def add_punctuation(text):
-    # TEST text
-    text = "The Kärcher WD 3 is a versatile and robust wet and dry vacuum cleaner designed to handle tough cleaning tasks both indoors and outdoors " \
-        "it features an intelligent cartridge filter system that allows seamless switching between wet and dry debris, making it ideal for various environments such as the car, garage, and basement2 " \
-        "the vacuum also includes a blower function, which is useful for dislodging dirt from hard-to-reach areas, adding to its overall convenience and flexibility2" \
-        "with a 4.5-gallon capacity and a powerful 1000-watt motor, the WD 3 offers strong suction power and energy efficiency, ensuring thorough cleaning results " \
-        "its compact design and convenient storage options for the hose and accessories make it easy to store and use5."
-    
+    # NOT WORKING and lowercase the entities    
     # Load the SpaCy model
     nlp = spacy.load("en_core_web_sm")
 
@@ -144,13 +169,17 @@ def add_punctuation(text):
 """
 
 ### TODO : usual tool funuctions like below to be declared in toolbox/ directory
+"""
 def read_json_file(json_file):
     with open(json_file, 'r') as f:
         data = json.load(f)
     return data
+"""
 
 # Use the save_json_file
+"""
 def save_json_file(json_data, json_filename):
+    # ATTENTION: path hard coded in the code for the output folder !
     current_date = datetime.now().strftime('%Y-%m-%d')
     output_dir = os.path.join('../Output', current_date)
     os.makedirs(output_dir, exist_ok=True)
@@ -163,82 +192,44 @@ def save_json_file(json_data, json_filename):
     with open(output_path, 'w', encoding='utf-8') as json_file:
         json.dump(json_data, json_file, indent=4, ensure_ascii=False)
     return True
+"""
 
-def add_punctuation(text):
-    # TEST text
-    text = "The Kärcher WD 3 is a versatile and robust wet and dry vacuum cleaner designed to handle tough cleaning tasks both indoors and outdoors " \
-        "it features an intelligent cartridge filter system that allows seamless switching between wet and dry debris, making it ideal for various environments such as the car, garage, and basement2 " \
-        "the vacuum also includes a blower function, which is useful for dislodging dirt from hard-to-reach areas, adding to its overall convenience and flexibility2" \
-        "with a 4.5-gallon capacity and a powerful 1000-watt motor, the WD 3 offers strong suction power and energy efficiency, ensuring thorough cleaning results " \
-        "its compact design and convenient storage options for the hose and accessories make it easy to store and use5."
-    # Add punctuation using spaCy: under assumption of English language
-    try:
-        nlp = spacy.load('en_core_web_sm')
-    except OSError:
-        from spacy.cli import download
-        download('en_core_web_sm')
-        nlp = spacy.load('en_core_web_sm')
-    doc = nlp(text)
-    punctuated_text = ''.join([token.text_with_ws for token in doc])
-    return punctuated_text
-    
-# define a method for extracting speech from a video
-def extract_speech(video_path):
-    # simulate speech extraction
-    import moviepy.editor as mp
+def convert_to_mono(input_audio_file: str, output_audio_file: str) -> str:
+    # Load the audio file
+    audio = AudioSegment.from_file(input_audio_file)
+    # Convert to mono
+    mono_audio = audio.set_channels(1)
+    # Save the mono audio to a temporary file
+    mono_audio_path = output_audio_file
+    mono_audio.export(mono_audio_path, format="wav")
+    return mono_audio_path
 
-    # Load the video file
-    video = mp.VideoFileClip(video_path)
-
-    # Extract the audio from the video
-    audio = video.audio
-    # output the audio to a temporary file
-    audio_path = "temp_audio.wav"
-    audio.write_audiofile(audio_path)
-
-    # Initialize the recognizer and punctuation model
-    recognizer = sr.Recognizer()
-    ##punct_model = PunctuationModel()
+def transcribe_file_with_auto_punctuation(audio_file: str) -> speech.RecognizeResponse:
+    # parameter audio_file is expected to be a mono audio file
+    client = speech.SpeechClient()
 
     # Load the audio file
-    with sr.AudioFile(audio_path) as source:
-        audio_data = recognizer.record(source)
+    with open(audio_file, "rb") as f:
+        content = f.read()
 
-    # Recognize speech using Google Web Speech API
-    # if French language spoken: specify language="fr-FR"
-    # add in attributes !!
-    # Attention: il manque la ponctuation dans le texte extrait de la vidéo
-    try:
-        # Transcribe audio to text
-        text = recognizer.recognize_google(audio_data)
-        # Add punctuation
-        #punctuated_text = add_punctuation(text)
-        #text = punctuated_text
-        ##punctuated_text = punct_model.restore_punctuation(text)
-        
-        # TEST text from Mistral
-        """
-        text = "The Kärcher WD 3 is a versatile and robust wet and dry vacuum cleaner designed to handle tough cleaning tasks both indoors and outdoors. " \
-        "It features an intelligent cartridge filter system that allows seamless switching between wet and dry debris, making it ideal for various environments such as the car, garage, and basement2. " \
-        "The vacuum also includes a blower function, which is useful for dislodging dirt from hard-to-reach areas, adding to its overall convenience and flexibility2. With a 4.5-gallon capacity and a powerful 1000-watt motor, the WD 3 offers strong suction power and energy efficiency, ensuring thorough cleaning results34." \
-        "Its compact design and convenient storage options for the hose and accessories make it easy to store and use5."
-        
-        """
-        """
-        text = "The brand is Karcher. The Kärcher Pro HD 700 X Plus is a professional-grade cold water pressure washer designed for heavy-duty cleaning tasks." \
-        "With a maximum pressure of 190 bar and a water flow rate of 590 liters per hour, it delivers powerful and efficient cleaning performance." \
-        "Its robust build quality and reliable German engineering ensure durability and longevity, making it suitable for various professional applications." \
-        "The pressure washer is equipped with a high-pressure hose reel and convenient features like compartments for storing accessories, enhancing its usability and convenience." \
-        "Additionally, its compact design and extendable handle make it easy to maneuver and store, further adding to its practicality." \
-        "The recommended price is 1200 euros and it is available for purchase at various retailers."
-        """
-        # ATTENTION: in the text from the video, make a first treatment to convert currencies in letters to symbols followed by the amount
-        # e.g. "one hundred euros" to "€100.00"
-        return text
-    except sr.UnknownValueError:
-        return "Speech recognition could not understand the audio"
-    except sr.RequestError as e:
-        return f"Could not request results from Google Web Speech API; {e}"
+    # Configure the audio file and recognition settings
+    # address long audio files:
+    # google.api_core.exceptions.InvalidArgument:
+    # 400 Sync input too long. For audio longer than 1 min use LongRunningRecognize with a 'uri' parameter.
+    # trouver un Youtube ou ask AI
+    ###audio = speech.LongRunningRecognizeResult()
+    audio = speech.RecognitionAudio(content=content)
+    config = speech.RecognitionConfig(
+        encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
+        ##sample_rate_hertz=6000,
+        language_code="en-US",
+        enable_automatic_punctuation=True,
+    )
+
+    # Perform the transcription
+    response = client.recognize(config=config, audio=audio)
+    return response
+
 
 def format_price_strings(text_video):
     """
@@ -313,13 +304,65 @@ class VideoToSpeechCopilot(VideoCopilot):
         super().__init__(video_path, frame_size, duration, video_type, random_time)
         self.output_text = output_text
 
-    def extract_speech(self):
-        # Extract the speech from the video from the video file path
-        textVideo = extract_speech(self.video_path)
-        self.output_text = textVideo
-        return textVideo
+    def extract_audio(self, input_audio_file):
+        # simulate speech extraction
+        import moviepy.editor as mp
+
+        # Load the video file
+        video = mp.VideoFileClip(self.video_path)
+
+        # Extract the audio from the video
+        audio = video.audio
+        # output the audio to a temporary file
+        audio_path = input_audio_file
+        audio.write_audiofile(audio_path)
+        self.audio_path = audio_path
+
+        # Initialize the recognizer
+        recognizer = sr.Recognizer()
+
+        # Load the audio file
+        with sr.AudioFile(audio_path) as source:
+            audio_data = recognizer.record(source)
+            self.audio_data = audio_data
+
+
+    def extract_speech_google_recognizer(self, temp_audio_file):
+        # Extract the audio from the video
+        self.extract_audio(temp_audio_file)
+        # Initialize the recognizer
+        recognizer = sr.Recognizer()
+        try:
+            # Transcribe audio to text
+            text_video = recognizer.recognize_google(self.audio_data)
+            self.output_text = text_video
+            ##punctuated_text = add_punctuation(text_video)
+            ##text_video = punctuated_text
+            ### TEST
+            self.output_text = "I am looking for a new laptop for a price range of €1000 to €1200. " \
+            "The brands I like are : Asus, Microsoft, Lenovo." \
+            "I need a screen size of at least 17 inches." \
+            "The RAM should be at least 16 GB. " \
+            "The processor should be at least i7. " \
+            "The storage should be at least 512 GB SSD. " \
+            "I will use the laptop mostly for work as a developer, so for software coding. " \
+            "Yet, I will also use it for gaming and digital art creation."
+            return text_video
+        except sr.UnknownValueError:
+            return "Speech recognition could not understand the audio"
+        except sr.RequestError as e:
+            return f"Could not request results from Google Web Speech API; {e}"
+
+    def transcribe_audio_with_punctuation_google_speech_api(self, output_audio_mono_path):
+        # Input = audio file path
+        # convert to mono track
+        mono_audio_file = convert_to_mono(self.audio_path, output_audio_mono_path)
+        response = transcribe_file_with_auto_punctuation(mono_audio_file)
+        print(f"response: {response}")
+        return response
     
     def process_text(self):
+        # Price formatting
         textVideo = format_price_strings(self.output_text)
         self.output_text = textVideo
         return textVideo
@@ -349,10 +392,11 @@ class VideoToSpeechCopilot(VideoCopilot):
 # for each topic of interest, get the list of sentences related to that topic
 # and summarize the text, extract keywords, and determine the sentiment
 # 1. Text from Video Summary   : DONE
-# 2. Name Entity Recognition
-# 3. Sentiment Analysis
-# 4. Topic Detection/Modeling
-# 5. Json sentences per topic  : DONE
+# 2. Name Entity Recognition   : DONE
+# 3. Key Infos Extraction      : DONE
+# 4. Sentiment Analysis        : DONE         
+# 5. Topic Detection/Modeling
+# 6. Json sentences per topic  : DONE
 #
 class VideoTopicsSummaryCopilot():
     def __init__(self, text, topics, output_json):
@@ -511,7 +555,10 @@ class VideoTopicsSummaryCopilot():
         # read Json file: verifications/content_analysis_reference.json
         # ATTENTION: ne pas passer le nom de fichier en dur dans le code
         # Use a serialization or other method to get the reference file
-        reference_analysis_file = read_json_file('verifications/content_analysis_reference.json')
+        # read the path of the reference json file in the config file
+        JSON_ANALYSIS_PATH = os.path.join('verifications', 'content_analysis_reference.json')
+
+        reference_analysis_file = read_json_file(JSON_ANALYSIS_PATH)
         if not reference_analysis_file:
             print(f'Error: Unable to read the reference JSON file: verifications/content_analysis_reference.json')
             return None
@@ -523,7 +570,7 @@ class VideoTopicsSummaryCopilot():
         key_infos = {}
         for key, value in reference_analysis_file.items():
             if isinstance(value, list):
-                # Fetch the values from the list present in self.text
+                # Fetch and collect in a lists the values from the list present in self.text
                 list_infos = [item for item in value if item in self.text]
                 if list_infos:
                     key_infos[key] = list_infos
@@ -556,6 +603,60 @@ class VideoTopicsSummaryCopilot():
         save_json_file(key_infos, json_filename)
 
         return key_infos
+    
+    def extract_type_product_specifications(self, product_type: str) -> dict:
+        # Wiil need to use the specific serialized for the product type
+        # NB: 'price' will be a common key for all product types
+        # Extract the product specifications from the text
+        # Prompt: extract the product specifications from the text
+        # Initialize spaCy model
+        # ATTENTION: Need a solution to find the specifications of the product type extracted from the text
+        # TEST
+        product_type = 'laptop'
+
+        JSON_PRODUCT_SPECIFICATIONS_PATH = os.path.join('products_specifications', product_type+'_specifications.json')
+        product_type_specifications_data = read_json_file(JSON_PRODUCT_SPECIFICATIONS_PATH)
+        if not product_type_specifications_data:
+            print(f'Error: Unable to read the reference JSON file:' + JSON_PRODUCT_SPECIFICATIONS_PATH)
+            return None
+        #if not self.key_infos.type_product:
+        #    print(f'Error: Unable to find the product type in the text')
+        #    return None
+        
+        #print(f'self.key_infos.type_product: {self.key_infos.type_product}')
+
+        # fill the specifications with the product type
+        product_specifications = {}
+        # ATTENTION: how to fill the product specifications with a generic code?
+        for key, value in product_type_specifications_data.items():
+            # get the text around the keyword
+            #product_specifications[key] = self.text # values from the text
+            if key == "price":
+                product_specifications["price"] = []
+                # get the currency
+                if "€" in self.text:
+                    product_specifications["currency"] = "euro"
+                    # get the indices of the currency in self.text
+                    indices = [m.start() for m in re.finditer("€", self.text)]
+                    # get the price infos from the text as a list
+                    for index_price in indices:
+                        # get the price before the currency
+                        price = self.text[index_price+1:index_price+5] # need to make it robust: extend to next space
+                        # remove the spaces
+                        price = price.replace(" ", "")
+                        # remove the currency
+                        price = price.replace("€", "")
+                        # add the price to the product specifications
+                        product_specifications["price"].append(price)            
+
+        print(f'product_specifications: {product_specifications}')
+        self.product_specifications = product_specifications
+
+        # save the product specifications to a JSON file
+        json_filename = 'content_analysis_product_specifications.json'
+        save_json_file(product_specifications, json_filename)
+
+        return product_specifications
 
     # ===========================
     # TOPIC MODELING
@@ -656,6 +757,7 @@ class VideoTopicsSummaryCopilot():
         #self.sentences = ["I love this movie", "I hate this movie", "This movie is okay", "I am neutral about this movie",
         #                  "I am very happy", "I am very sad", "I am feeling great", "I am feeling terrible"]
 
+        # Perform sentiment analysis on each sentence (not the summary per se)
         for sentence in self.sentences:
             blob = TextBlob(sentence)
             sentiment = blob.sentiment

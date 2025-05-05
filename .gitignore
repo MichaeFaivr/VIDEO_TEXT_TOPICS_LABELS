@@ -17,3 +17,6 @@ runs/
 
 # Ignore wav files
 **/*.wav
+
+# Ignore GoogleService 
+GoogleServices/

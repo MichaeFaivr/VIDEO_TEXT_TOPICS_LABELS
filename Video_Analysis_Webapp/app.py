@@ -16,6 +16,9 @@ LISTE_OBJETS = ['person', 'cup', 'dish', 'knife', 'bottle', 'scissor', 'cake', '
                 'bowl', 'fork', 'spoon', 'bag', 'glove', 'book', 'board', 'strawberry', 'hand', 'socket', 'sink', 'handle',
                 'cabinet']
 
+TEMP_AUDIO_FILE = "temp_audio.wav" # better to read from config file
+
+
 
 @app.route('/', methods=['GET'])
 def upload_video(): 
@@ -36,8 +39,12 @@ def result():
         # Attention: Need the punctuation marks in the text
         video_path = DIRECTORY_VIDEOS + video_file.filename
         videoToSpeech = VideoToSpeechCopilot(video_path)
-        _ = videoToSpeech.extract_speech()
+        _ = videoToSpeech.extract_speech_google_recognizer(TEMP_AUDIO_FILE)
         text_video = videoToSpeech.process_text()
+
+        # Transcript of the audio extracted from the video into a text 
+        # NOK when called onto video longer than 1 minute
+        #_ = videoToSpeech.transcribe_audio_with_punctuation_google_speech_api()
 
         # Save the text in a file in Outputs avec date et time
         # TO FIX: marks are missing in the text
@@ -50,7 +57,7 @@ def result():
         # save summary in a file
 
         # ===========================
-        # OPERATION.3: NER of the text from the video
+        # OPERATION.3: Key informations of the text from the video
         # ===========================
         # ** Analysis.1: Key infos from the text with NER
         text_NER = videoTopicsSummary.perform_ner_analysis_second()
@@ -58,11 +65,15 @@ def result():
         # save NER in a file
 
         # ** Analysis.2: NER entities with surrounding text
-        text_NER_surrounding = videoTopicsSummary.get_entities_surrounding_infos(window_size=3) # needs a window size sufficiently large to get the context of the entity
+        WINDOW_SIZE = 5 # need to take the sentences breaks into account
+        text_NER_surrounding = videoTopicsSummary.get_entities_surrounding_infos(window_size=WINDOW_SIZE) # needs a window size sufficiently large to get the context of the entity
         text_NER_surrounding = str(text_NER_surrounding)
 
         # ** Analysis.3: Key topics from the text with Complementary Content Analysis
         _ = videoTopicsSummary.extract_key_infos()
+
+        # ** Analysis.4: Key topics from the text with product type specific analysis
+        _ = videoTopicsSummary.extract_type_product_specifications('laptop')
 
         # ==========================
         # OPERATION.4: TOPICS from summary

@@ -53,12 +53,15 @@
 import numpy as np
 import pandas as pd
 import random
-import speech_recognition as sr
-#from deepmultilingualpunctuation import PunctuationModel
+
+# Image analysis
 import cv2
 import torch
 from torchvision import transforms
 from PIL import Image
+
+# Text analysis
+import speech_recognition as sr
 import json
 from collections import defaultdict
 import nltk
