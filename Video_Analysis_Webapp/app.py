@@ -53,7 +53,9 @@ def result():
         # OPERATION.2: Summarize the text extracted from the video
         # ===========================
         videoTopicsSummary = VideoTopicsSummaryCopilot(text_video, ['test'], 'test.json')
+        # Cancel Summarization
         summary_text = videoTopicsSummary.text_summary()
+        ##summary_text = ""
         # save summary in a file
 
         # ===========================
@@ -101,7 +103,7 @@ def result():
         analysis_json_filename = os.path.splitext(video_file.filename)[0] + '_' + current_time + '_json_video_analysis.json'
         output_json_analysis = os.path.join(output_dir, analysis_json_filename)
         # Save the analysis data in a Json file with the function from build_analysis_json.py
-        write_json_file = read_fill_save_json_file(output_json_analysis, video_path, text_video, videoTopicsSummary.entities, videoTopicsSummary.key_infos)
+        write_json_file = read_fill_save_json_file(output_json_analysis, video_path, text_video, videoTopicsSummary.entities, videoTopicsSummary.key_infos, videoTopicsSummary.sentiment_scores)
         if write_json_file:
             print(f'Json file saved: {output_json_analysis}')
         else:
@@ -109,7 +111,7 @@ def result():
         # Save the analysis data in a pickle file
 
         # ===========================
-        # OPERATION.7: Check the compliance of the text with the policy
+        # OPERATION.7: COMPLIANCE of the text with the policy
         # ===========================
         # Attention: need priorly to have stored the analysis data in a Json file !
         policy_data_file = 'verifications/cahier_des_charges.json'

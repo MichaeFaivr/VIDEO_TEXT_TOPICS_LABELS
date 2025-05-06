@@ -89,7 +89,10 @@ from pydub import AudioSegment
 ###from punctuator import Punctuator
 ###from deepmultilingualpunctuation import PunctuationModel ## implies transformers
 
+import inspect
+
 from commons.json_files_management import *
+from commons.decorators import *
 
 # The reason gensim no longer has a summarization module is that it was 
 # deprecated and eventually removed in more recent versions of the library.
@@ -295,7 +298,11 @@ class VideoCopilot:
         pass
 
     def main_color(self, object_type):
-        pass        
+        pass
+
+    def logger_process_times(self, time_log_file):
+        # Log the process times
+        pass
 
 
 # CHILD CLASS N°1: VideoToSpeechCopilot
@@ -329,31 +336,32 @@ class VideoToSpeechCopilot(VideoCopilot):
 
     def extract_speech_google_recognizer(self, temp_audio_file):
         # Extract the audio from the video
-        self.extract_audio(temp_audio_file)
-        # Initialize the recognizer
-        recognizer = sr.Recognizer()
-        try:
-            # Transcribe audio to text
-            text_video = recognizer.recognize_google(self.audio_data)
-            self.output_text = text_video
-            ##punctuated_text = add_punctuation(text_video)
-            ##text_video = punctuated_text
-            ### TEST
-            """
-            self.output_text = "I am looking for a new laptop for a price range of €1000 to €1200. " \
-            "The brands I like are : Asus, Microsoft, Lenovo." \
-            "I need a screen size of at least 17 inches." \
-            "The RAM should be at least 16 GB. " \
-            "The processor should be at least i7. " \
-            "The storage should be at least 512 GB SSD. " \
-            "I will use the laptop mostly for work as a developer, so for software coding. " \
-            "Yet, I will also use it for gaming and digital art creation."
-            """
-            return text_video
-        except sr.UnknownValueError:
-            return "Speech recognition could not understand the audio"
-        except sr.RequestError as e:
-            return f"Could not request results from Google Web Speech API; {e}"
+        with measure_time(inspect.currentframe().f_code.co_name):
+            self.extract_audio(temp_audio_file)
+            # Initialize the recognizer
+            recognizer = sr.Recognizer()
+            try:
+                # Transcribe audio to text
+                text_video = recognizer.recognize_google(self.audio_data)
+                self.output_text = text_video
+                ##punctuated_text = add_punctuation(text_video)
+                ##text_video = punctuated_text
+                ### TEST
+                """
+                self.output_text = "I am looking for a new laptop for a price range of €1000 to €1200. " \
+                "The brands I like are : Asus, Microsoft, Lenovo." \
+                "I need a screen size of at least 17 inches." \
+                "The RAM should be at least 16 GB. " \
+                "The processor should be at least i7. " \
+                "The storage should be at least 512 GB SSD. " \
+                "I will use the laptop mostly for work as a developer, so for software coding. " \
+                "Yet, I will also use it for gaming and digital art creation."
+                """
+                return text_video
+            except sr.UnknownValueError:
+                return "Speech recognition could not understand the audio"
+            except sr.RequestError as e:
+                return f"Could not request results from Google Web Speech API; {e}"
 
     def transcribe_audio_with_punctuation_google_speech_api(self, output_audio_mono_path):
         # Input = audio file path
@@ -417,47 +425,52 @@ class VideoTopicsSummaryCopilot():
         # 1. get most relevant sentences of the text
         # 2. summarize each selected sentence
         # 3. join the selected sentences to form the summary
-        try:
-            nlp = spacy.load('en_core_web_sm')
-        except OSError:
-            from spacy.cli import download
-            download('en_core_web_sm')
-            nlp = spacy.load('en_core_web_sm')
-        doc = nlp(self.text)
+        with measure_time(inspect.currentframe().f_code.co_name + " - load spaCy model"):
+            try:
+                nlp = spacy.load('en_core_web_sm')
+            except OSError:
+                from spacy.cli import download
+                download('en_core_web_sm')
+                nlp = spacy.load('en_core_web_sm')
+            doc = nlp(self.text)
 
         # Calculate word frequencies
-        word_frequencies = {}
-        for word in doc:
-            if word.text.lower() not in STOP_WORDS and word.text.lower() not in punctuation:
-                if word.text.lower() not in word_frequencies:
-                    word_frequencies[word.text.lower()] = 1
-                else:
-                    word_frequencies[word.text.lower()] += 1
+        with measure_time(inspect.currentframe().f_code.co_name + " - calculate word frequencies"):
+            word_frequencies = {}
+            for word in doc:
+                if word.text.lower() not in STOP_WORDS and word.text.lower() not in punctuation:
+                    if word.text.lower() not in word_frequencies:
+                        word_frequencies[word.text.lower()] = 1
+                    else:
+                        word_frequencies[word.text.lower()] += 1
 
         # Normalize word frequencies
-        max_frequency = max(word_frequencies.values())
-        for word in word_frequencies.keys():
-            word_frequencies[word] = word_frequencies[word] / max_frequency
+        with measure_time(inspect.currentframe().f_code.co_name + " - normalize word frequencies"):
+            max_frequency = max(word_frequencies.values())
+            for word in word_frequencies.keys():
+                word_frequencies[word] = word_frequencies[word] / max_frequency
 
         # Calculate sentence scores
-        sentence_scores = {}
-        for sent in doc.sents:
-            for word in sent:
-                if word.text.lower() in word_frequencies:
-                    if sent not in sentence_scores:
-                        sentence_scores[sent] = word_frequencies[word.text.lower()]
-                    else:
-                        sentence_scores[sent] += word_frequencies[word.text.lower()]
+        with measure_time(inspect.currentframe().f_code.co_name + " - calculate sentence scores"):
+            sentence_scores = {}
+            for sent in doc.sents:
+                for word in sent:
+                    if word.text.lower() in word_frequencies:
+                        if sent not in sentence_scores:
+                            sentence_scores[sent] = word_frequencies[word.text.lower()]
+                        else:
+                            sentence_scores[sent] += word_frequencies[word.text.lower()]
 
         # Select top sentences: factor 0.3
         select_length = int(len(sentence_scores) * 0.7)
         summary_sentences = nlargest(select_length, sentence_scores, key=sentence_scores.get)
 
         # Join selected sentences to form the summary
-        self.sentences = [sent.text for sent in summary_sentences]    
-        summary = ' '.join(self.sentences)
-        self.summary = summary
-        return summary
+        with measure_time(inspect.currentframe().f_code.co_name + " - join selected sentences"):
+            self.sentences = [sent.text for sent in summary_sentences]    
+            summary = ' '.join(self.sentences)
+            self.summary = summary
+            return summary
 
 
     # ===========================
@@ -466,25 +479,26 @@ class VideoTopicsSummaryCopilot():
     """ 04/28/2025 reactivate the code below to get the list of entities"""
     def perform_ner_analysis_second(self):
         # Perform Named Entity Recognition (NER) on the text
-        try:
-            nlp = spacy.load('en_core_web_sm')
-        except OSError:
-            from spacy.cli import download
-            download('en_core_web_sm')
-            nlp = spacy.load('en_core_web_sm')
+        with measure_time(inspect.currentframe().f_code.co_name):
+            try:
+                nlp = spacy.load('en_core_web_sm')
+            except OSError:
+                from spacy.cli import download
+                download('en_core_web_sm')
+                nlp = spacy.load('en_core_web_sm')
 
-        doc = nlp(self.text)
-        ner_analysis = defaultdict(list)
+            doc = nlp(self.text)
+            ner_analysis = defaultdict(list)
 
-        # Extract named entities and group them by their labels
-        for ent in doc.ents:
-            ner_analysis[ent.label_].append(ent.text)
+            # Extract named entities and group them by their labels
+            for ent in doc.ents:
+                ner_analysis[ent.label_].append(ent.text)
 
-        # Convert defaultdict to a regular dictionary
-        ner_analysis = dict(ner_analysis)
-        # Store the entities in an attribute
-        self.entities = ner_analysis
-        return ner_analysis
+            # Convert defaultdict to a regular dictionary
+            ner_analysis = dict(ner_analysis)
+            # Store the entities in an attribute
+            self.entities = ner_analysis
+            return ner_analysis
 
     """ ok on 73MB Nov.24; not complete on other test vidos """
     """ Need a complementary method to get the list of entities """
@@ -518,36 +532,37 @@ class VideoTopicsSummaryCopilot():
         # Get the surrounding information of the entities
         # Prompt: get the surrounding information of the entities
         # Initialize spaCy model
-        try:
-            nlp = spacy.load('en_core_web_sm')
-        except OSError:
-            from spacy.cli import download
-            download('en_core_web_sm')
-            nlp = spacy.load('en_core_web_sm')
+        with measure_time(inspect.currentframe().f_code.co_name):
+            try:
+                nlp = spacy.load('en_core_web_sm')
+            except OSError:
+                from spacy.cli import download
+                download('en_core_web_sm')
+                nlp = spacy.load('en_core_web_sm')
 
-        # Process the text
-        doc = nlp(self.text)
-        surrounding_infos = {}
+            # Process the text
+            doc = nlp(self.text)
+            surrounding_infos = {}
 
-        for ent in doc.ents:
-            sub_sentence = self._get_surrounding_text(ent, doc, window_size)
-            blob = TextBlob(sub_sentence)
-            sentiment = blob.sentiment
-            sentiment_label = "positive" if sentiment.polarity > 0 else "negative" if sentiment.polarity < 0 else "neutral"
-            surrounding_infos[ent.text] = {
-                "label": ent.label_,
-                #"start": ent.start_char,
-                #"end": ent.end_char,
-                "sentence": sub_sentence,
-                "sentiment": {
-                    "label": sentiment_label,
-                    "polarity": round(blob.polarity, 3),
-                    "subjectivity": round(blob.subjectivity, 3)
-                }, 
-                #ent.sent.text
-            }
-        
-        return surrounding_infos
+            for ent in doc.ents:
+                sub_sentence = self._get_surrounding_text(ent, doc, window_size)
+                blob = TextBlob(sub_sentence)
+                sentiment = blob.sentiment
+                sentiment_label = "positive" if sentiment.polarity > 0 else "negative" if sentiment.polarity < 0 else "neutral"
+                surrounding_infos[ent.text] = {
+                    "label": ent.label_,
+                    #"start": ent.start_char,
+                    #"end": ent.end_char,
+                    "sentence": sub_sentence,
+                    "sentiment": {
+                        "label": sentiment_label,
+                        "polarity": round(blob.polarity, 3),
+                        "subjectivity": round(blob.subjectivity, 3)
+                    }, 
+                    #ent.sent.text
+                }
+            
+            return surrounding_infos
     
     # ===========================
     # KEY INFOS EXTRACTION

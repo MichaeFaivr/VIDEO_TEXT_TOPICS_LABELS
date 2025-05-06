@@ -22,9 +22,12 @@
     "sentiment": {
         "positive_points": [],
         "negative_points": [],
-        "main_sentiment": ""
+        "main_sentiment": "",
+        "nb_positive_points": 0,
+        "nb_negative_points": 0
     },
     "content": {
+        "type_product": [],
         "product": [],
         "brand": [],
         "brand_tag": 0,

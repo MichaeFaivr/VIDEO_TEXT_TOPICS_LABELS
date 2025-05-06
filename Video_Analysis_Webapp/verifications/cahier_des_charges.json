@@ -10,13 +10,15 @@
         "nb_speakers": [1, 2, 3, 4],
         "language": ["english", "french", "spain", "german", "mandarin", "portuguese"]
     },
+    "sentiment": {
+        "nb_positive_points": [1, 20],
+        "nb_negative_points": [1, 20]
+    },
     "content": {
         "type_product": [],
         "product": [],
         "brand": [],
         "serial_number": [],
-        "nb_positive_points": [3, 20],
-        "nb_negative_points": [3, 20],
         "upcoming_purchase_new_item": 1,
         "budget_for_new_item": "",
         "auth_AI_training_usage": 1

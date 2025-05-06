@@ -245,8 +245,25 @@ def get_brand_product(dict_NER):
     product = list(set(product))
     return brand, product
 
+def sentiment_analysis(sentiment_scores):
+    dict_sentiments = {}
+    positive_points = [sent['sentence'] for sent in sentiment_scores if sent['sentiment_label'] == 'positive']
+    negative_points = [sent['sentence'] for sent in sentiment_scores if sent['sentiment_label'] == 'negative']
+    nb_positive_points = len([sent for sent in sentiment_scores if sent['sentiment_label'] == 'positive'])
+    nb_negative_points = len([sent for sent in sentiment_scores if sent['sentiment_label'] == 'negative'])
+    if nb_positive_points != nb_negative_points:
+        main_sentiment = 'positive' if nb_positive_points > nb_negative_points else 'negative'
+    else:
+        main_sentiment = 'neutral'
+    dict_sentiments['positive_points'] = positive_points
+    dict_sentiments['negative_points'] = negative_points
+    dict_sentiments['main_sentiment'] = main_sentiment
+    dict_sentiments['nb_positive_points'] = nb_positive_points
+    dict_sentiments['nb_negative_points'] = nb_negative_points
+    return dict_sentiments
 
-def read_fill_save_json_file(json_file, video_path, text_video, dict_NER, key_infos):
+
+def read_fill_save_json_file(json_file, video_path, text_video, dict_NER, key_infos, sentiment_scores):
     # read the template analysis Json file
     video_analysis_template = 'verifications/video_analysis_template.json'
     json_data = read_json_file(video_analysis_template)
@@ -278,9 +295,12 @@ def read_fill_save_json_file(json_file, video_path, text_video, dict_NER, key_in
     json_data['content']['currency'] = get_currency(text_video)
     json_data['content']['auth_AI_training_usage'] = 1
     # fill sentiment format of json_data
-    json_data['sentiment']['positive_points'] = []
-    json_data['sentiment']['negative_points'] = []
-    json_data['sentiment']['main_sentiment'] = ""
+    dict_sentiments = sentiment_analysis(sentiment_scores)
+    json_data['sentiment']['nb_positive_points'] = dict_sentiments['nb_positive_points']
+    json_data['sentiment']['nb_negative_points'] = dict_sentiments['nb_negative_points']
+    json_data['sentiment']['positive_points'] = dict_sentiments['positive_points']
+    json_data['sentiment']['negative_points'] = dict_sentiments['negative_points']
+    json_data['sentiment']['main_sentiment'] = dict_sentiments['main_sentiment']
 
     with open(json_file, 'w') as f:
         json.dump(json_data, f, indent=4)
