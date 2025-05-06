@@ -84,6 +84,9 @@ import os
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "" # path to the Google API credentials to add
 from google.cloud import speech
 from pydub import AudioSegment
+# Vosk Method
+from vosk import Model, KaldiRecognizer
+import wave
 
 ###from distutils import msvccompiler
 ###from punctuator import Punctuator
@@ -243,6 +246,8 @@ def format_price_strings(text_video):
     # ATTENTION: échec dans le cas de strings de prix avec des ponctuations : 1200 euros. -> word = 'euros.': échec
     # !!!! CODE ci-dessous à corriger !!!!!
     dict_currency = {'dollars': '$', 'euros': '€', 'pounds': '£', 'yen': '¥', 'francs': '₣'}
+    if not text_video or text_video == "":
+        return ""
 
     # "The price of the item is 200 euros" -> "The price of the item is €200"
     modified_text = ""
@@ -355,13 +360,51 @@ class VideoToSpeechCopilot(VideoCopilot):
                 "The processor should be at least i7. " \
                 "The storage should be at least 512 GB SSD. " \
                 "I will use the laptop mostly for work as a developer, so for software coding. " \
-                "Yet, I will also use it for gaming and digital art creation."
+                "Yet, I will also use it for gaming and digital art creation. " \
+                "The price should be between €1000 and €1200. "
                 """
                 return text_video
             except sr.UnknownValueError:
                 return "Speech recognition could not understand the audio"
             except sr.RequestError as e:
                 return f"Could not request results from Google Web Speech API; {e}"
+
+    """"        
+    def extract_speech_with_vosk(self, temp_audio_file):
+        # Extract the audio from the video
+        PATH_VOSK_MODEL = "../language_models/vosk-model-en-us-0.22"
+        with measure_time(inspect.currentframe().f_code.co_name):
+            ###self.extract_audio(temp_audio_file)
+            try:
+                # Load the Vosk model
+                model = Model(PATH_VOSK_MODEL)  # Path to the Vosk model directory
+
+                # Open the audio file
+                with wave.open(temp_audio_file, "rb") as wf:
+                    if wf.getnchannels() != 1 or wf.getsampwidth() != 2 or wf.getcomptype() != "NONE":
+                        raise ValueError("Audio file must be WAV format mono PCM.")
+                    
+                    recognizer = KaldiRecognizer(model, wf.getframerate())
+                    recognizer.SetWords(True)
+
+                    text_video = ""
+                    while True:
+                        data = wf.readframes(4000)
+                        if len(data) == 0:
+                            break
+                        if recognizer.AcceptWaveform(data):
+                            result = recognizer.Result()
+                            text_video += json.loads(result).get("text", "") + " "
+
+                    # Finalize the transcription
+                    final_result = recognizer.FinalResult()
+                    text_video += json.loads(final_result).get("text", "")
+
+                    self.output_text = text_video
+                    return text_video
+            except Exception as e:
+                return f"Error during speech recognition: {e}"
+    """
 
     def transcribe_audio_with_punctuation_google_speech_api(self, output_audio_mono_path):
         # Input = audio file path
@@ -393,8 +436,9 @@ class VideoToSpeechCopilot(VideoCopilot):
         self.create_output_path_text(video_path_uploaded, text_video)
         max_size_bytes = 1024*1000  # 1 MB limit
         # Write the text to a file with a size limit
-        with open(self.output_path, 'w') as file:
-            file.write(text_video[:max_size_bytes])   
+        if text_video and text_video != "":
+            with open(self.output_path, 'w') as file:
+                file.write(text_video[:max_size_bytes])   
 
 
 
@@ -425,6 +469,9 @@ class VideoTopicsSummaryCopilot():
         # 1. get most relevant sentences of the text
         # 2. summarize each selected sentence
         # 3. join the selected sentences to form the summary
+        if not self.text or self.text == "":
+            return "No text to summarize" 
+
         with measure_time(inspect.currentframe().f_code.co_name + " - load spaCy model"):
             try:
                 nlp = spacy.load('en_core_web_sm')
@@ -479,6 +526,9 @@ class VideoTopicsSummaryCopilot():
     """ 04/28/2025 reactivate the code below to get the list of entities"""
     def perform_ner_analysis_second(self):
         # Perform Named Entity Recognition (NER) on the text
+        if not self.text or self.text == "":
+            return {} 
+        
         with measure_time(inspect.currentframe().f_code.co_name):
             try:
                 nlp = spacy.load('en_core_web_sm')
@@ -505,6 +555,8 @@ class VideoTopicsSummaryCopilot():
     def perform_ner_analysis(self):
         # Perform Named Entity Recognition (NER) on the text or the summary
         self.entities = []
+        if not self.text or self.text == "":
+            return self.entities 
         try:
             nlp = spacy.load('en_core_web_sm')
         except OSError:
@@ -532,6 +584,9 @@ class VideoTopicsSummaryCopilot():
         # Get the surrounding information of the entities
         # Prompt: get the surrounding information of the entities
         # Initialize spaCy model
+        if not self.text or self.text == "":
+            return {}
+        
         with measure_time(inspect.currentframe().f_code.co_name):
             try:
                 nlp = spacy.load('en_core_web_sm')
@@ -573,6 +628,9 @@ class VideoTopicsSummaryCopilot():
         # ATTENTION: ne pas passer le nom de fichier en dur dans le code
         # Use a serialization or other method to get the reference file
         # read the path of the reference json file in the config file
+        if not self.text or self.text == "":
+            return {}
+
         JSON_ANALYSIS_PATH = os.path.join('verifications', 'content_analysis_reference.json')
 
         reference_analysis_file = read_json_file(JSON_ANALYSIS_PATH)
@@ -630,6 +688,8 @@ class VideoTopicsSummaryCopilot():
         # ATTENTION: Need a solution to find the specifications of the product type extracted from the text
         # TEST
         product_type = 'laptop'
+        if not self.text or self.text == "":
+            return {}
 
         JSON_PRODUCT_SPECIFICATIONS_PATH = os.path.join('products_specifications', product_type+'_specifications.json')
         product_type_specifications_data = read_json_file(JSON_PRODUCT_SPECIFICATIONS_PATH)
@@ -769,6 +829,9 @@ class VideoTopicsSummaryCopilot():
     # ===========================
     def sentiment_analysis_per_summary_sentence(self, output_json_file):
         self.sentiment_scores = []
+
+        if not self.text or self.text == "":
+            return self.sentiment_scores
 
         # POUR TESTER:
         #self.sentences = ["I love this movie", "I hate this movie", "This movie is okay", "I am neutral about this movie",

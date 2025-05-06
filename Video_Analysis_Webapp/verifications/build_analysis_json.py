@@ -284,7 +284,7 @@ def read_fill_save_json_file(json_file, video_path, text_video, dict_NER, key_in
     json_data['context']['adult_speaker'] = 0
     # fill content infos of json_data
     brand, product = get_brand_product(dict_NER)
-    json_data['content']['type_product'] = key_infos['type_product']
+    #json_data['content']['type_product'] = key_infos['type_product']
     json_data['content']['product'] = product
     json_data['content']['brand_tag'] = 0
     json_data['content']['brand'] = brand
