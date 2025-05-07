@@ -142,7 +142,7 @@ def check_policy_compliance(policy_data, analysis_data):
     compliance_dict['compliance_metrics'] = compliance_metrics
     # Save compliance dict and metrics in a json file
     compliance_file = 'compliance_metrics.json'
-    save_json_file(compliance_dict, compliance_file)
+    save_json_file("compliance_metrics", compliance_dict, compliance_file)
     return compliance_dict, compliance_metrics
 
 

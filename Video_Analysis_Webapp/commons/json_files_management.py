@@ -27,7 +27,7 @@ def read_json_file(json_file:str)->dict:
     return None
 
 # Use the save_json_file
-def save_json_file(json_data, json_filename):
+def save_json_file(type_analysis, json_data, json_filename):
     """
     Saves a Python dictionary to a JSON file with a timestamped filename.
     Args:
@@ -42,15 +42,22 @@ def save_json_file(json_data, json_filename):
         save_json_file(data, 'output.json')
     """
     # ATTENTION: path hard coded in the code for the output folder !
-    current_date = datetime.now().strftime('%Y-%m-%d')
-    output_dir = os.path.join('../Output', current_date)
-    os.makedirs(output_dir, exist_ok=True)
-    # Create a text filename based on the name from video_path and current time
-    current_time = datetime.now().strftime('%H-%M-%S')
-    json_path = os.path.basename(json_filename)
-    json_path = os.path.splitext(json_path)[0] + '_' + current_time + '_' + '.json'
-    output_path = os.path.join(output_dir, json_path)
-    # Save file
-    with open(output_path, 'w', encoding='utf-8') as json_file:
-        json.dump(json_data, json_file, indent=4, ensure_ascii=False)
-    return True
+    try:
+        current_date = datetime.now().strftime('%Y-%m-%d')
+        output_dir = os.path.join('Output', current_date, type_analysis)
+        # Create the output directory if it doesn't exist
+        ##os.makedirs(output_dir, exist_ok=True)
+        ##output_dir = os.path.join(output_dir, type_analysis)
+        os.makedirs(output_dir, exist_ok=True)
+        # Create a text filename based on the name from video_path and current time
+        current_time = datetime.now().strftime('%H-%M-%S')
+        json_path = os.path.basename(json_filename)
+        json_path = os.path.splitext(json_path)[0] + '_' + current_time + '_' + '.json'
+        output_path = os.path.join(output_dir, json_path)
+        # Save file
+        with open(output_path, 'w', encoding='utf-8') as json_file:
+            json.dump(json_data, json_file, indent=4, ensure_ascii=False)
+        return output_path
+    except OSError as e:
+        print(f"Error: Unable to create the output directory or save the file. {e}")
+        return False

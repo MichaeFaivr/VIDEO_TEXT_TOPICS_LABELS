@@ -102,28 +102,22 @@ def result():
         # OPERATION.5: SENTIMENT ANALYSIS from summary
         # ===========================
         # save Json file in same directory as the text file from video
-        current_date = datetime.now().strftime('%Y-%m-%d')
+        #current_date = datetime.now().strftime('%Y-%m-%d')
         current_time = datetime.now().strftime('%H-%M-%S')
-        output_dir = os.path.join('Output', current_date)
-        os.makedirs(output_dir, exist_ok=True)
         json_sentiments_filename = os.path.splitext(video_file.filename)[0] + '_' + current_time + '_json_sentiments_per_sentence.json'
-        output_json_sentiments = os.path.join(output_dir, json_sentiments_filename)
-        videoTopicsSummary.sentiment_analysis_per_summary_sentence(output_json_sentiments)
+        videoTopicsSummary.sentiment_analysis_per_summary_sentence(json_sentiments_filename)
         print(f'videoTextTopics.sentiment_scores: {videoTopicsSummary.sentiment_scores}')   
 
         # ===========================
         # OPERATION.6: Save the analysis data in a Json file
         # ===========================
         analysis_json_filename = os.path.splitext(video_file.filename)[0] + '_' + current_time + '_json_video_analysis.json'
-        output_json_analysis = os.path.join(output_dir, analysis_json_filename)
         # Save the analysis data in a Json file with the function from build_analysis_json.py
         print(f'app.py text_video: {text_video}')
         if text_video and text_video != '':
-            write_json_file = read_fill_save_json_file(output_json_analysis, video_path, text_video, videoTopicsSummary.entities, videoTopicsSummary.key_infos, videoTopicsSummary.sentiment_scores)
-            if write_json_file:
-                print(f'Json file saved: {output_json_analysis}')
-            else:
-                print(f'Error: Unable to save the JSON file: {output_json_analysis}')
+            json_video_analysis_file = read_fill_save_json_file(analysis_json_filename, video_path, text_video, videoTopicsSummary.entities, videoTopicsSummary.key_infos, videoTopicsSummary.sentiment_scores)
+            if not json_video_analysis_file:
+                print(f'Error: Unable to save the JSON file: {analysis_json_filename}')
         # Save the analysis data in a pickle file
 
         # ===========================
@@ -132,8 +126,7 @@ def result():
         # Attention: need priorly to have stored the analysis data in a Json file !
         if text_video and text_video != '':
             policy_data_file = 'verifications/cahier_des_charges.json'
-            ###video_analysis_file = 'verifications/video_analysis_for_testing.json'
-            video_analysis_file = output_json_analysis
+            video_analysis_file = json_video_analysis_file
 
             # Read the policy JSON file
             policy_data = read_json_file(policy_data_file)
@@ -142,7 +135,6 @@ def result():
                 analysis_data = read_json_file(video_analysis_file)
 
                 # computation of the compliance metrics
-                ##compliance_df = pd.DataFrame()
                 compliance_dict, compliance_metrics = check_policy_compliance(policy_data, analysis_data)
                 print('compliance_dict filled:', compliance_dict)
                 print('compliance_metrics computed:', compliance_metrics)

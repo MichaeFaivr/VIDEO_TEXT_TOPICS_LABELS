@@ -254,7 +254,7 @@ def sentiment_analysis(sentiment_scores):
     return dict_sentiments
 
 
-def read_fill_save_json_file(json_file, video_path, text_video, dict_NER, key_infos, sentiment_scores):
+def read_fill_save_json_file(json_filename, video_path, text_video, dict_NER, key_infos, sentiment_scores):
     """
     Read the Json file template for data analysis, fill it with the data from the video analysis and save it.
     Args:
@@ -268,6 +268,7 @@ def read_fill_save_json_file(json_file, video_path, text_video, dict_NER, key_in
         json_file (str): path to the Json file saved
     """
     # read the template analysis Json file
+    # ATTENTION: pas de path en dur dans le code, sinon pas portable
     video_analysis_template = 'verifications/video_analysis_template.json'
     json_data = read_json_file(video_analysis_template)
     if not json_data:
@@ -306,9 +307,7 @@ def read_fill_save_json_file(json_file, video_path, text_video, dict_NER, key_in
     json_data['sentiment']['negative_points'] = dict_sentiments['negative_points']
     json_data['sentiment']['main_sentiment'] = dict_sentiments['main_sentiment']
 
-    with open(json_file, 'w') as f:
-        json.dump(json_data, f, indent=4)
-    print(f'Json file saved: {json_file}')
-    ###return json_file
-    return True
+    # save the Json file
+    json_video_analysis_file = save_json_file("json_video_analysis", json_data, json_filename)
+    return json_video_analysis_file
     

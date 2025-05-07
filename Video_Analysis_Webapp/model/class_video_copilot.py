@@ -182,28 +182,11 @@ def read_json_file(json_file):
     return data
 """
 
-# Use the save_json_file
-"""
-def save_json_file(json_data, json_filename):
-    # ATTENTION: path hard coded in the code for the output folder !
-    current_date = datetime.now().strftime('%Y-%m-%d')
-    output_dir = os.path.join('../Output', current_date)
-    os.makedirs(output_dir, exist_ok=True)
-    # Create a text filename based on the name from video_path and current time
-    current_time = datetime.now().strftime('%H-%M-%S')
-    json_path = os.path.basename(json_filename)
-    json_path = os.path.splitext(json_path)[0] + '_' + current_time + '_' + json_filename
-    output_path = os.path.join(output_dir, json_path)
-    # Save file
-    with open(output_path, 'w', encoding='utf-8') as json_file:
-        json.dump(json_data, json_file, indent=4, ensure_ascii=False)
-    return True
-"""
+# Use the commons/json_files_managements.py save_json_file
 
 def convert_to_mono(input_audio_file: str, output_audio_file: str) -> str:
     """
     Convert stereo audio to mono using pydub.
-
     Args:
         input_audio_file (str): Path to the input audio file.
         output_audio_file (str): Path to save the converted mono audio file.
@@ -501,7 +484,7 @@ class VideoToSpeechCopilot(VideoCopilot):
         """
         # Create output directory based on current date
         current_date = datetime.now().strftime('%Y-%m-%d')
-        output_dir = os.path.join('../Output', current_date)
+        output_dir = os.path.join('Output', current_date)
         os.makedirs(output_dir, exist_ok=True)
         # Create a text filename based on the name from video_path and current time
         current_time = datetime.now().strftime('%H-%M-%S')
@@ -784,8 +767,7 @@ class VideoTopicsSummaryCopilot():
         self.key_infos = key_infos
         # Save the key infos to a JSON file
         json_filename = 'content_analysis_key_infos.json'
-        save_json_file(key_infos, json_filename)
-
+        save_json_file("key_infos", key_infos, json_filename)
         return key_infos
     
     def extract_type_product_specifications(self, product_type:str)->dict:
@@ -850,7 +832,7 @@ class VideoTopicsSummaryCopilot():
 
         # save the product specifications to a JSON file
         json_filename = 'content_analysis_product_specifications.json'
-        save_json_file(product_specifications, json_filename)
+        save_json_file("product_specifications", product_specifications, json_filename)
 
         return product_specifications
 
@@ -962,7 +944,7 @@ class VideoTopicsSummaryCopilot():
     # ===========================
     # SENTIMENT ANALYSIS
     # ===========================
-    def sentiment_analysis_per_summary_sentence(self, output_json_file:str)->list:
+    def sentiment_analysis_per_summary_sentence(self, json_sentiments_filename:str)->list:
         """
         Perform sentiment analysis on each sentence in the summary.
         The method uses TextBlob to analyze the sentiment of each sentence.
@@ -989,12 +971,13 @@ class VideoTopicsSummaryCopilot():
             self.sentiment_scores.append({
                 "sentence": sentence,
                 "sentiment_label": sentiment_label,
-                "polarity": sentiment.polarity,
-                "subjectivity": sentiment.subjectivity
+                "polarity": round(sentiment.polarity,3),
+                "subjectivity": round(sentiment.subjectivity,3)
             })
         # Save the dictionary as a JSON file
-        with open(output_json_file, 'w', encoding='utf-8') as json_file:
-            json.dump(self.sentiment_scores, json_file, indent=4, ensure_ascii=False)    
+        # use save_json_file function
+        save_json_file("sentiment_analysis", self.sentiment_scores, json_sentiments_filename)
+  
         return self.sentiment_scores
 
     
@@ -1103,6 +1086,27 @@ class VideoToObjectsCopilot(VideoCopilot):
         # Save file
         cv2.imwrite(self.output_path, cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
 
+
+    def detect_brands_products_in_frame(self):
+        """
+        Detect brands and products in the video frame using YOLOv5.
+        The method uses the YOLOv5 model to perform object detection on the frame.
+        The detected objects are stored in the self.detections attribute.
+        Returns:
+            list: A list of dictionaries containing information about detected objects.
+            Each dictionary contains the object type, start and end times, confidence score, class, and bounding box coordinates.
+        """
+        # Need to spend time on the design of the Brand detection: so many brands
+        LIST_BRANDS = ['Nescafe', 'Apple', 'Samsung', 'Honor', 'Oppo', 'Huawei', 'Xiaomi']
+        LIST_PRODUCTS = ['phone', 'laptop', 'tablet', 'watch', 'headphones']
+        # Load the YOLO model (ensure you have the correct model path)
+        model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
+
+        # Load the image
+        image = self.frame
+
+
+        
 
     def detect_objects(self)->list:
         """
