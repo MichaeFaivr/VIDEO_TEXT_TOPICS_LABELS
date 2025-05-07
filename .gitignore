@@ -20,3 +20,6 @@ runs/
 
 # Ignore GoogleService 
 GoogleServices/
+
+# Ignore language model folder
+language_models/

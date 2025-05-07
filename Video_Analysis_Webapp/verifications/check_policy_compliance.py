@@ -36,7 +36,17 @@ def read_json_file(file_path):
 """
 
 
-def check_entry_value(section, key, policy_data, analysis_data):
+def check_entry_value(section, key, policy_data, analysis_data)->list:
+    """
+    Check if the value of a specific entry in the analysis data complies with the policy.
+    Args:
+        section (str): The section of the policy data.
+        key (str): The key to check in the policy and analysis data.
+        policy_data (dict): The policy data loaded from the JSON file.
+        analysis_data (dict): The analysis data loaded from the JSON file.
+    Returns:
+        list: A list containing the value from the analysis data and a validation flag (1 for valid, 0 for invalid).
+    """
     # fill with False (treated as 0 in arithmetic), True, reward_for_authorization the dataframe of validation
     # example: section:'content', key:'brand'
     if section in policy_data and key in policy_data[section]:
@@ -74,6 +84,38 @@ def check_entry_value(section, key, policy_data, analysis_data):
             
 
 def check_policy_compliance(policy_data, analysis_data):
+    """
+    Check if the JSON data complies with the policy.
+    Args:
+        policy_data (dict): The policy data loaded from the JSON file.
+        analysis_data (dict): The analysis data loaded from the JSON file.
+    Returns:
+        tuple: A tuple containing the compliance dictionary and the compliance metrics.
+    Raises:
+        ValueError: If the policy data or analysis data is not in the expected format.
+    Example:
+        policy_data = {
+            "context": {
+                "brand": ["BrandA", "BrandB"],
+                "product": ["ProductX", "ProductY"]
+            },
+            "content": {
+                "date": ["2023-01-01", "2023-12-31"],
+                "auth": [1, 0]
+            }
+        }
+        analysis_data = {
+            "context": {
+                "brand": "BrandA",
+                "product": "ProductX"
+            },
+            "content": {
+                "date": "2023-06-15",
+                "auth": 1
+            }
+        }
+        compliance_dict, compliance_metrics = check_policy_compliance(policy_data, analysis_data)
+    """
     """
     Check if the JSON data complies with the policy.
     This function should be implemented based on the specific policy requirements.

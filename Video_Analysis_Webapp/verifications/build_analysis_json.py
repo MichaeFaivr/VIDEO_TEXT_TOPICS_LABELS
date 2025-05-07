@@ -68,7 +68,7 @@ def read_json_file(json_file):
     return data
 """
 
-def get_format_video(video_path):
+def get_format_video(video_path:str)->str:
     """
     Get the format of the video file.
     """
@@ -76,20 +76,21 @@ def get_format_video(video_path):
     return format_video
 
 
-def get_duration_video(video_path):
+def get_duration_video(video_path:str)->float:
     clip = VideoFileClip(video_path)
     return clip.duration
 
 
-def get_date_video(video_path):
+def get_date_video(video_path:str):
+    # TOFIX: the date of the video file is not always the same as the creation date of the file
     # Get the date of the video file
-    # ATTENTION: the processing modifies the creation date of the file to current date
+    # ATTENTION: the processing modifies the creation date of the file to current date !
     creation_time = os.path.getctime(video_path)
     creation_date = datetime.fromtimestamp(creation_time).strftime('%Y-%m-%d %H:%M:%S')
     return creation_date
 
 
-def get_geolocation_video(video_path):
+def get_geolocation_video(video_path:str)->dict:
     """
     Get the geolocation of the video file.
     code by copilot
@@ -128,7 +129,7 @@ def get_geolocation_video(video_path):
         return {"latitude": None, "longitude": None}
 
 
-def get_number_of_words_speech(text_video):
+def get_number_of_words_speech(text_video:str)->int:
     """
     Get the number of words in the speech of the video.
     """
@@ -138,13 +139,14 @@ def get_number_of_words_speech(text_video):
 
 def get_number_of_speakers(text_video):
     """
+    TODO: from snapshot of the video, get the number of speakers
     Get the number of speakers in the speech of the video.
     """
     nb_of_persons = 0 # utiliser la fcn de labellisation des objets dans une vidéo
     return nb_of_persons
 
 
-def get_language(text_video):
+def get_language(text_video:str)->str:
     """
     Get the language of the speech of the video.
     """
@@ -164,13 +166,12 @@ def get_language(text_video):
     return language
 
 
-def get_currency(text_video):
+def get_currency(text_video:str)->str:
     """
     Get the currency of the speech of the video.
     1. Find all prices strings in the text
     2. Modify the price strings as follow: '200 dollars' -> '$200' ; '200 euros' -> '€200'
     """
-
     dict_currency = {'dollars': '$', 'euros': '€', 'pounds': '£', 'yen': '¥', 'francs': '₣'}
     """
     modified_text = ""
@@ -201,22 +202,6 @@ def get_currency(text_video):
             return currency
     # If no currency is found 
     return 'unknown'
-    
-    """
-    if text_video.find('dollar') !=-1 or text_video.find('$') !=-1:
-        currency = 'dollar'
-    elif text_video.find('euro') !=-1 or text_video.find('€') !=-1:
-        currency = 'euro'
-    elif text_video.find('pound') !=-1 or text_video.find('£') !=-1:
-        currency = 'pound'
-    elif text_video.find('yen') !=-1  or text_video.find('¥') !=-1:
-        currency = 'yen'
-    elif text_video.find('franc') !=-1 or text_video.find('₣') !=-1 in text_video:
-        currency = 'franc'
-    else:
-        currency = 'unknown'
-    """
-    return currency
 
 
 def get_positive_sentiments(text_video):
@@ -246,6 +231,12 @@ def get_brand_product(dict_NER):
     return brand, product
 
 def sentiment_analysis(sentiment_scores):
+    """
+    Get the sentiment analysis of the speech of the video.
+    Example: sentiment_scores = [{'sentence': 'The camera is great', 'sentiment_label': 'positive'},
+                        {'sentence': 'The battery life is long', 'sentiment_label': 'positive'},
+                        {'sentence': 'The screen is small', 'sentiment_label': 'negative'}]
+    """
     dict_sentiments = {}
     positive_points = [sent['sentence'] for sent in sentiment_scores if sent['sentiment_label'] == 'positive']
     negative_points = [sent['sentence'] for sent in sentiment_scores if sent['sentiment_label'] == 'negative']
@@ -264,6 +255,18 @@ def sentiment_analysis(sentiment_scores):
 
 
 def read_fill_save_json_file(json_file, video_path, text_video, dict_NER, key_infos, sentiment_scores):
+    """
+    Read the Json file template for data analysis, fill it with the data from the video analysis and save it.
+    Args:
+        json_file (str): path to the Json file to save
+        video_path (str): path to the video file
+        text_video (str): text of the video
+        dict_NER (dict): dictionary of named entities recognition
+        key_infos (dict): dictionary of key information
+        sentiment_scores (list): list of sentiment scores
+    Returns:
+        json_file (str): path to the Json file saved
+    """
     # read the template analysis Json file
     video_analysis_template = 'verifications/video_analysis_template.json'
     json_data = read_json_file(video_analysis_template)
@@ -284,7 +287,8 @@ def read_fill_save_json_file(json_file, video_path, text_video, dict_NER, key_in
     json_data['context']['adult_speaker'] = 0
     # fill content infos of json_data
     brand, product = get_brand_product(dict_NER)
-    #json_data['content']['type_product'] = key_infos['type_product']
+    if key_infos and isinstance(key_infos, dict) and 'type_product' in key_infos.keys():
+        json_data['content']['type_product'] = key_infos['type_product']
     json_data['content']['product'] = product
     json_data['content']['brand_tag'] = 0
     json_data['content']['brand'] = brand

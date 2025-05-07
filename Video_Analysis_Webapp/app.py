@@ -16,8 +16,10 @@ LISTE_OBJETS = ['person', 'cup', 'dish', 'knife', 'bottle', 'scissor', 'cake', '
                 'bowl', 'fork', 'spoon', 'bag', 'glove', 'book', 'board', 'strawberry', 'hand', 'socket', 'sink', 'handle',
                 'cabinet', 'switch', 'lamp', 'banana', 'tree', 'canvas', 'frame', 'chair','glasses','smartphone','laptop']
 
-TEMP_AUDIO_FILE = "temp_audio.wav" # better to read from config file
 
+TEMP_AUDIO_FILE = "temp_audio.wav" # better to read from config file
+# 06-mai TEST
+TEMP_AUDIO_FILE = "temp_mono_audio.wav"
 
 
 @app.route('/', methods=['GET'])
@@ -40,7 +42,7 @@ def result():
         video_path = DIRECTORY_VIDEOS + video_file.filename
         videoToSpeech = VideoToSpeechCopilot(video_path)
         text_video = videoToSpeech.extract_speech_google_recognizer(TEMP_AUDIO_FILE)
-        print('app.py extract_speech_google_recognizer - text_video:', text_video)   
+        #print('app.py extract_speech_google_recognizer - text_video:', text_video)   
         #_ = videoToSpeech.extract_speech_with_vosk(TEMP_AUDIO_FILE) # find why not the model in the unzipped folder
         text_video = videoToSpeech.process_text()
         print('app.py process_text - text_video:', text_video) 

@@ -172,3 +172,86 @@ text_summary - calculate sentence scores Elapsed time: 9.369850158691406e-05 sec
 text_summary - join selected sentences Elapsed time: 4.649162292480469e-05 seconds
 perform_ner_analysis_second Elapsed time: 0.38401007652282715 seconds
 get_entities_surrounding_infos Elapsed time: 0.5179886817932129 seconds
+extract_speech_with_vosk Elapsed time: 0.011016368865966797 seconds
+extract_speech_with_vosk Elapsed time: 0.0005700588226318359 seconds
+extract_speech_with_vosk Elapsed time: 0.00046443939208984375 seconds
+extract_speech_with_vosk Elapsed time: 0.005738973617553711 seconds
+extract_speech_with_vosk Elapsed time: 0.0003619194030761719 seconds
+extract_speech_with_vosk Elapsed time: 0.36854028701782227 seconds
+extract_speech_with_vosk Elapsed time: 0.306365966796875 seconds
+extract_speech_with_vosk Elapsed time: 0.37821388244628906 seconds
+extract_speech_with_vosk Elapsed time: 0.39781737327575684 seconds
+extract_speech_with_vosk Elapsed time: 2.7123465538024902 seconds
+text_summary - load spaCy model Elapsed time: 0.49419307708740234 seconds
+text_summary - calculate word frequencies Elapsed time: 6.246566772460938e-05 seconds
+text_summary - normalize word frequencies Elapsed time: 5.4836273193359375e-06 seconds
+text_summary - calculate sentence scores Elapsed time: 8.988380432128906e-05 seconds
+text_summary - join selected sentences Elapsed time: 3.337860107421875e-06 seconds
+perform_ner_analysis_second Elapsed time: 0.35975050926208496 seconds
+get_entities_surrounding_infos Elapsed time: 0.5298423767089844 seconds
+extract_speech_with_vosk Elapsed time: 2.681852340698242 seconds
+text_summary - load spaCy model Elapsed time: 0.5396499633789062 seconds
+text_summary - calculate word frequencies Elapsed time: 4.935264587402344e-05 seconds
+text_summary - normalize word frequencies Elapsed time: 4.76837158203125e-06 seconds
+text_summary - calculate sentence scores Elapsed time: 3.600120544433594e-05 seconds
+text_summary - join selected sentences Elapsed time: 2.1457672119140625e-06 seconds
+perform_ner_analysis_second Elapsed time: 0.3697807788848877 seconds
+get_entities_surrounding_infos Elapsed time: 0.38059353828430176 seconds
+extract_speech_with_vosk Elapsed time: 2.916836738586426 seconds
+text_summary - load spaCy model Elapsed time: 0.42876243591308594 seconds
+text_summary - calculate word frequencies Elapsed time: 5.173683166503906e-05 seconds
+text_summary - normalize word frequencies Elapsed time: 5.245208740234375e-06 seconds
+text_summary - calculate sentence scores Elapsed time: 3.6716461181640625e-05 seconds
+text_summary - join selected sentences Elapsed time: 2.86102294921875e-06 seconds
+perform_ner_analysis_second Elapsed time: 0.3679478168487549 seconds
+get_entities_surrounding_infos Elapsed time: 0.5069971084594727 seconds
+extract_speech_with_vosk Elapsed time: 9.354814529418945 seconds
+text_summary - load spaCy model Elapsed time: 0.5351083278656006 seconds
+text_summary - calculate word frequencies Elapsed time: 0.00022745132446289062 seconds
+text_summary - normalize word frequencies Elapsed time: 1.2636184692382812e-05 seconds
+text_summary - calculate sentence scores Elapsed time: 0.0002262592315673828 seconds
+text_summary - join selected sentences Elapsed time: 9.679794311523438e-05 seconds
+perform_ner_analysis_second Elapsed time: 0.37114858627319336 seconds
+get_entities_surrounding_infos Elapsed time: 0.37737321853637695 seconds
+extract_speech_with_vosk Elapsed time: 7.638272762298584 seconds
+text_summary - load spaCy model Elapsed time: 0.48091602325439453 seconds
+text_summary - calculate word frequencies Elapsed time: 0.00013756752014160156 seconds
+text_summary - normalize word frequencies Elapsed time: 7.152557373046875e-06 seconds
+text_summary - calculate sentence scores Elapsed time: 0.0001456737518310547 seconds
+text_summary - join selected sentences Elapsed time: 5.7220458984375e-05 seconds
+perform_ner_analysis_second Elapsed time: 0.38010740280151367 seconds
+get_entities_surrounding_infos Elapsed time: 0.4954555034637451 seconds
+extract_speech_with_vosk Elapsed time: 9.749296426773071 seconds
+text_summary - load spaCy model Elapsed time: 0.4310762882232666 seconds
+text_summary - calculate word frequencies Elapsed time: 0.00025200843811035156 seconds
+text_summary - normalize word frequencies Elapsed time: 1.5020370483398438e-05 seconds
+text_summary - calculate sentence scores Elapsed time: 0.00022482872009277344 seconds
+text_summary - join selected sentences Elapsed time: 0.00010776519775390625 seconds
+perform_ner_analysis_second Elapsed time: 0.6149270534515381 seconds
+get_entities_surrounding_infos Elapsed time: 0.4201943874359131 seconds
+extract_speech_with_vosk Elapsed time: 22.000183582305908 seconds
+text_summary - load spaCy model Elapsed time: 0.4543330669403076 seconds
+text_summary - calculate word frequencies Elapsed time: 0.0002377033233642578 seconds
+text_summary - normalize word frequencies Elapsed time: 1.3828277587890625e-05 seconds
+text_summary - calculate sentence scores Elapsed time: 0.0001747608184814453 seconds
+text_summary - join selected sentences Elapsed time: 7.939338684082031e-05 seconds
+perform_ner_analysis_second Elapsed time: 0.4197821617126465 seconds
+get_entities_surrounding_infos Elapsed time: 0.5163552761077881 seconds
+extract_speech_with_vosk Elapsed time: 4.82802414894104 seconds
+extract_speech_google_recognizer Elapsed time: 46.130895376205444 seconds
+text_summary - load spaCy model Elapsed time: 0.44379591941833496 seconds
+text_summary - calculate word frequencies Elapsed time: 0.0002837181091308594 seconds
+text_summary - normalize word frequencies Elapsed time: 1.3828277587890625e-05 seconds
+text_summary - calculate sentence scores Elapsed time: 0.0004620552062988281 seconds
+text_summary - join selected sentences Elapsed time: 8.678436279296875e-05 seconds
+perform_ner_analysis_second Elapsed time: 0.4201066493988037 seconds
+get_entities_surrounding_infos Elapsed time: 0.5170934200286865 seconds
+extract_speech_google_recognizer Elapsed time: 28.175984859466553 seconds
+text_summary - load spaCy model Elapsed time: 0.44957804679870605 seconds
+text_summary - calculate word frequencies Elapsed time: 0.0005609989166259766 seconds
+text_summary - normalize word frequencies Elapsed time: 1.3113021850585938e-05 seconds
+text_summary - calculate sentence scores Elapsed time: 0.00029850006103515625 seconds
+text_summary - join selected sentences Elapsed time: 0.00015091896057128906 seconds
+perform_ner_analysis_second Elapsed time: 0.36826443672180176 seconds
+get_entities_surrounding_infos Elapsed time: 0.49169015884399414 seconds
+extract_speech_google_recognizer Elapsed time: 1.7640130519866943 seconds

@@ -85,7 +85,7 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "" # path to the Google API crede
 from google.cloud import speech
 from pydub import AudioSegment
 # Vosk Method
-from vosk import Model, KaldiRecognizer
+from vosk import Model, KaldiRecognizer 
 import wave
 
 ###from distutils import msvccompiler
@@ -201,6 +201,15 @@ def save_json_file(json_data, json_filename):
 """
 
 def convert_to_mono(input_audio_file: str, output_audio_file: str) -> str:
+    """
+    Convert stereo audio to mono using pydub.
+
+    Args:
+        input_audio_file (str): Path to the input audio file.
+        output_audio_file (str): Path to save the converted mono audio file.
+    Returns:
+        str: Path to the converted mono audio file.
+    """
     # Load the audio file
     audio = AudioSegment.from_file(input_audio_file)
     # Convert to mono
@@ -211,6 +220,13 @@ def convert_to_mono(input_audio_file: str, output_audio_file: str) -> str:
     return mono_audio_path
 
 def transcribe_file_with_auto_punctuation(audio_file: str) -> speech.RecognizeResponse:
+    """
+    transcribe audio file with automatic punctuation using Google Cloud Speech-to-Text API.
+    Args:
+        audio_file (str): Path to the audio file.
+    Returns:    
+        speech.RecognizeResponse: Transcription response from Google Cloud Speech-to-Text API.
+    """
     # parameter audio_file is expected to be a mono audio file
     client = speech.SpeechClient()
 
@@ -237,7 +253,7 @@ def transcribe_file_with_auto_punctuation(audio_file: str) -> speech.RecognizeRe
     return response
 
 
-def format_price_strings(text_video):
+def format_price_strings(text_video: str) -> str:
     """
     Get the currency of the speech of the video.
     1. Find all prices strings in the text
@@ -285,6 +301,11 @@ class VideoCopilot:
         self.video_path = video_path
 
     def loadVideo(self):
+        """
+        Load the video file using moviepy.
+        Returns:
+            video: Loaded video file from the video file path.
+        """
         import moviepy.editor as mp
         # Load the video file
         video = mp.VideoFileClip(self.video_path)
@@ -316,7 +337,14 @@ class VideoToSpeechCopilot(VideoCopilot):
         super().__init__(video_path, frame_size, duration, video_type, random_time)
         self.output_text = output_text
 
-    def extract_audio(self, input_audio_file):
+    def extract_audio(self, output_audio_file:str)-> None:
+        """
+        Extract the audio from the video file and save it to a temporary file.
+        Args:
+            output_audio_file (str): Path to save the extracted audio file.
+        Returns:
+            None    
+        """
         # simulate speech extraction
         import moviepy.editor as mp
 
@@ -326,8 +354,8 @@ class VideoToSpeechCopilot(VideoCopilot):
         # Extract the audio from the video
         audio = video.audio
         # output the audio to a temporary file
-        audio_path = input_audio_file
-        audio.write_audiofile(audio_path)
+        audio_path = output_audio_file
+        audio.write_audiofile(audio_path) # Write the audio track to the output file
         self.audio_path = audio_path
 
         # Initialize the recognizer
@@ -339,7 +367,14 @@ class VideoToSpeechCopilot(VideoCopilot):
             self.audio_data = audio_data
 
 
-    def extract_speech_google_recognizer(self, temp_audio_file):
+    def extract_speech_google_recognizer(self, temp_audio_file:str)->str:
+        """
+        Extract the speech from the video using Google Speech Recognition API.
+        Args:
+            temp_audio_file (str): Path to the temporary audio file.
+        Returns:
+            Transcribed text from the audio.
+        """
         # Extract the audio from the video
         with measure_time(inspect.currentframe().f_code.co_name):
             self.extract_audio(temp_audio_file)
@@ -369,17 +404,38 @@ class VideoToSpeechCopilot(VideoCopilot):
             except sr.RequestError as e:
                 return f"Could not request results from Google Web Speech API; {e}"
 
-    """"        
-    def extract_speech_with_vosk(self, temp_audio_file):
+       
+    def extract_speech_with_vosk(self, temp_audio_file:str)->str:
+        """
+        Extract the speech from the video using Vosk speech recognition.
+        Args:
+            temp_audio_file (str): Path to the temporary audio file to store the audio track.
+            NB: the audio track has to be mono PCM WAV format for Vosk
+            NB2: Github: Failing to load vosk model #1739
+                 You need like 10GB of memory to load RNN model. You can remove rnnlm folder from the model, it will take less memory.
+        Returns:
+            Transcribed text from the audio with a Vosk lib.
+        """
         # Extract the audio from the video
-        PATH_VOSK_MODEL = "../language_models/vosk-model-en-us-0.22"
+        PATH_VOSK_MODEL = "language_models/vosk-model-en-us-0.22" # fix the issue with missing file error
+        # Result is not good with vosk-model-en-us-0.22 without rnnlm
+        ###PATH_VOSK_MODEL = os.path.join(PATH_VOSK_MODEL, 'final.mdl')
+        ##PATH_VOSK_MODEL = "language_models/vosk-model-small-en-us-0.15" # bad
         with measure_time(inspect.currentframe().f_code.co_name):
             ###self.extract_audio(temp_audio_file)
             try:
                 # Load the Vosk model
                 model = Model(PATH_VOSK_MODEL)  # Path to the Vosk model directory
 
+                # Check if other solution
+                # Extract the audio from the video
+                self.extract_audio(temp_audio_file)
+                # Convert the audio to mono
+                temp_audio_file = convert_to_mono(self.audio_path, temp_audio_file)
+
                 # Open the audio file
+                print(f"temp_audio_file: {temp_audio_file}")
+                # CRITICAL: the audio file must be mono PCM WAV format !!
                 with wave.open(temp_audio_file, "rb") as wf:
                     if wf.getnchannels() != 1 or wf.getsampwidth() != 2 or wf.getcomptype() != "NONE":
                         raise ValueError("Audio file must be WAV format mono PCM.")
@@ -388,8 +444,10 @@ class VideoToSpeechCopilot(VideoCopilot):
                     recognizer.SetWords(True)
 
                     text_video = ""
+                    print(f'extract_speech_with_vosk before while loop')
                     while True:
                         data = wf.readframes(4000)
+                        print(f"len(data): {len(data)}")
                         if len(data) == 0:
                             break
                         if recognizer.AcceptWaveform(data):
@@ -400,28 +458,47 @@ class VideoToSpeechCopilot(VideoCopilot):
                     final_result = recognizer.FinalResult()
                     text_video += json.loads(final_result).get("text", "")
 
+                    print(f"Vosk transcription: {text_video}")
+
                     self.output_text = text_video
                     return text_video
             except Exception as e:
                 return f"Error during speech recognition: {e}"
-    """
+            
 
-    def transcribe_audio_with_punctuation_google_speech_api(self, output_audio_mono_path):
-        # Input = audio file path
+    def transcribe_audio_with_punctuation_google_speech_api(self, output_audio_mono_path:str)->str:
+        """
+        Add punctuation to the transcribed text using Google Cloud Speech-to-Text API.
+        Args:
+            output_audio_mono_path (str): Path to the mono audio file in output.
+        Returns:
+            Transcribed text with punctuation.
+        """
         # convert to mono track
         mono_audio_file = convert_to_mono(self.audio_path, output_audio_mono_path)
         response = transcribe_file_with_auto_punctuation(mono_audio_file)
         print(f"response: {response}")
         return response
     
-    def process_text(self):
+    def process_text(self)->str:
+        """
+        Apply various text processing steps to the transcribed text.
+        1. Price formatting
+        2. TBD 
+        """
         # Price formatting
         textVideo = format_price_strings(self.output_text)
         self.output_text = textVideo
         return textVideo
     
-    def create_output_path_text(self, video_path_uploaded, text_video):
-        # Create the output path for the text file
+    def create_output_path_text(self, video_path_uploaded:str)->None:
+        """
+        Create the output path for the text file.
+        Args:
+            video_path_uploaded (str): Path to the uploaded video file.
+        Returns:
+            None
+        """
         # Create output directory based on current date
         current_date = datetime.now().strftime('%Y-%m-%d')
         output_dir = os.path.join('../Output', current_date)
@@ -432,16 +509,23 @@ class VideoToSpeechCopilot(VideoCopilot):
         text_filename = os.path.splitext(video_filename)[0] + '_' + current_time + '_text.txt'
         self.output_path = os.path.join(output_dir, text_filename)
 
-    def save_speech_from_video(self, video_path_uploaded, text_video):
-        self.create_output_path_text(video_path_uploaded, text_video)
+    def save_speech_from_video(self, video_path_uploaded:str, text_video:str)->None:
+        """
+        Save the transcribed text to a file.
+        Args:
+            video_path_uploaded (str): Path to the uploaded video file.
+            text_video (str): Transcribed text from the video.
+        Returns:
+            None
+        """
+        self.create_output_path_text(video_path_uploaded)
         max_size_bytes = 1024*1000  # 1 MB limit
         # Write the text to a file with a size limit
         if text_video and text_video != "":
             with open(self.output_path, 'w') as file:
                 file.write(text_video[:max_size_bytes])   
 
-
-
+"""
 # CHILD CLASS N°2: analyze the text extracted from the video and split it into topics:
 # for each topic of interest, get the list of sentences related to that topic
 # and summarize the text, extract keywords, and determine the sentiment
@@ -451,7 +535,7 @@ class VideoToSpeechCopilot(VideoCopilot):
 # 4. Sentiment Analysis        : DONE         
 # 5. Topic Detection/Modeling
 # 6. Json sentences per topic  : DONE
-#
+"""
 class VideoTopicsSummaryCopilot():
     def __init__(self, text, topics, output_json):
         self.text   = text
@@ -465,10 +549,12 @@ class VideoTopicsSummaryCopilot():
     # TEXT SUMMARY
     # ===========================
     def text_summary(self):
-        # Summarize the text using spaCy lib
-        # 1. get most relevant sentences of the text
-        # 2. summarize each selected sentence
-        # 3. join the selected sentences to form the summary
+        """
+        Summarize the text using spaCy lib
+          1. get most relevant sentences of the text
+          2. summarize each selected sentence
+          3. join the selected sentences to form the summary
+        """
         if not self.text or self.text == "":
             return "No text to summarize" 
 
@@ -525,7 +611,10 @@ class VideoTopicsSummaryCopilot():
     # ===========================
     """ 04/28/2025 reactivate the code below to get the list of entities"""
     def perform_ner_analysis_second(self):
-        # Perform Named Entity Recognition (NER) on the text
+        """
+        Perform Named Entity Recognition (NER) on the text and return a dictionary of entities.
+        The dictionary contains entity labels as keys and lists of entity texts as values.
+        """
         if not self.text or self.text == "":
             return {} 
         
@@ -553,7 +642,9 @@ class VideoTopicsSummaryCopilot():
     """ ok on 73MB Nov.24; not complete on other test vidos """
     """ Need a complementary method to get the list of entities """
     def perform_ner_analysis(self):
-        # Perform Named Entity Recognition (NER) on the text or the summary
+        """
+        Perform Named Entity Recognition (NER) on the text or the summary
+        """
         self.entities = []
         if not self.text or self.text == "":
             return self.entities 
@@ -575,14 +666,25 @@ class VideoTopicsSummaryCopilot():
         self.entities = entities
         return entities
     
-    def _get_surrounding_text(self, entity, doc, window_size=2):
+    def _get_surrounding_text(self, entity, doc, window_size=2)->str:
+        """
+        Get the surrounding text of an entity in the document.
+        Args:
+            entity: The entity object from spaCy.
+            doc: The spaCy document object.
+            window_size: The number of words to include before and after the entity.
+        Returns:
+            str: The surrounding text of the entity.
+        """
         start = max(0, entity.start - window_size)
         end = min(len(doc), entity.end + window_size)
         return doc[start:end].text
 
-    def get_entities_surrounding_infos(self, window_size=2):
-        # Get the surrounding information of the entities
-        # Prompt: get the surrounding information of the entities
+    def get_entities_surrounding_infos(self, window_size=2)->dict:
+        """
+        Get the surrounding information of the entities
+        Prompt: get the surrounding information of the entities
+        """
         # Initialize spaCy model
         if not self.text or self.text == "":
             return {}
@@ -623,11 +725,18 @@ class VideoTopicsSummaryCopilot():
     # KEY INFOS EXTRACTION
     # ===========================
     # complementary method to get the list of entities / key infos
-    def extract_key_infos(self):
-        # read Json file: verifications/content_analysis_reference.json
-        # ATTENTION: ne pas passer le nom de fichier en dur dans le code
-        # Use a serialization or other method to get the reference file
-        # read the path of the reference json file in the config file
+    def extract_key_infos(self)->dict:
+        """
+        Extract key information from the text using a reference JSON file.
+        The reference JSON file contains the key information to extract.
+        The method reads the reference JSON file, extracts the key information from the text,
+        and saves the key information to a JSON file.
+        
+        read Json file: verifications/content_analysis_reference.json
+        ATTENTION: ne pas passer le nom de fichier en dur dans le code
+        Use a serialization or other method to get the reference file
+        read the path of the reference json file in the config file
+        """
         if not self.text or self.text == "":
             return {}
 
@@ -679,8 +788,18 @@ class VideoTopicsSummaryCopilot():
 
         return key_infos
     
-    def extract_type_product_specifications(self, product_type: str) -> dict:
-        # Wiil need to use the specific serialized for the product type
+    def extract_type_product_specifications(self, product_type:str)->dict:
+        """
+        Extract the product specifications from the text using a reference JSON file.
+        The reference JSON file contains the product specifications to extract.
+        The method reads the reference JSON file, extracts the product specifications from the text,
+        and saves the product specifications to a JSON file.
+        Args:
+            product_type (str): The type of product to extract specifications for.
+        Returns:
+            dict: The product specifications extracted from the text.
+        """
+        # Will need to use the specific serialized for the product type
         # NB: 'price' will be a common key for all product types
         # Extract the product specifications from the text
         # Prompt: extract the product specifications from the text
@@ -751,6 +870,12 @@ class VideoTopicsSummaryCopilot():
 
     
     def topic_modeling_LSA(self):
+        """
+        Perform topic modeling using Latent Semantic Analysis (LSA) on the text.
+        - The method uses TF-IDF vectorization and Truncated SVD to extract topics.
+        - The number of topics is set to 2 for demonstration purposes.
+        - The method stores the topics in the list_topics_from_summary attribute.
+        """
         # Perform topic modeling using LSA
         self.list_topics_from_summary = []
         print(f"self.sentences: {self.sentences}")
@@ -772,6 +897,12 @@ class VideoTopicsSummaryCopilot():
 
 
     def one_word_topic_per_summary_sentence(self):
+        """
+        Extract one-word topics from each sentence in the summary.
+        The method uses spaCy to process the sentences and extract the most relevant noun or proper noun as the topic.
+        If no noun or proper noun is found, the first word of the sentence is used as the topic.
+        The method stores the one-word topics in the one_word_topics attribute.
+        """
         # for each sentence in the summary, get the one word topic
         # Prompt: get the one word topic for each sentence in the summary
         # Initialize spaCy model
@@ -799,6 +930,10 @@ class VideoTopicsSummaryCopilot():
            
 
     def sentences_per_topic(self):
+        """
+        Split the text into sentences related to each topic.
+        The method uses the list of topics to categorize the sentences.
+        """
         # split the full text into list of texts per topic
         # Prompt.1: split a text into main topics (get_list_topics) with a max of 8 topics
         # Prompt.2: create a Json file which split the text into given topics: for each topic, get the list of sentences related to this topic
@@ -827,7 +962,16 @@ class VideoTopicsSummaryCopilot():
     # ===========================
     # SENTIMENT ANALYSIS
     # ===========================
-    def sentiment_analysis_per_summary_sentence(self, output_json_file):
+    def sentiment_analysis_per_summary_sentence(self, output_json_file:str)->list:
+        """
+        Perform sentiment analysis on each sentence in the summary.
+        The method uses TextBlob to analyze the sentiment of each sentence.
+        The method stores the sentiment scores in the sentiment_scores attribute.
+        Args:
+            output_json_file (str): Path to save the sentiment analysis results as a JSON file.
+        Returns:    
+            list: A list of dictionaries containing the sentiment scores for each sentence.
+        """
         self.sentiment_scores = []
 
         if not self.text or self.text == "":
@@ -899,6 +1043,13 @@ class VideoToObjectsCopilot(VideoCopilot):
         self.extract_video_frame_size()
 
     def draw_boxes(self, frame):
+        """
+        Draw red boxes around detected objects on the frame.
+        Args:
+            frame (numpy.ndarray): The video frame on which to draw the boxes.
+        Returns:
+            None
+        """
         for detection in self.detections:
             start_x, start_y, end_x, end_y = detection["box_coordinates"]
             print(f"start_x: {start_x}, start_y: {start_y}, end_x: {end_x}, end_y: {end_y}")
@@ -914,6 +1065,11 @@ class VideoToObjectsCopilot(VideoCopilot):
         #cv2.imwrite(output_image_path, cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
 
     def save_frame_with_detections(self):
+        """
+        Save a random frame (snapshot) from the video with detected objects.
+        The frame is saved with the current date and time in the filename.
+        The frame is processed to draw bounding boxes around detected objects.
+        """
         print(f"self.video.duration: {self.video.duration}")
         # RANDOM IMAGE FROM THE VIDEO 
         # Extract a random frame(image) from the video
@@ -948,7 +1104,15 @@ class VideoToObjectsCopilot(VideoCopilot):
         cv2.imwrite(self.output_path, cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
 
 
-    def detect_objects(self):
+    def detect_objects(self)->list:
+        """
+        Detect objects in the video frame using YOLOv5.
+        The method uses the YOLOv5 model to perform object detection on the frame.
+        The detected objects are stored in the self.detections attribute.
+        Returns:
+            list: A list of dictionaries containing information about detected objects.
+            Each dictionary contains the object type, start and end times, confidence score, class, and bounding box coordinates.
+        """
         # Load the pre-trained YOLO model
         ##model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
         model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
@@ -1017,6 +1181,23 @@ class VideoToObjectsCopilot(VideoCopilot):
         return sum(1 for detection in self.detections if detection["object_type"] == object_type)
 
     def main_color(self, object_type):
+        """
+        TO COMPLETE
+        Identify the main color of the detected object.
+        Args:
+            object_type (str): The type of object to identify the color for.
+        Returns:
+            str: The main color of the object.
+        1. Get the bounding box coordinates of the object
+        2. Extract the region of interest (ROI) from the frame
+        3. Convert the ROI to HSV color space
+        4. Calculate the histogram of the ROI
+        5. Find the most common color in the histogram
+        6. Map the HSV color to a color name
+        7. Return the color name
+        8. Save the color name in the detection dictionary
+        9. Return the color name
+        """
         # Placeholder for main color detection logic
         # This should be replaced with actual color detection code
         for detection in self.detections:
