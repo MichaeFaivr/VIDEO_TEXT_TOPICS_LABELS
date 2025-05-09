@@ -18,6 +18,9 @@ runs/
 # Ignore wav files
 **/*.wav
 
+# Ignore all Zone.Identifier files
+**/*.Zone.Identifier
+
 # Ignore GoogleService 
 GoogleServices/
 

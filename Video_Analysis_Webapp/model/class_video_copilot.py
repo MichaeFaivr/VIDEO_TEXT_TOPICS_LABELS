@@ -60,6 +60,8 @@ import cv2
 import torch
 from torchvision import transforms
 from PIL import Image
+import easyocr
+#import pytesseract
 
 # Text analysis
 import speech_recognition as sr
@@ -1075,19 +1077,27 @@ class VideoToObjectsCopilot(VideoCopilot):
         self.draw_boxes(frame)
 
         ## Save frame with current date and time in file name
-        current_date = datetime.now().strftime('%Y-%m-%d')
-        output_dir = os.path.join('../Output', current_date)
-        os.makedirs(output_dir, exist_ok=True)
-        # Create a text filename based on the name from video_path and current time
-        current_time = datetime.now().strftime('%H-%M-%S')
-        video_filename = os.path.basename('frame_with_detections.jpg')
-        video_filename = os.path.splitext(video_filename)[0] + '_' + current_time + '.jpg'
-        self.output_path = os.path.join(output_dir, video_filename)
-        # Save file
-        cv2.imwrite(self.output_path, cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
+        self.output_path = save_frame_to_jpeg(frame, 'frame_with_detections.jpg')
 
 
-    def detect_brands_products_in_frame(self):
+    def recognize_text_in_frame(self, method:str)->bool:
+        """
+        Recognize text in the video frame using the specified method.
+        Args:
+            method (str): The method to use for text recognition ('easyocr' or 'yolo').
+        Returns:
+            bool: True if text recognition is successful, False otherwise.
+        """
+        if method == 'easyocr':
+            return self.recognize_text_in_frame_easyocr()
+        elif method == 'yolo':
+            return self.recognize_text_in_frame_yolo()
+        else:
+            print(f"Unknown method: {method}")
+            return False
+
+
+    def recognize_text_in_frame_yolo(self):
         """
         Detect brands and products in the video frame using YOLOv5.
         The method uses the YOLOv5 model to perform object detection on the frame.
@@ -1105,8 +1115,79 @@ class VideoToObjectsCopilot(VideoCopilot):
         # Load the image
         image = self.frame
 
+        # Perform object detection
+        results = model(image)
 
-        
+        return True
+    
+
+    def recognize_text_in_frame_easyocr(self):
+        """
+        Detect brands and products in the video frame using EasyOCR.
+        The method uses the EasyOCR model to perform text recognition on the frame.
+        The recognized text is stored in the self.detections attribute.
+        Returns:
+            list: A list of dictionaries containing information about detected objects.
+            Each dictionary contains the object type, start and end times, confidence score, class, and bounding box coordinates.
+        ATTENTION: need to have the language of the video here!
+        """
+        # Load the EasyOCR model
+        reader = easyocr.Reader(['fr'])
+
+        # Perform text detection and recognition
+        results = reader.readtext(self.frame)
+
+        # Print the detected text
+        for detection in results:
+            print(detection[1]) # The detected text is in the second element of each detection tuple
+
+        text_list = []
+
+        # Process the results
+        for (bbox, text, prob) in results:
+            text_list.append(text)
+            # Extract the bounding box coordinates
+            (top_left, top_right, bottom_right, bottom_left) = bbox
+            (top_left_x, top_left_y) = top_left
+            (bottom_right_x, bottom_right_y) = bottom_right
+            print(f"recognize_text_in_frame_easyocr - bbox: {bbox}, text: {text}, prob: {prob}")
+
+        # Save text list in a file
+        if len(text_list) > 0:
+            save_ascii_file("frame_text_reading", text_list, "frame_text_reading.txt")
+
+        """
+            # Draw the bounding box on the image
+            cv2.rectangle(self.frame, (int(top_left_x), int(top_left_y)), (int(bottom_right_x), int(bottom_right_y)), (0, 255, 0), 2)
+            # Add text above the rectangle
+            label = f"{text} ({prob:.2f})"
+            cv2.putText(self.frame, label, (int(top_left_x), int(top_left_y) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
+            # Save the recognized text and bounding box coordinates
+            self.detections.append({
+                "object_type": text,
+                "start": random.randint(0, int(self.video.duration)),
+                "end": random.randint(0, int(self.video.duration)),
+                "confidence": prob,
+                "classe": text,
+                "box_coordinates": [int(top_left_x), int(top_left_y), int(bottom_right_x), int(bottom_right_y)]
+            })
+        # Save the image with bounding boxes
+        current_date = datetime.now().strftime('%Y-%m-%d')
+        output_dir = os.path.join('Output', current_date)
+        os.makedirs(output_dir, exist_ok=True)
+        # Create a text filename based on the name from video_path and current time
+        current_time = datetime.now().strftime('%H-%M-%S')
+        video_filename = os.path.basename('frame_with_text_recognition.jpg')
+        video_filename = os.path.splitext(video_filename)[0] + '_' + current_time + '.jpg'
+        self.output_path = os.path.join(output_dir, video_filename)
+        # Save file
+        cv2.imwrite(self.output_path, cv2.cvtColor(self.frame, cv2.COLOR_RGB2BGR))
+        # Save the image with bounding boxes
+        cv2.imwrite(self.output_path, self.frame)
+        """
+
+        return len(results) > 0  # Return True if any text was detected
+
 
     def detect_objects(self)->list:
         """
@@ -1214,22 +1295,3 @@ class VideoToObjectsCopilot(VideoCopilot):
 # to process videos and extract information about objects present in the video sequences. The methods in the class can be implemented to perform object detection,
 # count the number of objects of a specific type, and identify the main color of the object. The class provides a structured approach to handle video data and
 # perform object detection tasks efficiently.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

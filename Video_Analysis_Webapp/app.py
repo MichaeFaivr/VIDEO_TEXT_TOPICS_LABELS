@@ -162,7 +162,8 @@ def display_image():
         videoToObjects.get_video_frame_size()
         # Save an image from the video with the detected objects framed in red boxes
         videoToObjects.save_frame_with_detections() # with current date and time in file name
-        print('output_path:', videoToObjects.output_path)
+        # Recognize text in the frame
+        videoToObjects.recognize_text_in_frame("easyocr")
 
         return render_template('video_objects_detection.html', frame=videoToObjects.output_path)
 
