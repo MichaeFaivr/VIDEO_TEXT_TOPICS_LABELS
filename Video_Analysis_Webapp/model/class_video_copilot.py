@@ -61,7 +61,7 @@ import torch
 from torchvision import transforms
 from PIL import Image
 import easyocr
-#import pytesseract
+import pytesseract
 
 # Text analysis
 import speech_recognition as sr
@@ -1092,6 +1092,8 @@ class VideoToObjectsCopilot(VideoCopilot):
             return self.recognize_text_in_frame_easyocr()
         elif method == 'yolo':
             return self.recognize_text_in_frame_yolo()
+        elif method == 'tesseract':
+            return self.recognize_text_in_frame_tesseract()
         else:
             print(f"Unknown method: {method}")
             return False
@@ -1132,14 +1134,15 @@ class VideoToObjectsCopilot(VideoCopilot):
         ATTENTION: need to have the language of the video here!
         """
         # Load the EasyOCR model
-        reader = easyocr.Reader(['fr'])
+        reader = easyocr.Reader(['en'], gpu=False)  # Use GPU if available
 
         # Perform text detection and recognition
         results = reader.readtext(self.frame)
 
         # Print the detected text
         for detection in results:
-            print(detection[1]) # The detected text is in the second element of each detection tuple
+            if detection[2] > 0.4:
+                print(detection[1]) # The detected text is in the second element of each detection tuple
 
         text_list = []
 
@@ -1187,6 +1190,50 @@ class VideoToObjectsCopilot(VideoCopilot):
         """
 
         return len(results) > 0  # Return True if any text was detected
+
+    def recognize_text_in_frame_tesseract(self):
+        """
+        Detect brands and products in the video frame using Tesseract OCR.
+        The method uses the Tesseract OCR model to perform text recognition on the frame.
+        The recognized text is stored in the self.detections attribute.
+        Returns:
+            list: A list of dictionaries containing information about detected objects.
+            Each dictionary contains the object type, start and end times, confidence score, class, and bounding box coordinates.
+        """
+        # Load the Tesseract OCR model
+        # Perform text detection and recognition
+        #results = pytesseract.image_to_data(self.frame, output_type=pytesseract.Output.DICT)
+        results = pytesseract.image_to_string(self.frame, config='--psm 6', lang='eng')
+        # Print the detected text
+        print(f"results text: {results}")
+        # Print the detected text
+        #print(f"results['text']: {results['text']}")
+
+        """
+        # Print the detected text
+        for i in range(len(results['text'])):
+            # Filter out weak confidence results
+            if int(results['conf'][i]) > 20:
+                print(f"Detected text: {results['text'][i]} (Confidence: {results['conf'][i]})")
+                # Extract the bounding box coordinates
+                (top_left_x, top_left_y) = (results['left'][i], results['top'][i])
+                (bottom_right_x, bottom_right_y) = (results['left'][i] + results['width'][i], results['top'][i] + results['height'][i])
+                # Draw the bounding box on the image
+                cv2.rectangle(self.frame, (top_left_x, top_left_y), (bottom_right_x, bottom_right_y), (0, 255, 0), 2)
+                # Add text above the rectangle
+                label = f"{results['text'][i]} ({results['conf'][i]})"
+                cv2.putText(self.frame, label, (top_left_x, top_left_y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
+                # Save the recognized text and bounding box coordinates
+                self.detections.append({
+                    "object_type": results['text'][i],
+                    "start": random.randint(0, int(self.video.duration)),
+                    "end": random.randint(0, int(self.video.duration)),
+                    "confidence": results['conf'][i],
+                    "classe": results['text'][i],
+                    "box_coordinates": [top_left_x, top_left_y, bottom_right_x, bottom_right_y]
+                })
+        """
+        # Save the image with bounding boxes
 
 
     def detect_objects(self)->list:
