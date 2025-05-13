@@ -1,0 +1,20 @@
+{
+    "consumer review": {
+        "EUR": 5,
+        "USD": 6,
+        "POUND": 4,
+        "YEN": 700
+    },
+    "cooking": {
+        "EUR": 10,
+        "USD": 12,
+        "POUND": 8,
+        "YEN": 1400
+    },
+    "home": {
+        "EUR": 15,
+        "USD": 18,
+        "POUND": 12,
+        "YEN": 2100
+    }  
+}

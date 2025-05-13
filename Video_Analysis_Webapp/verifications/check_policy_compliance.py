@@ -20,7 +20,7 @@ ALGO for validation and notation of the uploaded Video w/r the policy Json file:
 import json
 from commons.json_files_management import *
 
-REWARD_FOR_AUTH = 3 # voir comment le sortir du code !!
+WEIGHT_FOR_AUTH = 3 # voir comment le sortir du code !!
 
 """
 def read_json_file(file_path):
@@ -71,7 +71,7 @@ def check_entry_value(section, key, policy_data, analysis_data)->list:
                 return [analysis_data[section][key], 1 if validation else 0]
             elif analysis_data[section][key] != "":
                 if "auth" in key:
-                    validation = analysis_data[section][key] * REWARD_FOR_AUTH
+                    validation = analysis_data[section][key] * WEIGHT_FOR_AUTH
                     return [analysis_data[section][key], validation]
                 else:
                     return [analysis_data[section][key], 1]
@@ -81,9 +81,51 @@ def check_entry_value(section, key, policy_data, analysis_data)->list:
             return [None, 0]
     else:
         return [None, 0]
-            
 
-def check_policy_compliance(policy_data, analysis_data):
+
+def compute_reward_in_currency(compliance_dict: dict, compliance_metrics: float) -> tuple:
+    """
+    Compute the reward in currency based on the compliance metrics.
+    Args:
+        compliance_dict (dict): The compliance dictionary.
+        compliance_metrics (float): The compliance metrics.
+    Returns:
+        float: The computed reward in currency.
+    ATTENTION: Need to know the currency of the reward: How to get the currency information?
+    """
+    # TEST: currency = 'EUR'
+    currency = 'EUR'
+
+    # Set default value for the reward
+    default_result, default_amount = "0 " + currency, 0
+
+    # Read table of rewards
+    reward_table = read_json_file('verifications/table_remunerations.json')
+    if reward_table:
+        # get the reward from the table of rewards matching the crm_video_type
+        crm_video_type = compliance_dict.get('crm_video_type', None)
+        if crm_video_type:
+            crm_video_type = crm_video_type[0]  # Get the first value of the list
+            # Check if the crm_video_type exists in the reward table
+            print(f"crm_video_type: {crm_video_type}, reward_table.keys(): {reward_table.keys()}")
+            if crm_video_type in reward_table.keys():
+                # Check if the currency exists in the reward table for the given crm_video_type
+                if currency not in reward_table[crm_video_type].keys():
+                    print(f"Error: The currency {currency} is not available for the crm_video_type {crm_video_type}.")
+                    return default_result, default_amount, currency
+                # Get the reward value
+                reward_value = reward_table[crm_video_type][currency]
+                payment = round(reward_value * compliance_metrics + 1, 0)
+                return str(payment) + " " + currency, payment, currency
+            else:
+                return default_result, default_amount, currency
+        else:
+            return default_result, default_amount, currency
+    else:
+        return default_result, default_amount, currency
+
+
+def check_policy_compliance(policy_data: dict, analysis_data: dict) -> tuple:
     """
     Check if the JSON data complies with the policy.
     Args:
@@ -140,6 +182,27 @@ def check_policy_compliance(policy_data, analysis_data):
 
     compliance_metrics = sum([val[1] for val in compliance_dict.values()]) / num_policy_checked if num_policy_checked > 0 else 0
     compliance_dict['compliance_metrics'] = compliance_metrics
+
+    # Compute the cash reward if compliant
+    # Read table of rewards
+    reward_in_currency, payment, currency = compute_reward_in_currency(compliance_dict, compliance_metrics)
+
+    # Add the result sentence to the compliance_dict based on the compliance metrics
+    if compliance_metrics >= 0.5:
+        compliance_dict['result'] = "The JSON data complies with the policy. The proposed reward is: " + str(reward_in_currency)
+    else:
+        compliance_dict['result'] = "Please check the following criteria: "
+        # Loop over the compliance_dict to find the non-compliant entries
+        for key, value in compliance_dict.items():
+            if key != 'compliance_metrics' and key != 'result':
+                if value[1] == 0:
+                    compliance_dict['result'] += f"{key.capitalize().replace('_',' ')}, "
+        compliance_dict['result'] = compliance_dict['result'].rstrip(", ")  # Remove the trailing comma and space
+    
+    # Add the payment information to the compliance_dict
+    compliance_dict['payment'] = payment
+    compliance_dict['currency'] = currency
+
     # Save compliance dict and metrics in a json file
     compliance_file = 'compliance_metrics.json'
     save_json_file("compliance_metrics", compliance_dict, compliance_file)

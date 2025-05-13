@@ -282,7 +282,7 @@ def read_fill_save_json_file(json_filename, video_path, text_video, dict_NER, ke
     json_data['metadata']['number_of_words'] = get_number_of_words_speech(text_video)
     json_data['metadata']['geoloc'] = get_geolocation_video(video_path)
     # fill context format of json_data
-    json_data['context']['crm_video_type'] = ""
+    json_data['context']['crm_video_type'] = "consumer review" # To get the type of video from the choice made by the user on the website
     json_data['context']['nb_speakers'] = get_number_of_speakers(text_video)
     json_data['context']['language'] = get_language(text_video)
     json_data['context']['adult_speaker'] = 0
