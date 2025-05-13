@@ -20,6 +20,7 @@ ALGO for validation and notation of the uploaded Video w/r the policy Json file:
 import json
 from commons.json_files_management import *
 
+COMPLIANCE_ACCEPTED_THRESHOLD = 0.5
 WEIGHT_FOR_AUTH = 3 # voir comment le sortir du code !!
 
 """
@@ -98,6 +99,10 @@ def compute_reward_in_currency(compliance_dict: dict, compliance_metrics: float)
 
     # Set default value for the reward
     default_result, default_amount = "0 " + currency, 0
+
+    # Return default values if compliance metrics is less than 0.5
+    if compliance_metrics < COMPLIANCE_ACCEPTED_THRESHOLD:
+        return default_result, default_amount, currency
 
     # Read table of rewards
     reward_table = read_json_file('verifications/table_remunerations.json')
@@ -184,6 +189,9 @@ def check_policy_compliance(policy_data: dict, analysis_data: dict) -> tuple:
     compliance_dict['compliance_metrics'] = compliance_metrics
 
     # Compute the cash reward if compliant
+    # TEST
+    #compliance_metrics = 0.3
+
     # Read table of rewards
     reward_in_currency, payment, currency = compute_reward_in_currency(compliance_dict, compliance_metrics)
 

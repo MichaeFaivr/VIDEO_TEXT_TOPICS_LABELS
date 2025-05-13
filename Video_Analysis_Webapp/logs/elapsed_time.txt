@@ -635,3 +635,27 @@ text_summary - calculate sentence scores Elapsed time: 0.00010228157043457031 se
 text_summary - join selected sentences Elapsed time: 5.1021575927734375e-05 seconds
 perform_ner_analysis_second Elapsed time: 0.5296058654785156 seconds
 get_entities_surrounding_infos Elapsed time: 0.4069523811340332 seconds
+extract_speech_google_recognizer Elapsed time: 35.61609935760498 seconds
+text_summary - load spaCy model Elapsed time: 0.4668853282928467 seconds
+text_summary - calculate word frequencies Elapsed time: 0.0001418590545654297 seconds
+text_summary - normalize word frequencies Elapsed time: 1.7881393432617188e-05 seconds
+text_summary - calculate sentence scores Elapsed time: 0.0001785755157470703 seconds
+text_summary - join selected sentences Elapsed time: 5.054473876953125e-05 seconds
+perform_ner_analysis_second Elapsed time: 0.4963407516479492 seconds
+get_entities_surrounding_infos Elapsed time: 0.42017412185668945 seconds
+extract_speech_google_recognizer Elapsed time: 35.63605809211731 seconds
+text_summary - load spaCy model Elapsed time: 0.4148569107055664 seconds
+text_summary - calculate word frequencies Elapsed time: 0.0001220703125 seconds
+text_summary - normalize word frequencies Elapsed time: 8.58306884765625e-06 seconds
+text_summary - calculate sentence scores Elapsed time: 0.00010824203491210938 seconds
+text_summary - join selected sentences Elapsed time: 4.1961669921875e-05 seconds
+perform_ner_analysis_second Elapsed time: 0.5114955902099609 seconds
+get_entities_surrounding_infos Elapsed time: 0.40891242027282715 seconds
+extract_speech_google_recognizer Elapsed time: 38.068761348724365 seconds
+text_summary - load spaCy model Elapsed time: 0.39101624488830566 seconds
+text_summary - calculate word frequencies Elapsed time: 0.0001361370086669922 seconds
+text_summary - normalize word frequencies Elapsed time: 7.152557373046875e-06 seconds
+text_summary - calculate sentence scores Elapsed time: 9.298324584960938e-05 seconds
+text_summary - join selected sentences Elapsed time: 4.220008850097656e-05 seconds
+perform_ner_analysis_second Elapsed time: 0.514009952545166 seconds
+get_entities_surrounding_infos Elapsed time: 0.41162109375 seconds
