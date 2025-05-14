@@ -122,6 +122,8 @@ from commons.decorators import *
 # use a config file to store the paths
 # and the credentials for the Google API : Json key
 
+TEXT_DETECTION_CONFIDENCE_THRESHOLD = 0.5
+
 """
 def add_punctuation(text):
     p = Punctuator('Demo-Europarl-EN.pcl')
@@ -1139,55 +1141,45 @@ class VideoToObjectsCopilot(VideoCopilot):
         # Perform text detection and recognition
         results = reader.readtext(self.frame)
 
-        # Print the detected text
-        for detection in results:
-            if detection[2] > 0.4:
-                print(detection[1]) # The detected text is in the second element of each detection tuple
-
         text_list = []
 
-        # Process the results
+        frame = cv2.cvtColor(self.frame, cv2.COLOR_RGB2BGR)
+
+        # Process the results and filter out weak confidence results
         for (bbox, text, prob) in results:
-            text_list.append(text)
-            # Extract the bounding box coordinates
-            (top_left, top_right, bottom_right, bottom_left) = bbox
-            (top_left_x, top_left_y) = top_left
-            (bottom_right_x, bottom_right_y) = bottom_right
-            print(f"recognize_text_in_frame_easyocr - bbox: {bbox}, text: {text}, prob: {prob}")
+            if prob >= TEXT_DETECTION_CONFIDENCE_THRESHOLD:
+                # Add the recognized text to the list and its confidence
+                text_list.append(text + " ; " + str(round(prob,3)))
+                # Extract the bounding box coordinates
+                (top_left, top_right, bottom_right, bottom_left) = bbox
+                (top_left_x, top_left_y) = top_left
+                (bottom_right_x, bottom_right_y) = bottom_right
+
+                # Draw the bounding box on the image
+                start_x = int(top_left_x)
+                start_y = int(top_left_y)
+                end_x = int(bottom_right_x)
+                end_y = int(bottom_right_y)
+                cv2.rectangle(frame, (start_x, start_y), (end_x, end_y), (0, 0, 255), 2)
+                # Add text above the rectangle
+                label = f"{text} ({prob:.2f})"
+                cv2.putText(frame, label, (int(top_left_x), int(top_left_y) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
+                # Save the recognized text and bounding box coordinates
+                self.detections.append({
+                    "object_type": text,
+                    "start": random.randint(0, int(self.video.duration)),
+                    "end": random.randint(0, int(self.video.duration)),
+                    "confidence": prob,
+                    "classe": text,
+                    "box_coordinates": [int(top_left_x), int(top_left_y), int(bottom_right_x), int(bottom_right_y)]
+                })
 
         # Save text list in a file
         if len(text_list) > 0:
             save_ascii_file("frame_text_reading", text_list, "frame_text_reading.txt")
 
-        """
-            # Draw the bounding box on the image
-            cv2.rectangle(self.frame, (int(top_left_x), int(top_left_y)), (int(bottom_right_x), int(bottom_right_y)), (0, 255, 0), 2)
-            # Add text above the rectangle
-            label = f"{text} ({prob:.2f})"
-            cv2.putText(self.frame, label, (int(top_left_x), int(top_left_y) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
-            # Save the recognized text and bounding box coordinates
-            self.detections.append({
-                "object_type": text,
-                "start": random.randint(0, int(self.video.duration)),
-                "end": random.randint(0, int(self.video.duration)),
-                "confidence": prob,
-                "classe": text,
-                "box_coordinates": [int(top_left_x), int(top_left_y), int(bottom_right_x), int(bottom_right_y)]
-            })
-        # Save the image with bounding boxes
-        current_date = datetime.now().strftime('%Y-%m-%d')
-        output_dir = os.path.join('Output', current_date)
-        os.makedirs(output_dir, exist_ok=True)
-        # Create a text filename based on the name from video_path and current time
-        current_time = datetime.now().strftime('%H-%M-%S')
-        video_filename = os.path.basename('frame_with_text_recognition.jpg')
-        video_filename = os.path.splitext(video_filename)[0] + '_' + current_time + '.jpg'
-        self.output_path = os.path.join(output_dir, video_filename)
-        # Save file
-        cv2.imwrite(self.output_path, cv2.cvtColor(self.frame, cv2.COLOR_RGB2BGR))
-        # Save the image with bounding boxes
-        cv2.imwrite(self.output_path, self.frame)
-        """
+        # Save the image with bounding boxes for the recognized text
+        save_frame_to_jpeg(frame, 'frame_with_text_recognition.jpg', False)
 
         return len(results) > 0  # Return True if any text was detected
 
