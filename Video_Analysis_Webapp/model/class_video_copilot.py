@@ -123,6 +123,7 @@ from commons.decorators import *
 # and the credentials for the Google API : Json key
 
 TEXT_DETECTION_CONFIDENCE_THRESHOLD = 0.5
+DEFAULT_SUMMARY_TEXT = "No text to summarize"
 
 """
 def add_punctuation(text):
@@ -526,6 +527,7 @@ class VideoToSpeechCopilot(VideoCopilot):
 class VideoTopicsSummaryCopilot():
     def __init__(self, text, topics, output_json):
         self.text   = text
+        self.default_text = DEFAULT_SUMMARY_TEXT
         self.topics = topics
         self.output_json = output_json
         nltk.download('punkt')
@@ -543,7 +545,8 @@ class VideoTopicsSummaryCopilot():
           3. join the selected sentences to form the summary
         """
         if not self.text or self.text == "":
-            return "No text to summarize" 
+            return DEFAULT_SUMMARY_TEXT
+        print(f"text_summary - self.text: {self.text}")
 
         with measure_time(inspect.currentframe().f_code.co_name + " - load spaCy model"):
             try:
@@ -564,8 +567,16 @@ class VideoTopicsSummaryCopilot():
                     else:
                         word_frequencies[word.text.lower()] += 1
 
+        if not word_frequencies:
+            # Proceed to reinitialize the attributes
+            self.summary = ""
+            self.sentences = []
+            self.text = ""
+            return DEFAULT_SUMMARY_TEXT
+
         # Normalize word frequencies
         with measure_time(inspect.currentframe().f_code.co_name + " - normalize word frequencies"):
+            print(f"word_frequencies.values(): {word_frequencies.values()}")
             max_frequency = max(word_frequencies.values())
             for word in word_frequencies.keys():
                 word_frequencies[word] = word_frequencies[word] / max_frequency

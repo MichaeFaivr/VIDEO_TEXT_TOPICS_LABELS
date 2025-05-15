@@ -112,12 +112,18 @@ def result():
         print(f'videoTextTopics.sentiment_scores: {videoTopicsSummary.sentiment_scores}')   
 
         # ===========================
+        # SET THE CONDITION FOR THE NEXT OPERATIONS
+        # ===========================
+        print(f'summary_text: {summary_text}')
+        conditions_for_next_operations = text_video and text_video != '' and summary_text != '' and summary_text != videoTopicsSummary.default_text
+        print(f'conditions_for_next_operations: {conditions_for_next_operations}')
+
+        # ===========================
         # OPERATION.6: Save the analysis data in a Json file
         # ===========================
-        analysis_json_filename = os.path.splitext(video_file.filename)[0] + '_' + current_time + '_json_video_analysis.json'
-        # Save the analysis data in a Json file with the function from build_analysis_json.py
-        print(f'app.py text_video: {text_video}')
-        if text_video and text_video != '':
+        if conditions_for_next_operations:
+            analysis_json_filename = os.path.splitext(video_file.filename)[0] + '_' + current_time + '_json_video_analysis.json'
+            # Save the analysis data in a Json file with the function from build_analysis_json.py
             json_video_analysis_file = read_fill_save_json_file(analysis_json_filename, video_path, text_video, videoTopicsSummary.entities, videoTopicsSummary.key_infos, videoTopicsSummary.sentiment_scores)
             if not json_video_analysis_file:
                 print(f'Error: Unable to save the JSON file: {analysis_json_filename}')
@@ -127,7 +133,7 @@ def result():
         # OPERATION.7: COMPLIANCE of the text with the policy
         # ===========================
         # Attention: need priorly to have stored the analysis data in a Json file !
-        if text_video and text_video != '':
+        if conditions_for_next_operations:
             policy_data_file = 'verifications/cahier_des_charges.json'
             video_analysis_file = json_video_analysis_file
 
