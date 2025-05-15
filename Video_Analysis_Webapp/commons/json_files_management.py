@@ -99,7 +99,7 @@ def save_ascii_file(type_analysis, text_list, filename):
         return False
 
 
-def save_frame_to_jpeg(frame, filename, apply_color_conversion=True):
+def save_frame_to_jpeg(frame, filename, apply_color_conversion=True, save_file=True):
     """
     Saves a frame as a JPEG file.
     Args:
@@ -123,14 +123,15 @@ def save_frame_to_jpeg(frame, filename, apply_color_conversion=True):
         video_filename = os.path.splitext(video_filename)[0] + '_' + current_time + '.jpg'
         output_path = os.path.join(output_dir, video_filename)
         # Save file
-        if apply_color_conversion:
-            cv2.imwrite(output_path, cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
-        else:
-            cv2.imwrite(output_path, frame)
-        # Check if the file was saved successfully
-        if not os.path.exists(output_path):
-            print(f"Error: The file {output_path} was not saved successfully.")
-            return False
+        if save_file:
+            if apply_color_conversion:
+                cv2.imwrite(output_path, cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
+            else:
+                cv2.imwrite(output_path, frame)
+            # Check if the file was saved successfully
+            if not os.path.exists(output_path):
+                print(f"Error: The file {output_path} was not saved successfully.")
+                return False
         return output_path
     except OSError as e:
         print(f"Error: Unable to save the frame as a JPEG file. {e}")

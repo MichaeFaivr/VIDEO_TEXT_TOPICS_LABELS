@@ -14,7 +14,10 @@ DIRECTORY_VIDEOS = '../Uploads/'
 
 LISTE_OBJETS = ['person', 'cup', 'dish', 'knife', 'bottle', 'scissor', 'cake', 'plate', 'punnet', 'basket', 'eye', 'carrot',
                 'bowl', 'fork', 'spoon', 'bag', 'glove', 'book', 'board', 'strawberry', 'hand', 'socket', 'sink', 'handle',
-                'cabinet', 'switch', 'lamp', 'banana', 'tree', 'canvas', 'frame', 'chair','glasses','smartphone','laptop']
+                'cabinet', 'switch', 'lamp', 'banana', 'tree', 'canvas', 'frame', 'chair','glasses','smartphone','laptop',
+                'monitor','keyboard','mouse','headphone','earphone','speaker','tablet','camera','projector','printer', 'radio',
+                'television','remote','clock','watch','calculator','scale','tape measure','ruler','pencil','pen',
+                'lion','box']
 
 
 TEMP_AUDIO_FILE = "temp_audio.wav" # better to read from config file

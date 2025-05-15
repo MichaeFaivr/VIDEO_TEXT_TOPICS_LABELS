@@ -1066,20 +1066,21 @@ class VideoToObjectsCopilot(VideoCopilot):
         self.frame = frame
 
         # Only once the frame above is defined, call detect_objects to build detections object
-        self.detections = self.detect_objects()
+        #self.detections = self.detect_objects()
+        self.any_object_detected = self.detect_objects()
 
         # If the image is marked as read-only, you can use this to make it writable
-        frame = np.array(frame)
-        frame.setflags(write=1)
+        #frame = np.array(frame)
+        #frame.setflags(write=1)
 
         # Draw red boxes around detected objects: boxes are computed in the ** detect_objects ** method called above
         # error : cv2.error: OpenCV(4.10.0) :-1: error: (-5:Bad argument) in function 'rectangle'
-        print(f"len(self.detections): {len(self.detections)}")
+        #print(f"len(self.detections): {len(self.detections)}")
 
-        self.draw_boxes(frame)
+        #self.draw_boxes(frame)
 
         ## Save frame with current date and time in file name
-        self.output_path = save_frame_to_jpeg(frame, 'frame_with_detections.jpg')
+        self.output_path = save_frame_to_jpeg(frame, 'frame_with_detections.jpg', save_file=False)
 
 
     def recognize_text_in_frame(self, method:str)->bool:
@@ -1259,42 +1260,48 @@ class VideoToObjectsCopilot(VideoCopilot):
         frame_transformed = transform(frame).unsqueeze(0)  # Add batch dimension
 
         # Perform object detection
-        ##results = model(frame_transformed)
+        #with torch.no_grad():
+        #    ############# ATTENTION: need to check the model and the frame size
+        #    results = model(frame_transformed)
         results = model(frame)  # Perform object detection
         # Display the results
-        results.show()  # Displays the image with bounding boxes
-        # Save the results
-        results.save()  # Saves the image with bounding boxes to 'runs/detect/exp'
+        #results.show()  # Displays the image with bounding boxes
+        # Save the results in the specified directory and the specified file name
+        current_date = datetime.now().strftime('%Y-%m-%d')
+        output_dir = os.path.join('Output', current_date, 'frames_with_detections')
+        os.makedirs(output_dir, exist_ok=True)
+
+        # Rename output filename to include the current date and time
+        current_time = datetime.now().strftime('%H-%M-%S')
+        output_filename = f"frame_with_detections_results_{current_time}.jpg"
+        # Modify results.pandas().files to include the output filename
+        print(f"results.__dict__.keys(): {results.__dict__.keys()}")
+        results.__dict__['files'] = [output_filename]  # Set the filename to the image name 
+        print(f"results.pandas().files: {results.pandas().files}")
+        results.save(save_dir=output_dir, exist_ok=True)  # Saves the image with bounding boxes
+        #results.save()  # Saves the image with bounding boxes to 'runs/detect/exp'
+        # Quite good : saved the image in the proper directory
 
         # Process the results: voir class_frame.py
-        print(f"results.__dict__: {results.__dict__}")
+        print(f"results.__dict__: {results.__dict__};  results.__dict__.keys(): {results.__dict__.keys()}")
         print(f"results.pandas(): {results.pandas()}")
 
-        for result in results.pandas().xyxy:
-            print(f"result: {result}, columns: {result.columns}")
-            print(f"result.xmin type: {type(result.xmin)}") # result.xmin type: <class 'pandas.core.series.Series'>
+        return results.pandas().xyxy is not None
 
-            for _, row in result.iterrows():
-                x1 = row.xmin
-                y1 = row.ymin
-                x2 = row.xmax
-                y2 = row.ymax
-                cnf= row.confidence
-                cls= row.name
-                print(f"x1: {x1}, y1: {y1}, x2: {x2}, y2: {y2}")
-                object_type = row.iloc[-1] ##model.names[int(cls)] # voir pourquoi NOK avec model.names...
-                print(f"object_type: {object_type}")
-                print(f"self.object_types: {self.object_types}")
-                if object_type in self.object_types:
-                    detections.append({
-                        "object_type": object_type,
-                        "start": random.randint(0, int(self.video.duration)),
-                        "end": random.randint(0, int(self.video.duration)),
-                        "confidence": cnf,
-                        "classe": object_type,
-                        "box_coordinates": [int(x1), int(y1), int(x2), int(y2)]
-                        })
-        return detections
+
+    def subimages_detection_from_frame(self, frame):
+        """
+        Detect objects in the video frame using YOLOv5.
+        The method uses the YOLOv5 model to perform object detection on the frame.
+        The detected objects are stored in the self.detections attribute.
+        Args:
+            frame (numpy.ndarray): The video frame on which to perform object detection.
+        Returns:
+            list: A list of dictionaries containing information about detected objects.
+            Each dictionary contains the object type, start and end times, confidence score, class, and bounding box coordinates.
+        """
+        # Placeholder for subimage detection logic
+        pass
 
 
     def end_obj_detection(self):
