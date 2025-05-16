@@ -166,6 +166,17 @@ def get_language(text_video:str)->str:
     return language
 
 
+def get_prices(dict_NER:dict)->str:
+    """
+    Get the price from the NER dictionary.
+    """
+    #dict_NER = {'ORG': ['ASUS VivoBook', 'ASUS', 'Intel', 'Office 365', 'IDE', 'ASUS', 'AI'], 'DATE': ['April 2024', '8 months', '8-month'], 'GPE': ['Italy', 'Paris'], 'PRODUCT': ['VivoBook 17', 'VivoBook 17', 'Google Cloud'], 'CARDINAL': ['680', '60', 'four'], 'QUANTITY': ['17 inches'], 'PERSON': ['Iris']}
+    prices = []
+    if "MONEY" in dict_NER.keys():
+        prices = list(set(dict_NER["MONEY"]))
+    return prices
+
+
 def get_currency(text_video:str)->str:
     """
     Get the currency of the speech of the video.
@@ -211,7 +222,7 @@ def get_positive_sentiments(text_video):
     pass
 
 
-def get_brand_product(dict_NER):
+def get_brand_product(dict_NER:dict)->tuple:
     """
     Get the brand and product of the speech of the video.
     """
@@ -230,7 +241,7 @@ def get_brand_product(dict_NER):
     product = list(set(product))
     return brand, product
 
-def sentiment_analysis(sentiment_scores):
+def sentiment_analysis(sentiment_scores:list)->dict:
     """
     Get the sentiment analysis of the speech of the video.
     Example: sentiment_scores = [{'sentence': 'The camera is great', 'sentiment_label': 'positive'},
@@ -286,6 +297,11 @@ def read_fill_save_json_file(json_filename, video_path, text_video, dict_NER, ke
     json_data['context']['nb_speakers'] = get_number_of_speakers(text_video)
     json_data['context']['language'] = get_language(text_video)
     json_data['context']['adult_speaker'] = 0
+    json_data['context']['type_environment'] = "kitchen" # To get the type of environment from the choice made by the user on the website
+    # fill speech
+    json_data['speech'] = text_video
+    # fill summary
+    json_data['summary'] = "" # Add summary in the args
     # fill content infos of json_data
     brand, product = get_brand_product(dict_NER)
     if key_infos and isinstance(key_infos, dict) and 'type_product' in key_infos.keys():
@@ -297,6 +313,7 @@ def read_fill_save_json_file(json_filename, video_path, text_video, dict_NER, ke
     json_data['content']['NER_tags'] = str(dict_NER)
     json_data['content']['upcoming_purchase_new_item'] = 0
     json_data['content']['budget_for_new_item'] = ""
+    json_data['content']['price'] = get_prices(dict_NER)
     json_data['content']['currency'] = get_currency(text_video)
     json_data['content']['auth_AI_training_usage'] = 1
     # fill sentiment format of json_data

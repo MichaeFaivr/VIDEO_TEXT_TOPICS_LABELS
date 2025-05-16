@@ -90,9 +90,9 @@ def result():
         _ = videoTopicsSummary.extract_key_infos()
 
         # ----------------------------        
-        # ** Analysis.4: Key topics from the text with product type specific analysis
+        # ** Analysis.4: Key topics from the text with product type extracted from the text: TO COMPLETE
         # ----------------------------
-        _ = videoTopicsSummary.extract_type_product_specifications('laptop')
+        #_ = videoTopicsSummary.extract_type_product_specifications('laptop')
 
         # ==========================
         # OPERATION.4: TOPICS from summary

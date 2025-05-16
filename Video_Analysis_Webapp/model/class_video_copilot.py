@@ -489,7 +489,7 @@ class VideoToSpeechCopilot(VideoCopilot):
         """
         # Create output directory based on current date
         current_date = datetime.now().strftime('%Y-%m-%d')
-        output_dir = os.path.join('Output', current_date)
+        output_dir = os.path.join('Output', current_date, 'extracted_text')
         os.makedirs(output_dir, exist_ok=True)
         # Create a text filename based on the name from video_path and current time
         current_time = datetime.now().strftime('%H-%M-%S')
@@ -1137,7 +1137,7 @@ class VideoToObjectsCopilot(VideoCopilot):
         return True
     
 
-    def recognize_text_in_frame_easyocr(self):
+    def recognize_text_in_frame_easyocr(self)->bool:
         """
         Detect brands and products in the video frame using EasyOCR.
         The method uses the EasyOCR model to perform text recognition on the frame.
@@ -1240,7 +1240,7 @@ class VideoToObjectsCopilot(VideoCopilot):
         # Save the image with bounding boxes
 
 
-    def detect_objects(self)->list:
+    def detect_objects(self)->bool:
         """
         Detect objects in the video frame using YOLOv5.
         The method uses the YOLOv5 model to perform object detection on the frame.
