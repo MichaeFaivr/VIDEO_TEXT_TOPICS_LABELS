@@ -931,3 +931,11 @@ text_summary - calculate sentence scores Elapsed time: 0.0001895427703857422 sec
 text_summary - join selected sentences Elapsed time: 4.4345855712890625e-05 seconds
 perform_ner_analysis_second Elapsed time: 0.48177313804626465 seconds
 get_entities_surrounding_infos Elapsed time: 0.39664697647094727 seconds
+extract_speech_google_recognizer Elapsed time: 39.1096510887146 seconds
+text_summary - load spaCy model Elapsed time: 0.40456581115722656 seconds
+text_summary - calculate word frequencies Elapsed time: 0.0001456737518310547 seconds
+text_summary - normalize word frequencies Elapsed time: 4.482269287109375e-05 seconds
+text_summary - calculate sentence scores Elapsed time: 0.00011754035949707031 seconds
+text_summary - join selected sentences Elapsed time: 0.00014281272888183594 seconds
+perform_ner_analysis_second Elapsed time: 0.5258584022521973 seconds
+get_entities_surrounding_infos Elapsed time: 0.40935730934143066 seconds

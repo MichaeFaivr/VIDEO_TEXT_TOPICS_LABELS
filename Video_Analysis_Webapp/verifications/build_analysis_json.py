@@ -305,11 +305,10 @@ def read_fill_save_json_file(json_filename, video_path, text_video, dict_NER, ke
     # fill content infos of json_data
     brand, product = get_brand_product(dict_NER)
     if key_infos and isinstance(key_infos, dict) and 'type_product' in key_infos.keys():
-        json_data['content']['type_product'] = key_infos['type_product']
-    json_data['content']['product'] = product
-    json_data['content']['brand_tag'] = 0
-    json_data['content']['brand'] = brand
-    json_data['content']['serial_number'] = ""
+        json_data['content']['type_products'] = key_infos['type_product']
+    json_data['content']['products'] = product
+    json_data['content']['brands'] = brand
+    json_data['content']['serial_numbers'] = ""
     json_data['content']['NER_tags'] = str(dict_NER)
     json_data['content']['upcoming_purchase_new_item'] = 0
     json_data['content']['budget_for_new_item'] = ""

@@ -27,11 +27,10 @@
         "nb_negative_points": 0
     },
     "content": {
-        "type_product": [],
-        "product": [],
-        "brand": [],
-        "brand_tag": 0,
-        "serial_number": "",
+        "type_products": [],
+        "products": [],
+        "brands": [],
+        "serial_numbers": "",
         "NER_tags": [],
         "price": 0,
         "budget_for_new_item": "",
