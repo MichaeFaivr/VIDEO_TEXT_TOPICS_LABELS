@@ -171,8 +171,17 @@ def display_image():
         videoToObjects.get_video_frame_size()
         # Save an image from the video with the detected objects framed in red boxes
         videoToObjects.save_frame_with_detections() # with current date and time in file name
+
+        # ===========================
+        # OPERATION.9: Extract text from the video
+        # ===========================
         # Recognize text in the frame
         videoToObjects.recognize_text_in_frame("easyocr")
+
+        # ===========================
+        # OPERATION.10: Detect faces in the frame and assess the age and the gender
+        videoToObjects.estimate_gender_age_from_faces()
+        # ===========================
 
         return render_template('video_objects_detection.html', frame=videoToObjects.output_path)
 

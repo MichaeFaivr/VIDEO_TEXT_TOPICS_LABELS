@@ -1346,6 +1346,111 @@ class VideoToObjectsCopilot(VideoCopilot):
             if detection["object_type"] == object_type:
                 return "red"  # Example color
         return None
+    
+
+    def estimate_gender_age_from_faces(self):
+        """
+        First proceed to the face detection
+        If a face is detected, proceed to the estimation of
+        - gender of speaker
+        - age range of speaker
+
+        Ref: Youtube: Python Age & Gender Detection Tutorial | Python OpenCV and CNN guide
+        """
+
+        # Constant to put in the constants.py file
+        MODEL_MEAN_VALUES = (104.0, 177.0, 123.0)
+        BLOB_MEAN_VALUES = (78.426, 87.768, 114.895)
+        # Load the pre-trained models for face detection, age estimation, and
+    
+        # Define the pre-trained models paths to be used by opencv-python
+        # These files can often be found in OpenCV's GitHub repository or other online resources that host pre-trained models.
+        # OpenCV DNN module
+        # caffe models downloaded from smahesh 29 Age-and-Gender-Detection GitHub repository
+        face_detection_model = "face_models/opencv_face_detector.pbtxt" # prototxt file that defines the model architecture.
+        face_detection_weights = "face_models/opencv_face_detector_uint8.pb" # weights file that contains the pre-trained model parameters.
+        age_estimation_model = "face_models/age_net.caffemodel"
+        age_estimation_weights = "face_models/age_deploy.prototxt"
+        gender_estimation_model = "face_models/gender_net.caffemodel"
+        gender_estimation_weights = "face_models/gender_deploy.prototxt"
+
+        # Load the face estimation model
+        face_net = cv2.dnn.readNet(face_detection_model, face_detection_weights)
+        # Load the age estimation model
+        age_net = cv2.dnn.readNet(age_estimation_model, age_estimation_weights)
+        # Load the gender estimation model
+        gen_net = cv2.dnn.readNet(gender_estimation_model, gender_estimation_weights)
+
+        # Setup Classifications
+        age_classifications = ["(0-2)", "(4-6)", "(8-12)", "(15-20)", "(25-32)", "(38-43)", "(48-53)", "(60,100)"]
+        gender_classifications = ["Female", "Male"]
+
+        # Load the image
+        ###image_cp = cv2.imread(self.frame)
+
+        # Resize the image to the input size of the model
+        ###image_cp = cv2.resize(image_cp, (300, 300)) # see if use instead of self.frame
+
+        frame = cv2.cvtColor(self.frame, cv2.COLOR_RGB2BGR)
+
+        # Convert the image to a blob
+        blob = cv2.dnn.blobFromImage(self.frame, 1.0, (300, 300), MODEL_MEAN_VALUES, swapRB=True, crop=False)
+        
+        # Set the input to the face detection model
+        face_net.setInput(blob)
+        
+        # Perform face detection
+        detected_faces = face_net.forward()
+        
+        # Loop over the detected faces
+        for i in range(detected_faces.shape[2]):
+            # Get the confidence of the detection
+            confidence = detected_faces[0, 0, i, 2]
+            # Filter out weak detections
+            if confidence > 0.8:
+                print(f"confidence: {confidence}")
+                # Get the bounding box coordinates
+                box = detected_faces[0, 0, i, 3:7] * np.array([self.frame.shape[1], self.frame.shape[0], self.frame.shape[1], self.frame.shape[0]])
+                (start_x, start_y, end_x, end_y) = box.astype("int")
+                # Draw the bounding box on the image: Bug Fix TODO
+                cv2.rectangle(frame, (start_x, start_y), (end_x, end_y), (0, 255, 0), 2)
+                # Extract the face region from the image
+                face = self.frame[start_y:end_y, start_x:end_x]
+                # Convert the face region to a blob
+                face_blob = cv2.dnn.blobFromImage(face, 1.0, (227, 227), BLOB_MEAN_VALUES, swapRB=False)
+                # Set the input to the age estimation model
+                age_net.setInput(face_blob)
+                # Perform age estimation
+                age_predictions = age_net.forward()
+                # Get the index of the maximum prediction
+                age_index = age_predictions[0].argmax()
+                # Get the predicted age range
+                age_range = age_classifications[age_index]
+                print(f"Predicted age range: {age_range}")
+                
+                # Set the input to the gender estimation model
+                gen_net.setInput(face_blob)
+                # Perform gender estimation
+                gen_predictions = gen_net.forward()
+                # Get the index of the maximum prediction
+                gen_index = gen_predictions[0].argmax()
+                # Get the predicted gender
+                gender = gender_classifications[gen_index]
+                print(f"Predicted gender: {gender}")
+
+                # Save the detected face information
+                # Age range
+                label_size, _ = cv2.getTextSize(age_range, cv2.FONT_HERSHEY_SIMPLEX, 1.5, 1)
+                label_y = max(0, start_y-5, label_size[1] + 15)
+                cv2.putText(frame, "Age range: " + age_range, (start_x, label_y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 255), 1)
+                # Gender range
+                label_y = max(0, label_y - 30, label_size[1] - 40)
+                cv2.putText(frame, "Gender: " + gender, (start_x, label_y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
+
+        # Save the image with bounding boxes for the recognized text
+        save_frame_to_jpeg(frame, 'frame_with_face_detection.jpg', False)
+
+        return True
 
 
 # The class VideoCopilot is defined with the required attributes and methods for object detection from a predefined list of object types. The class can be used
