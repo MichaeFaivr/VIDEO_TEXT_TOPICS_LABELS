@@ -20,8 +20,8 @@ ALGO for validation and notation of the uploaded Video w/r the policy Json file:
 import json
 from commons.json_files_management import *
 
-COMPLIANCE_ACCEPTED_THRESHOLD = 0.5
-WEIGHT_FOR_AUTH = 3 # voir comment le sortir du code !!
+from model.constants import *
+
 
 """
 def read_json_file(file_path):

@@ -11,16 +11,6 @@ from model.constants import *
 
 app = Flask(__name__)
 
-DIRECTORY_VIDEOS = '../Uploads/'
-
-LISTE_OBJETS = ['person', 'cup', 'dish', 'knife', 'bottle', 'scissor', 'cake', 'plate', 'punnet', 'basket', 'eye', 'carrot',
-                'bowl', 'fork', 'spoon', 'bag', 'glove', 'book', 'board', 'strawberry', 'hand', 'socket', 'sink', 'handle',
-                'cabinet', 'switch', 'lamp', 'banana', 'tree', 'canvas', 'frame', 'chair','glasses','smartphone','laptop',
-                'monitor','keyboard','mouse','headphone','earphone','speaker','tablet','camera','projector','printer', 'radio',
-                'television','remote','clock','watch','calculator','scale','tape measure','ruler','pencil','pen',
-                'lion','box']
-
-
 TEMP_AUDIO_FILE = "temp_audio.wav" # better to read from config file
 # 06-mai TEST
 TEMP_AUDIO_FILE = "temp_mono_audio.wav"
@@ -70,7 +60,6 @@ def result():
         # ===========================
         # OPERATION.3: Key informations of the text from the video
         # ===========================
-
         # ---------------------------
         # ** Analysis.1: Key infos from the text with NER
         # ---------------------------
@@ -106,7 +95,6 @@ def result():
         # OPERATION.5: SENTIMENT ANALYSIS from summary
         # ===========================
         # save Json file in same directory as the text file from video
-        #current_date = datetime.now().strftime('%Y-%m-%d')
         current_time = datetime.now().strftime('%H-%M-%S')
         json_sentiments_filename = os.path.splitext(video_file.filename)[0] + '_' + current_time + '_json_sentiments_per_sentence.json'
         videoTopicsSummary.sentiment_analysis_per_summary_sentence(json_sentiments_filename)
@@ -135,7 +123,7 @@ def result():
         # ===========================
         # Attention: need priorly to have stored the analysis data in a Json file !
         if conditions_for_next_operations:
-            policy_data_file = 'verifications/cahier_des_charges.json'
+            policy_data_file = POLICY_DATA_FILE
             video_analysis_file = json_video_analysis_file
 
             # Read the policy JSON file

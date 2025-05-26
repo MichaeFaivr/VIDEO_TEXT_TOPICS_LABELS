@@ -1125,3 +1125,33 @@ extract_speech_google_recognizer Elapsed time: 1.5356543064117432 seconds
 extract_speech_google_recognizer Elapsed time: 2.6182727813720703 seconds
 extract_speech_google_recognizer Elapsed time: 1.1256561279296875 seconds
 extract_speech_google_recognizer Elapsed time: 3.196338415145874 seconds
+extract_speech_google_recognizer Elapsed time: 5.605252265930176 seconds
+extract_speech_google_recognizer Elapsed time: 8.317895412445068 seconds
+extract_speech_google_recognizer Elapsed time: 10.443683624267578 seconds
+text_summary - load spaCy model Elapsed time: 0.42400026321411133 seconds
+text_summary - calculate word frequencies Elapsed time: 4.9591064453125e-05 seconds
+text_summary - normalize word frequencies Elapsed time: 1.5020370483398438e-05 seconds
+text_summary - calculate sentence scores Elapsed time: 0.0001163482666015625 seconds
+text_summary - join selected sentences Elapsed time: 4.76837158203125e-06 seconds
+perform_ner_analysis_second Elapsed time: 0.504641056060791 seconds
+get_entities_surrounding_infos Elapsed time: 0.41088318824768066 seconds
+extract_speech_google_recognizer Elapsed time: 13.864086151123047 seconds
+text_summary - load spaCy model Elapsed time: 0.4215214252471924 seconds
+text_summary - calculate word frequencies Elapsed time: 7.271766662597656e-05 seconds
+text_summary - normalize word frequencies Elapsed time: 1.4543533325195312e-05 seconds
+text_summary - calculate sentence scores Elapsed time: 6.437301635742188e-05 seconds
+text_summary - join selected sentences Elapsed time: 3.337860107421875e-05 seconds
+perform_ner_analysis_second Elapsed time: 0.5029022693634033 seconds
+get_entities_surrounding_infos Elapsed time: 0.41064953804016113 seconds
+extract_speech_google_recognizer Elapsed time: 13.061316967010498 seconds
+text_summary - load spaCy model Elapsed time: 0.3797485828399658 seconds
+text_summary - calculate word frequencies Elapsed time: 0.0001995563507080078 seconds
+text_summary - normalize word frequencies Elapsed time: 2.9325485229492188e-05 seconds
+text_summary - calculate sentence scores Elapsed time: 5.698204040527344e-05 seconds
+text_summary - join selected sentences Elapsed time: 2.86102294921875e-06 seconds
+perform_ner_analysis_second Elapsed time: 0.5027248859405518 seconds
+get_entities_surrounding_infos Elapsed time: 0.4151573181152344 seconds
+extract_speech_google_recognizer Elapsed time: 0.8986423015594482 seconds
+extract_speech_google_recognizer Elapsed time: 1.1847620010375977 seconds
+extract_speech_google_recognizer Elapsed time: 0.8006911277770996 seconds
+extract_speech_google_recognizer Elapsed time: 1.2957572937011719 seconds

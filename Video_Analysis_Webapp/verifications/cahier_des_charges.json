@@ -8,7 +8,8 @@
     "context": {
         "crm_video_type": ["consumer review","cooking","home"],
         "nb_speakers": [1, 2, 3, 4],
-        "language": ["english", "french", "spain", "german", "mandarin", "portuguese"]
+        "language": ["english", "french", "spain", "german", "mandarin", "portuguese"],
+        "user_id_number": ""
     },
     "sentiment": {
         "nb_positive_points": [1, 20],

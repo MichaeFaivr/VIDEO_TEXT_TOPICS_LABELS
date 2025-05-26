@@ -1162,11 +1162,21 @@ class VideoToObjectsCopilot(VideoCopilot):
         frame = cv2.cvtColor(self.frame, cv2.COLOR_RGB2BGR)
         print(f"recognize_text_in_frame_easyocr frame.shape: {frame.shape}")
 
+        # Add attribute: self.detected_user_id
+        self.detected_user_id = ""
+
         # Process the results and filter out weak confidence results
         for (bbox, text, prob) in results:
             if prob >= TEXT_DETECTION_CONFIDENCE_THRESHOLD:
                 # Add the recognized text to the list and its confidence
                 text_list.append(text + " ; " + str(round(prob,3)))
+                # check if the text matches User ID number on the platform
+                if len(text.replace(" ", "")) == USER_ID_LENGTH:
+                    # Compute the number of characters in the text matching the User ID test in the proper order
+                    number_of_matching_characters = sum(1 for i in range(len(text)) if text[i] == USER_ID_TEST[i])
+                    if number_of_matching_characters >= USER_ID_MIN_MATCHING_CHARACTERS:
+                        self.detected_user_id = text # store the information in the file
+                        text_list.append("detected USER ID : " + text + " ; " + str(round(prob,3)))
                 # Extract the bounding box coordinates
                 (top_left, top_right, bottom_right, bottom_left) = bbox
                 (top_left_x, top_left_y) = top_left
@@ -1407,6 +1417,9 @@ class VideoToObjectsCopilot(VideoCopilot):
         
         # Perform face detection
         detected_faces = face_net.forward()
+
+        # Counter on nb valid faces detected
+        nb_valid_faces = 0
         
         # Loop over the detected faces
         for i in range(detected_faces.shape[2]):
@@ -1415,6 +1428,8 @@ class VideoToObjectsCopilot(VideoCopilot):
             # Filter out weak detections
             if confidence > 0.8:
                 print(f"confidence: {confidence}")
+                # Increment the counter of valid faces detected
+                nb_valid_faces += 1
                 # Get the bounding box coordinates
                 box = detected_faces[0, 0, i, 3:7] * np.array([self.frame.shape[1], self.frame.shape[0], self.frame.shape[1], self.frame.shape[0]])
                 (start_x, start_y, end_x, end_y) = box.astype("int")
@@ -1472,7 +1487,10 @@ class VideoToObjectsCopilot(VideoCopilot):
                     cv2.putText(frame, "Gender: " + gender, (start_x, label_y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
 
         # Save the image with bounding boxes for the recognized text
-        save_frame_to_jpeg(frame, 'frame_faces_age_gender.jpg', False)
+        # Do not save frame when no face is detected
+        if nb_valid_faces > 0:
+            # Save the image with bounding boxes for the recognized text
+            save_frame_to_jpeg(frame, 'frame_faces_age_gender.jpg', False)
 
         return True
 
