@@ -98,6 +98,7 @@ import inspect
 
 from commons.json_files_management import *
 from commons.decorators import *
+from model.constants import *
 
 # The reason gensim no longer has a summarization module is that it was 
 # deprecated and eventually removed in more recent versions of the library.
@@ -122,8 +123,9 @@ from commons.decorators import *
 # use a config file to store the paths
 # and the credentials for the Google API : Json key
 
-TEXT_DETECTION_CONFIDENCE_THRESHOLD = 0.5
-DEFAULT_SUMMARY_TEXT = "No text to summarize"
+# in imported constants
+#TEXT_DETECTION_CONFIDENCE_THRESHOLD = 0.5
+#DEFAULT_SUMMARY_TEXT = "No text to summarize"
 
 """
 def add_punctuation(text):
@@ -1125,8 +1127,8 @@ class VideoToObjectsCopilot(VideoCopilot):
             Each dictionary contains the object type, start and end times, confidence score, class, and bounding box coordinates.
         """
         # Need to spend time on the design of the Brand detection: so many brands
-        LIST_BRANDS = ['Nescafe', 'Apple', 'Samsung', 'Honor', 'Oppo', 'Huawei', 'Xiaomi']
-        LIST_PRODUCTS = ['phone', 'laptop', 'tablet', 'watch', 'headphones']
+        #LIST_BRANDS = ['Nescafe', 'Apple', 'Samsung', 'Honor', 'Oppo', 'Huawei', 'Xiaomi'] # in imported constants
+        #LIST_PRODUCTS = ['phone', 'laptop', 'tablet', 'watch', 'headphones']
         # Load the YOLO model (ensure you have the correct model path)
         model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
 
@@ -1158,6 +1160,7 @@ class VideoToObjectsCopilot(VideoCopilot):
         text_list = []
 
         frame = cv2.cvtColor(self.frame, cv2.COLOR_RGB2BGR)
+        print(f"recognize_text_in_frame_easyocr frame.shape: {frame.shape}")
 
         # Process the results and filter out weak confidence results
         for (bbox, text, prob) in results:
@@ -1362,8 +1365,8 @@ class VideoToObjectsCopilot(VideoCopilot):
         """
 
         # Constant to put in the constants.py file
-        MODEL_MEAN_VALUES = (104.0, 177.0, 123.0)
-        BLOB_MEAN_VALUES = (78.426, 87.768, 114.895)
+        #MODEL_MEAN_VALUES = (104.0, 177.0, 123.0)
+        #BLOB_MEAN_VALUES = (78.426, 87.768, 114.895)
         # Load the pre-trained models for face detection, age estimation, and
     
         # Define the pre-trained models paths to be used by opencv-python
@@ -1397,7 +1400,7 @@ class VideoToObjectsCopilot(VideoCopilot):
         frame = cv2.cvtColor(self.frame, cv2.COLOR_RGB2BGR)
 
         # Convert the image to a blob
-        blob = cv2.dnn.blobFromImage(self.frame, 1.0, (300, 300), MODEL_MEAN_VALUES, swapRB=True, crop=False)
+        blob = cv2.dnn.blobFromImage(self.frame, 1.0, BLOB_SIZE, MODEL_MEAN_VALUES, swapRB=True, crop=False)
         
         # Set the input to the face detection model
         face_net.setInput(blob)
@@ -1424,35 +1427,49 @@ class VideoToObjectsCopilot(VideoCopilot):
                 print(f"frame.shape: {frame.shape}")
                 # Convert the face region to a blob
                 print(f"face.shape: {face.shape}")
-                face_blob = cv2.dnn.blobFromImage(face, 1.0, (227, 227), BLOB_MEAN_VALUES, swapRB=False, crop=True)
+                face_blob = cv2.dnn.blobFromImage(face, 1.0, BLOB_SIZE, BLOB_MEAN_VALUES, swapRB=False, crop=True)
+                # Set booleans for age and gender estimation
+                age_estimation = False
+                gender_estimation = False 
+
                 # Set the input to the age estimation model
                 age_net.setInput(face_blob)
                 # Perform age estimation
-                age_predictions = age_net.forward()
-                # Get the index of the maximum prediction
-                age_index = age_predictions[0].argmax()
-                # Get the predicted age range
-                age_range = age_classifications[age_index]
-                print(f"Predicted age range: {age_range}")
+                # Add an exception here to avoiding blocking the continuation of the program
+                try:
+                    age_predictions = age_net.forward()
+                    # Get the index of the maximum prediction
+                    age_index = age_predictions[0].argmax()
+                    # Get the predicted age range
+                    age_range = age_classifications[age_index]
+                    print(f"Predicted age range: {age_range}")
+                except cv2.error as e:
+                    print(f"Error during age estimation: {e}")
+                    continue
                 
                 # Set the input to the gender estimation model
                 gen_net.setInput(face_blob)
-                # Perform gender estimation
-                gen_predictions = gen_net.forward()
-                # Get the index of the maximum prediction
-                gen_index = gen_predictions[0].argmax()
-                # Get the predicted gender
-                gender = gender_classifications[gen_index]
-                print(f"Predicted gender: {gender}")
+                try:
+                    # Perform gender estimation
+                    gen_predictions = gen_net.forward()
+                    # Get the index of the maximum prediction
+                    gen_index = gen_predictions[0].argmax()
+                    # Get the predicted gender
+                    gender = gender_classifications[gen_index]
+                    print(f"Predicted gender: {gender}")
+                except cv2.error as e:
+                    print(f"Error during gender estimation: {e}")
+                    continue
 
-                # Save the detected face information
-                # Age range
-                label_size, _ = cv2.getTextSize(age_range, cv2.FONT_HERSHEY_SIMPLEX, 1.5, 1)
-                label_y = max(0, start_y-5, label_size[1] + 15)
-                cv2.putText(frame, "Age range: " + age_range, (start_x, label_y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 255), 1)
-                # Gender range
-                label_y = max(0, label_y - 30, label_size[1] - 40)
-                cv2.putText(frame, "Gender: " + gender, (start_x, label_y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
+                if age_estimation and gender_estimation:
+                    # Save the detected face information
+                    # Age range
+                    label_size, _ = cv2.getTextSize(age_range, cv2.FONT_HERSHEY_SIMPLEX, 1.5, 1)
+                    label_y = max(0, start_y-5, label_size[1] + 15)
+                    cv2.putText(frame, "Age range: " + age_range, (start_x, label_y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 255), 1)
+                    # Gender range
+                    label_y = max(0, label_y - 30, label_size[1] - 40)
+                    cv2.putText(frame, "Gender: " + gender, (start_x, label_y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
 
         # Save the image with bounding boxes for the recognized text
         save_frame_to_jpeg(frame, 'frame_faces_age_gender.jpg', False)

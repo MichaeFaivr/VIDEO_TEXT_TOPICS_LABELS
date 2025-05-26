@@ -186,8 +186,8 @@ def display_image():
 
             # ===========================
             # OPERATION.10: Detect faces in the frame and assess the age and the gender
-            videoToObjects.estimate_gender_age_from_faces()
             # ===========================
+            videoToObjects.estimate_gender_age_from_faces()
 
         return render_template('video_objects_detection.html', frame=videoToObjects.output_path)
 
