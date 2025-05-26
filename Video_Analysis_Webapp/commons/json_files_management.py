@@ -117,6 +117,14 @@ def save_frame_to_jpeg(frame, filename, apply_color_conversion=True, save_file=T
         current_date = datetime.now().strftime('%Y-%m-%d')
         output_dir = os.path.join('Output', current_date, 'frames_with_detections')
         os.makedirs(output_dir, exist_ok=True)
+        # Add a hierarchy for the output directory
+        if 'age_gender' in filename:
+            output_dir = os.path.join(output_dir, 'faces_age_gender')
+        elif 'objects_detection' in filename:
+            output_dir = os.path.join(output_dir, 'objects_detection')
+        elif 'text_recognition' in filename:
+            output_dir = os.path.join(output_dir, 'text_recognition')
+        os.makedirs(output_dir, exist_ok=True)
         # Create a text filename based on the name from video_path and current time
         current_time = datetime.now().strftime('%H-%M-%S')
         video_filename = os.path.basename(filename)

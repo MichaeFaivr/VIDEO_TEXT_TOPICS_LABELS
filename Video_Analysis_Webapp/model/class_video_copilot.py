@@ -1074,6 +1074,8 @@ class VideoToObjectsCopilot(VideoCopilot):
         frame_time = random.uniform(0, self.video.duration)
         print(f"frame_time: {frame_time}")
         frame = self.video.get_frame(frame_time)
+
+        # Save frame as an attribute
         self.frame = frame
 
         # Only once the frame above is defined, call detect_objects to build detections object
@@ -1278,13 +1280,14 @@ class VideoToObjectsCopilot(VideoCopilot):
         # Display the results
         #results.show()  # Displays the image with bounding boxes
         # Save the results in the specified directory and the specified file name
-        current_date = datetime.now().strftime('%Y-%m-%d')
-        output_dir = os.path.join('Output', current_date, 'frames_with_detections')
-        os.makedirs(output_dir, exist_ok=True)
+        output_path = save_frame_to_jpeg(frame, 'frame_objects_detection', False, False)
+        # Get the output directory from the output path
+        output_dir = os.path.dirname(output_path)
+        print(f"output_dir: {output_dir}")
 
         # Rename output filename to include the current date and time
         current_time = datetime.now().strftime('%H-%M-%S')
-        output_filename = f"frame_with_detections_results_{current_time}.jpg"
+        output_filename = f"frame_objects_detection_{current_time}.jpg"
         # Modify results.pandas().files to include the output filename
         print(f"results.__dict__.keys(): {results.__dict__.keys()}")
         results.__dict__['files'] = [output_filename]  # Set the filename to the image name 
@@ -1415,9 +1418,13 @@ class VideoToObjectsCopilot(VideoCopilot):
                 # Draw the bounding box on the image: Bug Fix TODO
                 cv2.rectangle(frame, (start_x, start_y), (end_x, end_y), (0, 255, 0), 2)
                 # Extract the face region from the image
-                face = self.frame[start_y:end_y, start_x:end_x]
+                #face = self.frame[start_y:end_y, start_x:end_x]
+                print(f"start_x: {start_x}, start_y: {start_y}, end_x: {end_x}, end_y: {end_y}")
+                face = frame[start_y:end_y, start_x:end_x]
+                print(f"frame.shape: {frame.shape}")
                 # Convert the face region to a blob
-                face_blob = cv2.dnn.blobFromImage(face, 1.0, (227, 227), BLOB_MEAN_VALUES, swapRB=False)
+                print(f"face.shape: {face.shape}")
+                face_blob = cv2.dnn.blobFromImage(face, 1.0, (227, 227), BLOB_MEAN_VALUES, swapRB=False, crop=True)
                 # Set the input to the age estimation model
                 age_net.setInput(face_blob)
                 # Perform age estimation
@@ -1448,7 +1455,7 @@ class VideoToObjectsCopilot(VideoCopilot):
                 cv2.putText(frame, "Gender: " + gender, (start_x, label_y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
 
         # Save the image with bounding boxes for the recognized text
-        save_frame_to_jpeg(frame, 'frame_with_face_detection.jpg', False)
+        save_frame_to_jpeg(frame, 'frame_faces_age_gender.jpg', False)
 
         return True
 

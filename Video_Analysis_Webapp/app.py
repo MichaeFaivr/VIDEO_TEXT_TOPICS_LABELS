@@ -7,6 +7,7 @@ from model.class_video_copilot import VideoCopilot, VideoToSpeechCopilot, VideoT
 
 from verifications.check_policy_compliance import read_json_file, check_policy_compliance
 from verifications.build_analysis_json import *
+from model.constants import *
 
 app = Flask(__name__)
 
@@ -161,27 +162,32 @@ def result():
 def display_image():
     if request.method == 'POST':
         video_file = request.form['video_path'] ##voir comment récupérer video file
-        # ===========================
-        # OPERATION.8: Extract objects from the video
-        # ===========================
+        # Need to apply the image operations from the video onto one or multiple frames randomly extracted from the video
         liste_objets = LISTE_OBJETS
         print('video_file:', video_file) # empty
 
         videoToObjects = VideoToObjectsCopilot(video_file, list_object_types=liste_objets)
         videoToObjects.get_video_frame_size()
-        # Save an image from the video with the detected objects framed in red boxes
-        videoToObjects.save_frame_with_detections() # with current date and time in file name
 
-        # ===========================
-        # OPERATION.9: Extract text from the video
-        # ===========================
-        # Recognize text in the frame
-        videoToObjects.recognize_text_in_frame("easyocr")
+        # call constantes.py NB_SNAPSHOTS_VIDEO_ANALYSIS
 
-        # ===========================
-        # OPERATION.10: Detect faces in the frame and assess the age and the gender
-        videoToObjects.estimate_gender_age_from_faces()
-        # ===========================
+        for _ in range(0, NB_SNAPSHOTS_VIDEO_ANALYSIS):
+            # ===========================
+            # OPERATION.8: Extract objects from the video
+            # ===========================
+            # Save an image from the video with the detected objects framed in red boxes
+            videoToObjects.save_frame_with_detections() # with current date and time in file name
+
+            # ===========================
+            # OPERATION.9: Extract text from the video
+            # ===========================
+            # Recognize text in the frame
+            videoToObjects.recognize_text_in_frame("easyocr")
+
+            # ===========================
+            # OPERATION.10: Detect faces in the frame and assess the age and the gender
+            videoToObjects.estimate_gender_age_from_faces()
+            # ===========================
 
         return render_template('video_objects_detection.html', frame=videoToObjects.output_path)
 
