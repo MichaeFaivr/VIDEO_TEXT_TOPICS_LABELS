@@ -1140,7 +1140,10 @@ class VideoToObjectsCopilot(VideoCopilot):
 
         return True
     
+    def detect_brands_logos(self)->bool:
+        pass
 
+    
     def recognize_text_in_frame_easyocr(self)->bool:
         """
         Detect brands and products in the video frame using EasyOCR.
@@ -1399,7 +1402,7 @@ class VideoToObjectsCopilot(VideoCopilot):
 
         # Setup Classifications
         age_classifications = ["(0-2)", "(4-6)", "(8-12)", "(15-20)", "(25-32)", "(38-43)", "(48-53)", "(60,100)"]
-        gender_classifications = ["Female", "Male"]
+        gender_classifications = ["Male", "Female"]
 
         # Load the image
         ###image_cp = cv2.imread(self.frame)
@@ -1410,7 +1413,7 @@ class VideoToObjectsCopilot(VideoCopilot):
         frame = cv2.cvtColor(self.frame, cv2.COLOR_RGB2BGR)
 
         # Convert the image to a blob
-        blob = cv2.dnn.blobFromImage(self.frame, 1.0, BLOB_SIZE, MODEL_MEAN_VALUES, swapRB=True, crop=False)
+        blob = cv2.dnn.blobFromImage(self.frame, BLOB_FRAME_SCALE, BLOB_SIZE, MODEL_MEAN_VALUES, swapRB=True, crop=False)
         
         # Set the input to the face detection model
         face_net.setInput(blob)
@@ -1426,7 +1429,7 @@ class VideoToObjectsCopilot(VideoCopilot):
             # Get the confidence of the detection
             confidence = detected_faces[0, 0, i, 2]
             # Filter out weak detections
-            if confidence > 0.8:
+            if confidence > FACE_CONFIDENCE_THRESHOLD:
                 print(f"confidence: {confidence}")
                 # Increment the counter of valid faces detected
                 nb_valid_faces += 1
@@ -1458,6 +1461,7 @@ class VideoToObjectsCopilot(VideoCopilot):
                     # Get the predicted age range
                     age_range = age_classifications[age_index]
                     print(f"Predicted age range: {age_range}")
+                    age_estimation = True
                 except cv2.error as e:
                     print(f"Error during age estimation: {e}")
                     continue
@@ -1472,6 +1476,7 @@ class VideoToObjectsCopilot(VideoCopilot):
                     # Get the predicted gender
                     gender = gender_classifications[gen_index]
                     print(f"Predicted gender: {gender}")
+                    gender_estimation = True
                 except cv2.error as e:
                     print(f"Error during gender estimation: {e}")
                     continue
