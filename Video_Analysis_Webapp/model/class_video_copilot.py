@@ -98,6 +98,7 @@ import inspect
 
 from commons.json_files_management import *
 from commons.decorators import *
+from commons.common_functions import *
 from model.constants import *
 
 # The reason gensim no longer has a summarization module is that it was 
@@ -1174,12 +1175,11 @@ class VideoToObjectsCopilot(VideoCopilot):
                 # Add the recognized text to the list and its confidence
                 text_list.append(text + " ; " + str(round(prob,3)))
                 # check if the text matches User ID number on the platform
-                if len(text.replace(" ", "")) == USER_ID_LENGTH:
-                    # Compute the number of characters in the text matching the User ID test in the proper order
-                    number_of_matching_characters = sum(1 for i in range(len(text)) if text[i] == USER_ID_TEST[i])
-                    if number_of_matching_characters >= USER_ID_MIN_MATCHING_CHARACTERS:
-                        self.detected_user_id = text # store the information in the file
-                        text_list.append("detected USER ID : " + text + " ; " + str(round(prob,3)))
+                text_match_user_id = compare_strings(text, USER_ID_TEST, USER_ID_MIN_MATCHING_CHARACTERS)
+                if text_match_user_id:
+                    self.detected_user_id = text
+                    text_list.append("detected USER ID : " + text + " ; " + str(round(prob,3)))
+
                 # Extract the bounding box coordinates
                 (top_left, top_right, bottom_right, bottom_left) = bbox
                 (top_left_x, top_left_y) = top_left
@@ -1204,14 +1204,13 @@ class VideoToObjectsCopilot(VideoCopilot):
                     "box_coordinates": [int(top_left_x), int(top_left_y), int(bottom_right_x), int(bottom_right_y)]
                 })
 
-        # Save text list in a file
         if len(text_list) > 0:
+            # Save text list in a file
             save_ascii_file("frame_text_reading", text_list, "frame_text_reading.txt")
+            # Save the image with bounding boxes for the recognized text
+            save_frame_to_jpeg(frame, 'frame_with_text_recognition.jpg', False)
 
-        # Save the image with bounding boxes for the recognized text
-        save_frame_to_jpeg(frame, 'frame_with_text_recognition.jpg', False)
-
-        return len(results) > 0  # Return True if any text was detected
+        return len(text_list) > 0  # Return True if any text was detected
 
     def recognize_text_in_frame_tesseract(self):
         """
