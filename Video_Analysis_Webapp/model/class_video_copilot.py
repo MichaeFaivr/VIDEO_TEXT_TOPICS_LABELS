@@ -1400,19 +1400,22 @@ class VideoToObjectsCopilot(VideoCopilot):
         gen_net = cv2.dnn.readNet(gender_estimation_model, gender_estimation_weights)
 
         # Setup Classifications
-        age_classifications = ["(0-2)", "(4-6)", "(8-12)", "(15-20)", "(25-32)", "(38-43)", "(48-53)", "(60,100)"]
+        age_classifications = ["(0-8)", "(8-15)", "(15-25)", "(25-35)", "(35-45)", "(45-60)", "(60,100)"]
         gender_classifications = ["Male", "Female"]
 
         # Load the image
         ###image_cp = cv2.imread(self.frame)
+        #image_cp = self.frame
 
         # Resize the image to the input size of the model
-        ###image_cp = cv2.resize(image_cp, (300, 300)) # see if use instead of self.frame
+        #image_cp = cv2.resize(image_cp, (1000, 1500)) # see if use instead of self.frame
+        #frame = cv2.cvtColor(image_cp, cv2.COLOR_RGB2BGR)
 
         frame = cv2.cvtColor(self.frame, cv2.COLOR_RGB2BGR)
 
         # Convert the image to a blob
-        blob = cv2.dnn.blobFromImage(self.frame, BLOB_FRAME_SCALE, BLOB_SIZE, MODEL_MEAN_VALUES, swapRB=True, crop=False)
+        #blob = cv2.dnn.blobFromImage(self.frame, BLOB_FRAME_SCALE, BLOB_SIZE, MODEL_MEAN_VALUES, swapRB=True, crop=False)
+        blob = cv2.dnn.blobFromImage(frame, BLOB_FRAME_SCALE, BLOB_SIZE, MODEL_MEAN_VALUES, swapRB=True, crop=False)
         
         # Set the input to the face detection model
         face_net.setInput(blob)
@@ -1492,6 +1495,7 @@ class VideoToObjectsCopilot(VideoCopilot):
 
         # Save the image with bounding boxes for the recognized text
         # Do not save frame when no face is detected
+        print(f"nb_valid_faces: {nb_valid_faces}")
         if nb_valid_faces > 0:
             # Save the image with bounding boxes for the recognized text
             save_frame_to_jpeg(frame, 'frame_faces_age_gender.jpg', False)
