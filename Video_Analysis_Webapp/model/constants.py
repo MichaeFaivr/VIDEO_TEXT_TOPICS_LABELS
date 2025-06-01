@@ -36,6 +36,8 @@ LISTE_OBJETS = ['person', 'cup', 'dish', 'knife', 'bottle', 'scissor', 'cake', '
                 'television','remote','clock','watch','calculator','scale','tape measure','ruler','pencil','pen',
                 'lion','box']  # not used yet
 
+BOX_DIM_TOLERANCE = 10
+
 # VERIFCATION AND MARKING OF THE VIDEO
 COMPLIANCE_ACCEPTED_THRESHOLD = 0.5
 WEIGHT_FOR_AUTH = 3

@@ -1061,44 +1061,14 @@ class VideoToObjectsCopilot(VideoCopilot):
             label_y = max(start_y, label_size[1] + 10)
             cv2.putText(frame, label, (start_x, label_y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
 
-        # DO NOT PUT THE SAVE FRAME HERE! Save the frame as an image wirth current date and time
+        # DO NOT PUT THE SAVE FRAME HERE! Save the frame as an image with current date and time
         #output_image_path = "Output/frame_with_detections.jpg"
         #cv2.imwrite(output_image_path, cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
 
-    def save_frame_with_detections(self):
-        """
-        Save a random frame (snapshot) from the video with detected objects.
-        The frame is saved with the current date and time in the filename.
-        The frame is processed to draw bounding boxes around detected objects.
-        """
-        print(f"self.video.duration: {self.video.duration}")
-        # RANDOM IMAGE FROM THE VIDEO 
-        # Extract a random frame(image) from the video
-        frame_time = random.uniform(0, self.video.duration)
-        print(f"frame_time: {frame_time}")
-        frame = self.video.get_frame(frame_time)
 
-        # Save frame as an attribute
-        self.frame = frame
-
-        # Only once the frame above is defined, call detect_objects to build detections object
-        #self.detections = self.detect_objects()
-        self.any_object_detected = self.detect_objects()
-
-        # If the image is marked as read-only, you can use this to make it writable
-        #frame = np.array(frame)
-        #frame.setflags(write=1)
-
-        # Draw red boxes around detected objects: boxes are computed in the ** detect_objects ** method called above
-        # error : cv2.error: OpenCV(4.10.0) :-1: error: (-5:Bad argument) in function 'rectangle'
-        #print(f"len(self.detections): {len(self.detections)}")
-
-        #self.draw_boxes(frame)
-
-        ## Save frame with current date and time in file name
-        self.output_path = save_frame_to_jpeg(frame, 'frame_with_detections.jpg', save_file=False)
-
-
+    # ===========================
+    # TEXT DETECTION IN FRAMES
+    # ===========================
     def recognize_text_in_frame(self, method:str)->bool:
         """
         Recognize text in the video frame using the specified method.
@@ -1211,6 +1181,7 @@ class VideoToObjectsCopilot(VideoCopilot):
             save_frame_to_jpeg(frame, 'frame_with_text_recognition.jpg', False)
 
         return len(text_list) > 0  # Return True if any text was detected
+    
 
     def recognize_text_in_frame_tesseract(self):
         """
@@ -1256,7 +1227,9 @@ class VideoToObjectsCopilot(VideoCopilot):
         """
         # Save the image with bounding boxes
 
-
+    # ===========================
+    # OBJECT DETECTION IN FRAMES
+    # ===========================
     def detect_objects(self)->bool:
         """
         Detect objects in the video frame using YOLOv5.
@@ -1315,7 +1288,118 @@ class VideoToObjectsCopilot(VideoCopilot):
         print(f"results.__dict__: {results.__dict__};  results.__dict__.keys(): {results.__dict__.keys()}")
         print(f"results.pandas(): {results.pandas()}")
 
+        # Save results.pandas().xyxy to self.object_detections
+        #detections = []
+        self.object_detections = results.pandas().xyxy  # Save the pandas DataFrame of detections
+        print(f"self.object_detections: {self.object_detections}")
+        print(f"type(self.object_detections): {type(self.object_detections)}")
+        """
+        self.object_detections: [       xmin        ymin         xmax        ymax         confidence  class name
+                                    0   689.487732  156.435349  1163.907471  434.881836    0.890000      0  person
+                                    1   196.987122  143.403168   460.037537  435.118378    0.732596      0  person
+                                    2  1110.970093  301.935913  1158.418091  338.731079    0.672179      0  person
+                                    3   936.182434  299.395874   975.041199  423.912048    0.410017     27  tie]
+        """
         return results.pandas().xyxy is not None
+    
+
+    def save_frame_with_detections(self):
+        """
+        Save a random frame (snapshot) from the video with detected objects.
+        The frame is saved with the current date and time in the filename.
+        The frame is processed to draw bounding boxes around detected objects.
+        """
+        print(f"self.video.duration: {self.video.duration}")
+        # RANDOM IMAGE FROM THE VIDEO 
+        # Extract a random frame(image) from the video
+        frame_time = random.uniform(0, self.video.duration)
+        print(f"frame_time: {frame_time}")
+        frame = self.video.get_frame(frame_time)
+
+        # Save frame as an attribute
+        self.frame = frame
+
+        # Only once the frame above is defined, call detect_objects to build detections object
+        #self.detections = self.detect_objects()
+        self.any_object_detected = self.detect_objects()
+
+        # Assess wherther a bottle is detected and real
+        if self.any_object_detected:
+            target_object = 'person'  # Example target object
+            is_targetobject_detected_and_real = self.assess_object_is_real(target_object, confidence_threshold=0.5)
+            print(f"Is {target_object} detected and real: {is_targetobject_detected_and_real}")
+
+        ## Save frame with current date and time in file name
+        self.output_path = save_frame_to_jpeg(frame, 'frame_with_detections.jpg', save_file=False)
+
+
+    def assess_object_is_real(self, target_object:str, confidence_threshold:float=0.5)->bool:
+        """
+        Assess if the detected object is real based on its type and confidence score.
+        The object type is the one reviewed by the user in the video.
+        Args:
+            object_type (str): The type of object to assess.
+            confidence_threshold (float): The minimum confidence score to consider the object as real.
+        Returns:
+            bool: True if the object is real, False otherwise.
+        Algo:
+        1. Iterate through the list of detections
+        2. For each detection, check if the object type matches the specified type
+        3. If the object box is inside a box of cell phone or tv then object is not real (need to store the boxes boundaries of each detected object)
+        detection
+
+        If the target object is labeled as False, then the overall value accounting for the whole video is False: object not real.
+        Except if the target object is : cell phone 
+        Need to store the values of the outputs of the function in a txt output file
+        """
+        # Print the column 'name' of the object detections DataFrame
+        print(f"type(self.object_detections): {type(self.object_detections)}")
+        # Convert the object_detections to a DataFrame if it is not already
+    
+        self.object_detections = convert_list_to_dataframe(self.object_detections, expected_columns=['xmin', 'ymin', 'xmax', 'ymax', 'confidence', 'class', 'name'])
+        print(f"self.object_detections.columns: {self.object_detections.columns}")
+
+        # Get the list of detected object types
+        # 'name' column contains the object types detected by YOLOv5
+        # Extract the 'name' column from the DataFrame
+        detected_object_types = list(self.object_detections['name'].unique())
+        print(f"type(detected_object_types): {type(detected_object_types)}")
+        print(f"detected_object_types: {detected_object_types}")
+        # Check if the target object is in the detected object types
+        print(f"target_object: {target_object}")
+        # If the target object is not in the detected object types, return False
+        if target_object not in detected_object_types:
+            print(f"assess_object_is_real - {target_object} not found in object_detections")
+            return False
+        elif 'cell phone' not in detected_object_types and 'tv' not in detected_object_types:
+            return True # Object detected and not in a box of cell phone or tv
+        else:
+            # Iterate through the object detections
+            # return True if one box of the target_object is not inside a box of cell phone or tv
+            for idx, row in self.object_detections.iterrows():
+                print(f"row['name']: {row['name']}")
+                print(f"row['confidence']: {row['confidence']}")
+                if row['name'] == target_object and row['confidence'] >= confidence_threshold:
+                    target_box = [row['xmin'], row['ymin'], row['xmax'], row['ymax']]
+                    inside_cell_phone_or_tv = False
+                    for _, other_row in self.object_detections.iterrows():
+                        if other_row['name'] in ['cell phone', 'tv']:
+                            other_box = [other_row['xmin'], other_row['ymin'], other_row['xmax'], other_row['ymax']]
+                            # Check if target_box is inside other_box +/- 10 pixels
+                            # This is a tolerance to account for small variations in bounding box sizes
+                            # If the target box is inside a box of cell phone or tv, then the object is not real
+                            if (target_box[0] >= other_box[0]-BOX_DIM_TOLERANCE and target_box[1] >= other_box[1]-BOX_DIM_TOLERANCE and
+                                target_box[2] <= other_box[2]+BOX_DIM_TOLERANCE and target_box[3] <= other_box[3]+BOX_DIM_TOLERANCE):
+                                inside_cell_phone_or_tv = True
+                                break
+                    if not inside_cell_phone_or_tv:
+                        return True
+                    else:
+                        print(f"assess_object_is_real - {target_object} is inside a box of cell phone or tv")
+                        # If the target object is inside a box of cell phone or tv, return False
+                        return False
+        # If no valid object is found, return False
+        return False
 
 
     def subimages_detection_from_frame(self, frame):
@@ -1438,6 +1522,11 @@ class VideoToObjectsCopilot(VideoCopilot):
                 # Get the bounding box coordinates
                 box = detected_faces[0, 0, i, 3:7] * np.array([self.frame.shape[1], self.frame.shape[0], self.frame.shape[1], self.frame.shape[0]])
                 (start_x, start_y, end_x, end_y) = box.astype("int")
+                # Increase the bounding box coordinates to avoid cropping the face
+                start_x = max(0, start_x - 25)
+                start_y = max(0, start_y - 25)
+                end_x = min(self.frame.shape[1], end_x + 25)
+                end_y = min(self.frame.shape[0], end_y + 25)
                 # Draw the bounding box on the image: Bug Fix TODO
                 cv2.rectangle(frame, (start_x, start_y), (end_x, end_y), (0, 255, 0), 2)
                 # Extract the face region from the image
