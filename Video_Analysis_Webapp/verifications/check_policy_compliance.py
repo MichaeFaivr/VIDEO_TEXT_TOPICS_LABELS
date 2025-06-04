@@ -51,12 +51,16 @@ def check_entry_value(section, key, policy_data, analysis_data)->list:
     # fill with False (treated as 0 in arithmetic), True, reward_for_authorization the dataframe of validation
     # example: section:'content', key:'brand'
     if section in policy_data and key in policy_data[section]:
+        # More weight for duration and number of words
+        weight = WEIGHT_FOR_DURATION_NBWORDS if "duration" in key or "number_of_words" in key else 1 # Should be a function of the duration
+        # weight = 1 if 
         # Check if the key exists in the analysis data
         if section in analysis_data and key in analysis_data[section]:
             print(f"section: {section}, key: {key}, policy_data[section][key]: {policy_data[section][key]}, analysis_data[section][key]: {analysis_data[section][key]}")
             if isinstance(policy_data[section][key], list):
-                validation = analysis_data[section][key] in policy_data[section][key]
+                validation = analysis_data[section][key] in policy_data[section][key] # Check if the value is in the list of allowed values given in the policy
                 print(f"validation: {validation}")
+                # Specific handling for certain keys of different naming than in the policy
                 if not validation:
                     if len(policy_data[section][key]) == 2:
                         if "date" in key:
@@ -66,10 +70,14 @@ def check_entry_value(section, key, policy_data, analysis_data)->list:
                         else:
                             # Check if the value is between the two values in the list
                             validation = policy_data[section][key][0] <= analysis_data[section][key] <= policy_data[section][key][1]
-                            return [analysis_data[section][key], 1 if validation else 0]
+                            if weight > 1:
+                                weight = 1 + weight * (analysis_data[section][key] - policy_data[section][key][0]) / (policy_data[section][key][1] - policy_data[section][key][0])
+                                # Trim to a maximum of 1 decimals
+                                weight = round(weight, 2) 
+                            return [analysis_data[section][key], weight if validation else 0]
                     elif len(policy_data[section][key]) == 0 and len(analysis_data[section][key]) >= 1:
                         validation = True
-                return [analysis_data[section][key], 1 if validation else 0]
+                return [analysis_data[section][key], weight if validation else 0]
             elif analysis_data[section][key] != "":
                 if "auth" in key:
                     validation = analysis_data[section][key] * WEIGHT_FOR_AUTH
@@ -158,6 +166,8 @@ def check_policy_compliance(policy_data: dict, analysis_data: dict) -> tuple:
         tuple: A tuple containing the compliance dictionary and the compliance metrics.
     Raises:
         ValueError: If the policy data or analysis data is not in the expected format.
+    Remark:
+        Reward with higher weight for duration and nb of words
     Example:
         policy_data = {
             "context": {
@@ -203,12 +213,11 @@ def check_policy_compliance(policy_data: dict, analysis_data: dict) -> tuple:
     print(f"num_policy_checked: {num_policy_checked}")
     # get the first values of the compliance_dict lists values
 
+    #divider_value = num_policy_checked + WEIGHT_FOR_AUTH + 2 * WEIGHT_FOR_DURATION_NBWORDS - 3
+    # The overweighted criteria are bonuses: keep the divider as the number of policy checked entries
+    #divider_value = num_policy_checked
     compliance_metrics = sum([val[1] for val in compliance_dict.values()]) / num_policy_checked if num_policy_checked > 0 else 0
-    compliance_dict['compliance_metrics'] = compliance_metrics
-
-    # Compute the cash reward if compliant
-    # TEST
-    #compliance_metrics = 0.3
+    compliance_dict['compliance_metrics'] = round(compliance_metrics, 3) # Round to 2 decimals
 
     # Read table of rewards
     reward_in_currency, payment, currency = compute_reward_in_currency(compliance_dict, compliance_metrics)

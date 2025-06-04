@@ -280,7 +280,6 @@ def format_price_strings(text_video: str) -> str:
             # remove the preceding string
             print(f"symbol: {symbol}, list_words[word_count-1]: {list_words[word_count-1]}, list_words[word_count-2]: {list_words[word_count-2]}")
             if word_count >= 2:
-                ##modified_text = " ".join(list_words[:word_count-2]) # Incorrect: remove previous price strings corrections
                 # concatenate the symbol and the previous word and remove the preceding string
                 modified_text = " ".join(modified_text.split()[:-1]) + " " + symbol + list_words[word_count-2] + " "
             else:
@@ -291,6 +290,7 @@ def format_price_strings(text_video: str) -> str:
             ##currency = word # see to take the most frequent currency
     text_video = modified_text
     return text_video
+
 
 # BASE CLASS: empty methods to fill in child classes
 class VideoCopilot:

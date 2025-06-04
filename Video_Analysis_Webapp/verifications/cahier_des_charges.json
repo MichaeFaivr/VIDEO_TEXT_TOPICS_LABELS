@@ -3,7 +3,8 @@
         "format": ["MP4", "AVI", "MOV"],
         "date": ["01-01-2025", "12-31-2050"],
         "duration_secs": [120, 1800],
-        "number_of_words": [200, 1500]
+        "number_of_words": [200, 1500],
+        "nb_words_per_minute": [50, 300]
     },
     "context": {
         "crm_video_type": ["consumer review","cooking","home"],

@@ -291,6 +291,7 @@ def read_fill_save_json_file(json_filename, video_path, text_video, dict_NER, ke
     json_data['metadata']['duration_secs'] = get_duration_video(video_path)
     json_data['metadata']['date'] = get_date_video(video_path)
     json_data['metadata']['number_of_words'] = get_number_of_words_speech(text_video)
+    json_data['metadata']['nb_words_per_minute'] = round(get_number_of_words_speech(text_video) / (json_data['metadata']['duration_secs'] / 60)) if json_data['metadata']['duration_secs'] > 0 else 0
     json_data['metadata']['geoloc'] = get_geolocation_video(video_path)
     # fill context format of json_data
     json_data['context']['crm_video_type'] = "consumer review" # To get the type of video from the choice made by the user on the website
