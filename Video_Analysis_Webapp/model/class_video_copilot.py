@@ -261,6 +261,11 @@ def format_price_strings(text_video: str) -> str:
     word_count = 1
     list_words = text_video.split()
     print(f"list_words: {list_words}")
+    # Add condition of the length of the list_words
+    if len(list_words) < 3:
+        print("format_price_strings - list_words is too short, returning original text")
+        return text_video
+
     currency = 'unknown'
     for word in list_words:
         if word in dict_currency.keys() or word in dict_currency.values():
@@ -271,10 +276,15 @@ def format_price_strings(text_video: str) -> str:
             else:
                 currency = [key for key, val in dict_currency.items() if val == word][0]
                 symbol = word
+            print(f"format_price_strings - word: {word}")
             # remove the preceding string
-            print(f"symbol: {symbol}, list_words[word_count-1]: {list_words[word_count-1]}, modified_text[-3:-2]: {modified_text[-3:-2]}")
-            modified_text = " ".join(list_words[:word_count-2])
-            modified_text += " " + symbol + list_words[word_count-2] + " " # TODO: remove preceding string
+            print(f"symbol: {symbol}, list_words[word_count-1]: {list_words[word_count-1]}, list_words[word_count-2]: {list_words[word_count-2]}")
+            if word_count >= 2:
+                ##modified_text = " ".join(list_words[:word_count-2]) # Incorrect: remove previous price strings corrections
+                # concatenate the symbol and the previous word and remove the preceding string
+                modified_text = " ".join(modified_text.split()[:-1]) + " " + symbol + list_words[word_count-2] + " "
+            else:
+                modified_text += word + " "
         else:
             modified_text += word + " "
         word_count += 1
@@ -475,10 +485,14 @@ class VideoToSpeechCopilot(VideoCopilot):
         """
         Apply various text processing steps to the transcribed text.
         1. Price formatting
-        2. TBD 
+        2. Replace specific words in the text 
         """
         # Price formatting
         textVideo = format_price_strings(self.output_text)
+        # Replace words
+        for word in REPLACE_WORDS.keys():
+            textVideo = textVideo.replace(word, REPLACE_WORDS[word])
+        # Update the output text attribute
         self.output_text = textVideo
         return textVideo
     
@@ -529,7 +543,7 @@ class VideoToSpeechCopilot(VideoCopilot):
 """
 class VideoTopicsSummaryCopilot():
     def __init__(self, text, topics, output_json):
-        self.text   = text
+        self.text = text
         self.summary = ""
         self.sentences = []
         self.summary_sentences = []

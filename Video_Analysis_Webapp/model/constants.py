@@ -22,6 +22,16 @@ BLOB_FRAME_SCALE = 3.0
 DEFAULT_SUMMARY_TEXT = "No text to summarize"
 SENTENCE_SCORE_THRESHOLD = 0.7
 
+# TEXT PROCESSING
+REPLACE_WORDS = {
+    'coral': 'car',
+    'railway': 'reliable',
+    'Butcher': 'budget',
+    'butcher': 'budget',
+    'scorers': 'car',
+    'scorer': 'car'
+}
+
 # TEXT RECOGNITION 
 TEXT_DETECTION_CONFIDENCE_THRESHOLD = 0.5
 
