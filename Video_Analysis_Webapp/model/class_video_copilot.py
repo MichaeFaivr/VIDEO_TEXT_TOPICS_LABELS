@@ -530,6 +530,9 @@ class VideoToSpeechCopilot(VideoCopilot):
 class VideoTopicsSummaryCopilot():
     def __init__(self, text, topics, output_json):
         self.text   = text
+        self.summary = ""
+        self.sentences = []
+        self.summary_sentences = []
         self.default_text = DEFAULT_SUMMARY_TEXT
         self.topics = topics
         self.output_json = output_json
@@ -540,7 +543,7 @@ class VideoTopicsSummaryCopilot():
     # ===========================
     # TEXT SUMMARY
     # ===========================
-    def text_summary(self):
+    def from_text_to_sentences_and_summary(self):
         """
         Summarize the text using spaCy lib
           1. get most relevant sentences of the text
@@ -549,7 +552,7 @@ class VideoTopicsSummaryCopilot():
         """
         if not self.text or self.text == "":
             return DEFAULT_SUMMARY_TEXT
-        print(f"text_summary - self.text: {self.text}")
+        print(f"from_text_to_sentences_and_summary - self.text: {self.text}")
 
         with measure_time(inspect.currentframe().f_code.co_name + " - load spaCy model"):
             try:
@@ -571,9 +574,11 @@ class VideoTopicsSummaryCopilot():
                         word_frequencies[word.text.lower()] += 1
 
         if not word_frequencies:
+            print("from_text_to_sentences_and_summary - No relevant words found in the text.")
             # Proceed to reinitialize the attributes
             self.summary = ""
             self.sentences = []
+            self.summary_sentences = []
             self.text = ""
             return DEFAULT_SUMMARY_TEXT
 
@@ -588,6 +593,11 @@ class VideoTopicsSummaryCopilot():
         with measure_time(inspect.currentframe().f_code.co_name + " - calculate sentence scores"):
             sentence_scores = {}
             for sent in doc.sents:
+                print(f"from_text_to_sentences_and_summary - sent.text: {sent.text}")
+                # If the sentence is not empty
+                if sent.text.strip():
+                    # Add the sentence
+                    self.sentences.append(sent.text)
                 for word in sent:
                     if word.text.lower() in word_frequencies:
                         if sent not in sentence_scores:
@@ -595,15 +605,18 @@ class VideoTopicsSummaryCopilot():
                         else:
                             sentence_scores[sent] += word_frequencies[word.text.lower()]
 
-        # Select top sentences: factor 0.3
-        select_length = int(len(sentence_scores) * 0.7)
+        # Select top sentences
+        select_length = int(len(sentence_scores) * SENTENCE_SCORE_THRESHOLD)
         summary_sentences = nlargest(select_length, sentence_scores, key=sentence_scores.get)
 
         # Join selected sentences to form the summary
         with measure_time(inspect.currentframe().f_code.co_name + " - join selected sentences"):
-            self.sentences = [sent.text for sent in summary_sentences]    
-            summary = ' '.join(self.sentences)
-            self.summary = summary
+            if len(summary_sentences) > 0:
+                self.summary_sentences = [sent.text for sent in summary_sentences]    
+                summary = ' '.join(self.summary_sentences)
+                self.summary = summary
+            else:
+                summary = self.text # In this case, no sentences were selected, so we return the original text
             return summary
 
 
@@ -973,6 +986,9 @@ class VideoTopicsSummaryCopilot():
             list: A list of dictionaries containing the sentiment scores for each sentence.
         """
         self.sentiment_scores = []
+
+        print(f"entiment_analysis_per_summary_sentence - self.sentences: {self.sentences}")
+        print(f"entiment_analysis_per_summary_sentence - self.text: {self.text}")
 
         if not self.text or self.text == "":
             return self.sentiment_scores

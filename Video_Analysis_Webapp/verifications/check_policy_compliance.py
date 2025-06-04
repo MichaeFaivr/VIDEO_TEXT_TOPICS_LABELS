@@ -129,6 +129,24 @@ def compute_reward_in_currency(compliance_dict: dict, compliance_metrics: float)
     else:
         return default_result, default_amount, currency
 
+def check_policy_compliance_default():
+    """
+    Check the compliance of the JSON data with the policy using default values.
+    This function is called when the conditions for the next operations are not fulfilled.
+    It returns a default compliance dictionary and metrics.
+    """
+    compliance_dict = {
+        'compliance_metrics': 0.0,
+        'result': "The JSON data does not comply with the policy: no speech extracted or no summary.",
+        'payment': "0 EUR",
+        'currency': 'EUR'
+    }
+    # Save compliance dict and metrics in a json file
+    compliance_file = COMPLIANCE_BASEFILE
+    save_json_file(COMPLIANCE_DIRECTORY, compliance_dict, compliance_file)
+    # Return the compliance dictionary and metrics
+    return compliance_dict, 0.0
+
 
 def check_policy_compliance(policy_data: dict, analysis_data: dict) -> tuple:
     """
@@ -196,7 +214,7 @@ def check_policy_compliance(policy_data: dict, analysis_data: dict) -> tuple:
     reward_in_currency, payment, currency = compute_reward_in_currency(compliance_dict, compliance_metrics)
 
     # Add the result sentence to the compliance_dict based on the compliance metrics
-    if compliance_metrics >= 0.5:
+    if compliance_metrics >= COMPLIANCE_ACCEPTED_THRESHOLD:
         compliance_dict['result'] = "The JSON data complies with the policy. The proposed reward is: " + str(reward_in_currency)
     else:
         compliance_dict['result'] = "Please check the following criteria: "
@@ -212,8 +230,8 @@ def check_policy_compliance(policy_data: dict, analysis_data: dict) -> tuple:
     compliance_dict['currency'] = currency
 
     # Save compliance dict and metrics in a json file
-    compliance_file = 'compliance_metrics.json'
-    save_json_file("compliance_metrics", compliance_dict, compliance_file)
+    compliance_file = COMPLIANCE_BASEFILE
+    save_json_file(COMPLIANCE_DIRECTORY, compliance_dict, compliance_file)
     return compliance_dict, compliance_metrics
 
 

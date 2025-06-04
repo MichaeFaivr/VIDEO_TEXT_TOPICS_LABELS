@@ -5,7 +5,7 @@ from flask import Flask, render_template, request
 
 from model.class_video_copilot import VideoCopilot, VideoToSpeechCopilot, VideoToObjectsCopilot, VideoTopicsSummaryCopilot
 
-from verifications.check_policy_compliance import read_json_file, check_policy_compliance
+from verifications.check_policy_compliance import *
 from verifications.build_analysis_json import *
 from model.constants import *
 
@@ -53,8 +53,7 @@ def result():
         # ===========================
         videoTopicsSummary = VideoTopicsSummaryCopilot(text_video, ['test'], 'test.json')
         # Cancel Summarization
-        summary_text = videoTopicsSummary.text_summary()
-        ##summary_text = ""
+        summary_text = videoTopicsSummary.from_text_to_sentences_and_summary()
         # save summary in a file
 
         # ===========================
@@ -136,6 +135,13 @@ def result():
                 compliance_dict, compliance_metrics = check_policy_compliance(policy_data, analysis_data)
                 print('compliance_dict filled:', compliance_dict)
                 print('compliance_metrics computed:', compliance_metrics)
+        else:
+            print('Conditions for next operations not fulfilled. Compliance metrics will not be computed: apply the default compliance metrics.')
+            compliance_dict, _ = check_policy_compliance_default()
+        
+        # Save the compliance metrics in a Json file in the case of not fulfilled conditions
+        #if not conditions_for_next_operations:
+
 
         # DISPLAY RESULTS FROM THE VIDEO ANALYSIS
         return render_template('video_analysis.html', 
