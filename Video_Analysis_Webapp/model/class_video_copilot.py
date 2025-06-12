@@ -62,6 +62,7 @@ from torchvision import transforms
 from PIL import Image
 import easyocr
 import pytesseract
+from ultralytics import YOLO
 
 # Text analysis
 import speech_recognition as sr
@@ -1110,7 +1111,7 @@ class VideoToObjectsClass(VideoBaselineClass):
         if method == 'easyocr':
             return self.recognize_text_in_frame_easyocr()
         elif method == 'yolo':
-            return self.recognize_text_in_frame_yolo()
+            return self.recognize_text_in_frame_yolo(yolo_version='yolov8n')
         elif method == 'tesseract':
             return self.recognize_text_in_frame_tesseract()
         else:
@@ -1118,7 +1119,7 @@ class VideoToObjectsClass(VideoBaselineClass):
             return False
 
 
-    def recognize_text_in_frame_yolo(self):
+    def recognize_text_in_frame_yolo(self, yolo_version:str='yolov5s')->bool:
         """
         Detect brands and products in the video frame using YOLOv5.
         The method uses the YOLOv5 model to perform object detection on the frame.
@@ -1131,7 +1132,15 @@ class VideoToObjectsClass(VideoBaselineClass):
         #LIST_BRANDS = ['Nescafe', 'Apple', 'Samsung', 'Honor', 'Oppo', 'Huawei', 'Xiaomi'] # in imported constants
         #LIST_PRODUCTS = ['phone', 'laptop', 'tablet', 'watch', 'headphones']
         # Load the YOLO model (ensure you have the correct model path)
-        model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
+        if yolo_version not in ['yolov5s', 'yolov5m', 'yolov5l', 'yolov5x', 'yolov8n']:
+            print(f"Invalid YOLO version: {yolo_version}. Using default 'yolov5s'.")
+            yolo_version = 'yolov5s'
+        if yolo_version == 'yolov5s':
+            model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
+        elif yolo_version == 'yolov8n':
+            model = YOLO('yolov8n.pt')  # Load YOLOv8n model weights
+        else:
+            return False  # Unsupported YOLO version
 
         # Load the image
         image = self.frame

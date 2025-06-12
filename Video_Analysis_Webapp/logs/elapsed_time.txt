@@ -1659,3 +1659,14 @@ from_text_to_sentences_and_summary - calculate sentence scores Elapsed time: 0.0
 from_text_to_sentences_and_summary - join selected sentences Elapsed time: 9.179115295410156e-05 seconds
 perform_ner_analysis_second Elapsed time: 0.39540815353393555 seconds
 get_entities_surrounding_infos Elapsed time: 0.4395122528076172 seconds
+extract_speech_google_recognizer Elapsed time: 0.866215705871582 seconds
+extract_speech_google_recognizer Elapsed time: 7.349660396575928 seconds
+extract_speech_google_recognizer Elapsed time: 5.624241828918457 seconds
+from_text_to_sentences_and_summary - load spaCy model Elapsed time: 0.46834659576416016 seconds
+from_text_to_sentences_and_summary - calculate word frequencies Elapsed time: 1.0728836059570312e-05 seconds
+from_text_to_sentences_and_summary - normalize word frequencies Elapsed time: 9.775161743164062e-06 seconds
+from_text_to_sentences_and_summary - calculate sentence scores Elapsed time: 0.00010800361633300781 seconds
+from_text_to_sentences_and_summary - join selected sentences Elapsed time: 9.5367431640625e-07 seconds
+perform_ner_analysis_second Elapsed time: 0.3753645420074463 seconds
+get_entities_surrounding_infos Elapsed time: 0.39606690406799316 seconds
+extract_speech_google_recognizer Elapsed time: 10.568202495574951 seconds

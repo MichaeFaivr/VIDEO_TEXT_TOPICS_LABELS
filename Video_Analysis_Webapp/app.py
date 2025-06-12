@@ -176,7 +176,8 @@ def display_image():
             # OPERATION.9: Extract text from the video
             # ===========================
             # Recognize text in the frame
-            videoToObjects.recognize_text_in_frame("easyocr")
+            object_labeling_method = "yolo" # "easyocr"
+            videoToObjects.recognize_text_in_frame(object_labeling_method)
 
             # ===========================
             # OPERATION.10: Detect faces in the frame and assess the age and the gender
