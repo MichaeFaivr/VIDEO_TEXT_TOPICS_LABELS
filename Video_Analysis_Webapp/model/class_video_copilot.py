@@ -1,6 +1,6 @@
 # create a class to store video attributes and methods for object detection
 
-# In the class VideoCopilot, we will define the attributes and methods for object detection from a predefined list of object types.
+# In the class VideoBaselineClass, we will define the attributes and methods for object detection from a predefined list of object types.
 # The class will have the following attributes:
 # - frame_size: a tuple
 # - duration: the duration of the video, trimmed at 10 mins to avoid too heavy files
@@ -29,9 +29,9 @@
 # voir le landmarking d'objets dans une vidéo ou dans une image pour identifier les objets.
 
 # bien concevoir les classes:
-# - classe de base: VideoCopilot
-# - classe fille #1: VideoToSpeechCopilot
-# - classe fille #2: VideoToObjectsCopilot
+# - classe de base: VideoBaselineClass
+# - classe fille #1: VideoToSpeechClass
+# - classe fille #2: VideoToObjectsClass
 
 # ATTENTION: Responsibilité Dev / DS : portabilité du package avec les paths flexibles / best practices
 
@@ -293,7 +293,7 @@ def format_price_strings(text_video: str) -> str:
 
 
 # BASE CLASS: empty methods to fill in child classes
-class VideoCopilot:
+class VideoBaselineClass:
     def __init__(self, video_path, frame_size, duration, video_type, random_time):
         self.frame_size = frame_size
         self.duration = min(duration, 600) if duration else None  # Trimmed at 10 mins
@@ -332,8 +332,8 @@ class VideoCopilot:
         pass
 
 
-# CHILD CLASS N°1: VideoToSpeechCopilot
-class VideoToSpeechCopilot(VideoCopilot):
+# CHILD CLASS N°1: VideoToSpeechClass
+class VideoToSpeechClass(VideoBaselineClass):
     def __init__(self, video_path, frame_size=None, duration=None, video_type=None, random_time=None, output_text=None):
         super().__init__(video_path, frame_size, duration, video_type, random_time)
         self.output_text = output_text
@@ -541,7 +541,7 @@ class VideoToSpeechCopilot(VideoCopilot):
 # 5. Topic Detection/Modeling
 # 6. Json sentences per topic  : DONE
 """
-class VideoTopicsSummaryCopilot():
+class VideoTopicsSummaryClass():
     def __init__(self, text, topics, output_json):
         self.text = text
         self.summary = ""
@@ -1050,7 +1050,7 @@ class VideoTopicsSummaryCopilot():
 
 
 
-#CTRL+i -> chat prompt: build a class derived from VideoCopilot to detect objects in a video
+#CTRL+i -> chat prompt: build a class derived from VideoBaselineClass to detect objects in a video
 """
 1. extraction de la taille des frames de la video
 2. random image (frame) from the video: 
@@ -1058,8 +1058,8 @@ class VideoTopicsSummaryCopilot():
 4. dessiner des boîtes bleues autour des objets détectés & label & confidence
 """
 
-# CHILD CLASS N°3: VideoToObjectsCopilot
-class VideoToObjectsCopilot(VideoCopilot):
+# CHILD CLASS N°3: VideoToObjectsClass
+class VideoToObjectsClass(VideoBaselineClass):
     def __init__(self, video_path, frame_size=None, duration=None, video_type=None, random_time=None, list_object_types=None):
         super().__init__(video_path, frame_size, duration, video_type, random_time)
         self.object_types = list_object_types
@@ -1622,7 +1622,7 @@ class VideoToObjectsCopilot(VideoCopilot):
         return True
 
 
-# The class VideoCopilot is defined with the required attributes and methods for object detection from a predefined list of object types. The class can be used
+# The class VideoBaselineClass is defined with the required attributes and methods for object detection from a predefined list of object types. The class can be used
 # to process videos and extract information about objects present in the video sequences. The methods in the class can be implemented to perform object detection,
 # count the number of objects of a specific type, and identify the main color of the object. The class provides a structured approach to handle video data and
 # perform object detection tasks efficiently.

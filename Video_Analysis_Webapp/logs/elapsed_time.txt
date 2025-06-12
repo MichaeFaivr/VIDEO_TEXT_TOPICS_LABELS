@@ -1650,3 +1650,12 @@ from_text_to_sentences_and_summary - calculate sentence scores Elapsed time: 0.0
 from_text_to_sentences_and_summary - join selected sentences Elapsed time: 8.940696716308594e-05 seconds
 perform_ner_analysis_second Elapsed time: 0.5268309116363525 seconds
 get_entities_surrounding_infos Elapsed time: 0.4207754135131836 seconds
+extract_speech_google_recognizer Elapsed time: 1.1295835971832275 seconds
+extract_speech_google_recognizer Elapsed time: 62.31829118728638 seconds
+from_text_to_sentences_and_summary - load spaCy model Elapsed time: 0.48992228507995605 seconds
+from_text_to_sentences_and_summary - calculate word frequencies Elapsed time: 0.0002357959747314453 seconds
+from_text_to_sentences_and_summary - normalize word frequencies Elapsed time: 5.1975250244140625e-05 seconds
+from_text_to_sentences_and_summary - calculate sentence scores Elapsed time: 0.00061798095703125 seconds
+from_text_to_sentences_and_summary - join selected sentences Elapsed time: 9.179115295410156e-05 seconds
+perform_ner_analysis_second Elapsed time: 0.39540815353393555 seconds
+get_entities_surrounding_infos Elapsed time: 0.4395122528076172 seconds

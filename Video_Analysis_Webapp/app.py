@@ -3,7 +3,7 @@ import os
 from datetime import datetime
 from flask import Flask, render_template, request
 
-from model.class_video_copilot import VideoCopilot, VideoToSpeechCopilot, VideoToObjectsCopilot, VideoTopicsSummaryCopilot
+from model.class_video_copilot import VideoToSpeechClass, VideoToObjectsClass, VideoTopicsSummaryClass
 
 from verifications.check_policy_compliance import *
 from verifications.build_analysis_json import *
@@ -34,7 +34,7 @@ def result():
         # ==========================
         # Attention: Need the punctuation marks in the text
         video_path = DIRECTORY_VIDEOS + video_file.filename
-        videoToSpeech = VideoToSpeechCopilot(video_path)
+        videoToSpeech = VideoToSpeechClass(video_path)
         text_video = videoToSpeech.extract_speech_google_recognizer(TEMP_AUDIO_FILE)
         #print('app.py extract_speech_google_recognizer - text_video:', text_video)   
         #_ = videoToSpeech.extract_speech_with_vosk(TEMP_AUDIO_FILE) # find why not the model in the unzipped folder
@@ -51,7 +51,7 @@ def result():
         # ===========================
         # OPERATION.2: Summarize the text extracted from the video
         # ===========================
-        videoTopicsSummary = VideoTopicsSummaryCopilot(text_video, ['test'], 'test.json')
+        videoTopicsSummary = VideoTopicsSummaryClass(text_video, ['test'], 'test.json')
         # Cancel Summarization
         summary_text = videoTopicsSummary.from_text_to_sentences_and_summary()
         # save summary in a file
@@ -160,7 +160,7 @@ def display_image():
         liste_objets = LISTE_OBJETS
         print('video_file:', video_file) # empty
 
-        videoToObjects = VideoToObjectsCopilot(video_file, list_object_types=liste_objets)
+        videoToObjects = VideoToObjectsClass(video_file, list_object_types=liste_objets)
         videoToObjects.get_video_frame_size()
 
         # call constantes.py NB_SNAPSHOTS_VIDEO_ANALYSIS
