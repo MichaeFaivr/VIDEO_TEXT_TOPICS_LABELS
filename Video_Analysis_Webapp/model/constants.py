@@ -8,7 +8,7 @@ DIRECTORY_VIDEOS = '../Uploads/'
 POLICY_DATA_FILE = 'verifications/cahier_des_charges.json'
 
 # NB OF FRAMES TO ANALYZE IN THE VIDEO
-NB_SNAPSHOTS_VIDEO_ANALYSIS = 4
+NB_SNAPSHOTS_VIDEO_ANALYSIS = 7
 
 # FACE DETECTION MODEL AGE GENDER
 FACE_DETECTION_MODEL = 'retinaface'
@@ -29,8 +29,17 @@ REPLACE_WORDS = {
     'Butcher': 'budget',
     'butcher': 'budget',
     'scorers': 'car',
-    'scorer': 'car'
+    'scorer': 'car',
+    'Scarface': 'scaler'
 }
+
+# TEXT VALIDATION VS AI GENERATED TEXT
+THRESHOLD_SIMILARITY_RATIO = 0.65
+GENERATED_TEXT_MODEL = 'gpt-3.5-turbo'
+GENERATED_TEXT_MODEL_MAX_TOKENS = 1000
+AI_GENERATED_SPEECH = "One two three four MD reveals Next Generation AI ships with open a ICU summit AMD on Thursday in Wales new details about Next Generation AI chips " \
+"Instinct am I 400 series that will be shipped next year see you later the launch events in San Jose California the chips will be able to be used as part of" \
+"the Rock scale system MD said it's important for customers that want to hyper scaler of AI computers that can spend entire data centers open aicu simultane appear on the stage and set a company would use the AMD chips it's got it's going to be an amazing thing pmd rock scale setup will make the chips look to use like one system which is important for most artificial intelligence like that providers and companies that develop large language model those customers want hyper scales clusters of the eye computers that can spend in Toyota centuries and use massive amounts of power open AI in a table"
 
 # TEXT RECOGNITION 
 TEXT_DETECTION_CONFIDENCE_THRESHOLD = 0.5
