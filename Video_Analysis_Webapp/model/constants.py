@@ -44,6 +44,10 @@ AI_GENERATED_SPEECH = "One two three four MD reveals Next Generation AI ships wi
 # TEXT RECOGNITION 
 TEXT_DETECTION_CONFIDENCE_THRESHOLD = 0.5
 
+# KEY INFOS
+VERIFICATION_FOLDER = 'verifications'
+CONTENT_ANALYSIS_REFERENCE_FILENAME = VERIFICATION_FOLDER + '/' + 'content_analysis_reference.json'
+
 # TEXT RECOGNITION in YOLO
 LIST_BRANDS = ['Nescafe', 'Apple', 'Samsung', 'Honor', 'Oppo', 'Huawei', 'Xiaomi']
 LIST_PRODUCTS = ['phone', 'laptop', 'tablet', 'watch', 'headphones']

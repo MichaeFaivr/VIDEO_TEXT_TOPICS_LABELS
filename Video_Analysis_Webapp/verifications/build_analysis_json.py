@@ -7,7 +7,9 @@ Algo:
 """
 
 import json
-from moviepy.editor import VideoFileClip
+# June-14th: News version of moviepy library implies a different pipe for VideoFileClip
+# and the moviepy library does not have the module Editor anymore
+from moviepy.video.io.VideoFileClip import VideoFileClip
 from langdetect import detect
 ##import ffmpeg
 ##from pprint import pprint
@@ -77,6 +79,9 @@ def get_format_video(video_path:str)->str:
 
 
 def get_duration_video(video_path:str)->float:
+    " 13/06/2025: More recent version of moviepy library does not have the module Editor !!!"
+    "I Had to reinstall all the libs; but moviepy fails I do not know why"
+    from moviepy.video.io.VideoFileClip import VideoFileClip
     clip = VideoFileClip(video_path)
     return clip.duration
 

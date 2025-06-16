@@ -19,9 +19,7 @@ ALGO for validation and notation of the uploaded Video w/r the policy Json file:
 
 import json
 from commons.json_files_management import *
-
 from model.constants import *
-
 
 """
 def read_json_file(file_path):

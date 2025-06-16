@@ -55,6 +55,10 @@ import numpy as np
 import pandas as pd
 import random
 
+# Video analysis
+##import moviepy.audio as mp
+from moviepy.video.io.VideoFileClip import VideoFileClip
+
 # Image analysis
 import cv2
 import torch
@@ -312,9 +316,12 @@ class VideoBaselineClass:
         Returns:
             video: Loaded video file from the video file path.
         """
-        import moviepy.editor as mp
+        ###import moviepy.editor as mp
+        # June-14th: News version of moviepy library implies a different pipe for VideoFileClip
+        # and the moviepy library does not have the module Editor anymore
+        ##from moviepy.video.io.VideoFileClip import VideoFileClip
         # Load the video file
-        video = mp.VideoFileClip(self.video_path)
+        video = VideoFileClip(self.video_path)
         return video
 
     def landmarking(self):
@@ -351,11 +358,10 @@ class VideoToSpeechClass(VideoBaselineClass):
         Returns:
             None    
         """
-        # simulate speech extraction
-        import moviepy.editor as mp
-
+        # Simulate speech extraction
+        # June-14th: News version of moviepy library implies a different pipe for VideoFileClip
         # Load the video file
-        video = mp.VideoFileClip(self.video_path)
+        video = VideoFileClip(self.video_path)
 
         # Extract the audio from the video
         audio = video.audio
@@ -816,7 +822,7 @@ class VideoTopicsSummaryClass():
         # Store the key infos in an attribute
         self.key_infos = key_infos
         # Save the key infos to a JSON file
-        json_filename = 'content_analysis_key_infos.json'
+        json_filename = CONTENT_ANALYSIS_REFERENCE_FILENAME        
         save_json_file("key_infos", key_infos, json_filename)
         return key_infos
     
@@ -1501,6 +1507,10 @@ class VideoToObjectsClass(VideoBaselineClass):
         - age range of speaker
 
         Ref: Youtube: Python Age & Gender Detection Tutorial | Python OpenCV and CNN guide
+
+        ATTENTION: the function is reliable when to applied to videos shot with a frontal camera.
+        Not reliable when applied to videos shot with smartphone camera:
+        TO BE IMPROVED in the MVP
         """
 
         # Constant to put in the constants.py file
@@ -1577,9 +1587,13 @@ class VideoToObjectsClass(VideoBaselineClass):
                 print(f"start_x: {start_x}, start_y: {start_y}, end_x: {end_x}, end_y: {end_y}")
                 face = frame[start_y:end_y, start_x:end_x]
                 print(f"frame.shape: {frame.shape}")
+                if face.shape[0] == 0 or face.shape[1] == 0:
+                    print(f"Warning: Detected face region is empty. Skipping this face.")
+                    continue
                 # Convert the face region to a blob
                 print(f"face.shape: {face.shape}")
                 face_blob = cv2.dnn.blobFromImage(face, 1.0, BLOB_SIZE, BLOB_MEAN_VALUES, swapRB=False, crop=True)
+                ##face_blob = cv2.dnn.blobFromImage(face, BLOB_FRAME_SCALE, BLOB_SIZE, MODEL_MEAN_VALUES, swapRB=True, crop=False)
                 # Set booleans for age and gender estimation
                 age_estimation = False
                 gender_estimation = False 
@@ -1719,3 +1733,72 @@ class VideoPostValidationClass(VideoToSpeechClass):
         }
         # Save the validation result to a file
         save_json_file("ai_validation_result", validation_result, "ai_validation_result.json")
+
+
+    def get_reference_list_favorite_products(self):
+        """
+        Get the list of favorite products from the user speech.
+        This method should be implemented to extract the list of favorite products from the user speech.
+        Returns:
+            list: A list of favorite products.
+        """
+        # Read content_analysis_reference.json file to get the list of favorite products
+        reference_file = CONTENT_ANALYSIS_REFERENCE_FILENAME
+        reference_data = read_json_file(reference_file)
+        if not reference_data:
+            print(f"get_reference_list_favorite_products - No data found in {reference_file}.")
+            return []
+        # Extract the list of favorite products from the reference data
+        favorite_products = reference_data.get("type_product", [])
+        print(f"get_reference_list_favorite_products - favorite_products: {favorite_products}")
+        return favorite_products
+    
+
+    def count_number_favorite_products_in_speech(self)->int:
+        """
+        Count the number of favorite products mentioned in the speech.
+        Returns:
+            int: The count of favorite products mentioned in the speech.
+        """
+        user_speech = self.video_text  # The text extracted from the video
+        if not user_speech:
+            print("count_number_favorite_products_in_speech - No user speech provided.")
+            return 0
+        # Count the number of favorite products mentioned in the user speech
+        favorite_products = self.get_reference_list_favorite_products()
+        return sum(1 for product in favorite_products if product in user_speech)
+    
+
+    def fetch_count_favorite_products_from_speech(self)->dict:
+        """
+        Fetch the list of favorite products mentioned in the speech.
+        Returns:
+            dict: A dict of favorite products mentioned in the speech and their counts.
+        """
+        user_speech = self.video_text
+        if not user_speech:
+            print("fetch_count_favorite_products_from_speech - No user speech provided.")
+            return {}
+        # Count the occurrences of each favorite product in the user speech
+        favorite_products = self.get_reference_list_favorite_products()
+        # Attention: trim the plural form of the product names
+        # Count the occurrences of each favorite product in the user speech
+        # Build the list of favorite products which string fully or partially match in the user speech
+        user_speech = user_speech.lower()
+        favorite_products = [product.lower() for product in favorite_products]
+        # Count the occurrences of each favorite product in the user speech
+        # To clean the code with regex, we can use a list comprehension to create a list of singular and plural forms of the products
+        product_counts = {}
+        for product in favorite_products:
+            # Use word boundaries to match whole words or substrings within words
+            pattern = re.compile(r'\b\w*' + re.escape(product) + r'\w*\b', re.IGNORECASE)
+            print(f"fetch_count_favorite_products_from_speech - pattern: {pattern}")
+            matches = pattern.findall(user_speech)
+            if matches:
+                product_counts[product] = len(matches)
+        # If the product ends with 's', we can also check for the singular form
+        # Create a list of singular and plural forms of the products
+        # Save the product counts to a Json file
+        save_json_file("product_counts", product_counts, "product_counts.json")
+
+        return product_counts
