@@ -1,16 +1,238 @@
 <!DOCTYPE html>
 <html lang="en">
+    <nav style="background-color: #fff; padding: 15px 20px; border-bottom: 2px solid #1a73e8; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <div style="display: flex; justify-content: space-between; align-items: center; max-width: 800px; margin: 0 auto;">
+            <div style="font-size: 1.2em; font-weight: bold; color: #1a73e8;">SHAIRE</div>
+            <div id="serverUsername" style="font-size: 1.2em; color: #1a73e8; margin-bottom: 10px; font-weight: bold;">
+                Welcome, {{ username }}
+            </div>  
+            <div style="position: relative;">
+                <button id="accountMenuBtn" style="background-color: #1a73e8; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">
+                    Account ▼
+                </button>
+                <div id="accountDropdown" style="display: none; position: absolute; right: 0; top: 100%; background-color: white; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); min-width: 150px; z-index: 1000;">
+                    <!-- <a href="/account_info" onclick="sessionStorage.setItem('username', '{{ username }}')" style="display: block; padding: 10px 15px; color: #333; text-decoration: none; border-bottom: 1px solid #eee;">{{ username }}</a> -->
+                    <a href="/account_info?username={{ username }}" style="display: block; padding: 10px 15px; color: #333; text-decoration: none; border-bottom: 1px solid #eee;">{{ username }} Account</a>
+                    <a href="/user_history?username={{ username }}" style="display: block; padding: 10px 15px; color: #333; text-decoration: none; border-bottom: 1px solid #eee;">History/Credits</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <script>
+        document.getElementById('accountMenuBtn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            const dropdown = document.getElementById('accountDropdown');
+            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+        });
+        
+        document.addEventListener('click', function() {
+            document.getElementById('accountDropdown').style.display = 'none';
+        });
+    </script>
+<style>
+    html {
+        background: url('/static/images/light-green-bg.jpg') no-repeat center center fixed;
+        background-color: #e8f5e9; /* Fallback color if image fails to load */
+        background-size: cover;
+    }
+    
+    body {
+        background-color: rgba(255, 255, 255, 0.85); /* Semi-transparent white for better readability */
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+</style>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video Upload</title>
 </head>
 <body>
-    <h1>Upload a Video for Analysis</h1>
+    <header>
+        <style>
+            header h1 {
+                color: rgb(4, 4, 68);
+                font-size: 3em; /* Makes the font 2 sizes larger */
+            }
+            header p {
+                font-size: 1.5em; /* Slightly larger font for the tagline */
+                color: rgb(10, 10, 100);
+            }
+        </style>
+        <h1>Welcome to Shaire</h1>
+        <p><em>Input your Data|Contributions, Get credits with our partners</em></p>
+    <!--
+        <div id="username" style="font-size: 1.2em; color: #1a73e8; margin-bottom: 10px; font-weight: bold;"></div>
+        <script>
+            // Retrieve the username from sessionStorage
+            const username = sessionStorage.getItem('username');
+            document.getElementById('username').textContent = username;
+        </script>
+        <p>Welcome, <span id="username"></span>!</p>
+    -->
+    </header>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        header {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        h1 {
+            margin-top: 30px;
+            margin-bottom: 20px;
+            color: #1a73e8;
+            text-align: center;
+        }
+        form {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f5f5f5;
+        }
+        button {
+            background-color: #1a73e8;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0d47a1;
+        }
+        label {
+            font-weight: bold;
+        }
+    </style>
+    <h1>Select a Video for AI Analysis</h1>
     <form action="/analysis/" method="post" enctype="multipart/form-data">
-        <label for="video">Choose a video file:</label>
+        <!-- <label for="video">Choose a video file:</label> -->
+        <div style="margin-top: 20px;">
+            <button type="submit" id="selectButton">Choose a video file for AI Analysis</button>
+        </div>
         <input type="file" id="video" name="video" accept="video/*" required>
-        <button type="submit">Upload Video</button>
+        <br>
+        <div style="margin-top: 20px;">
+            <button type="submit" id="uploadButton">Upload your Video for AI Analysis</button>   
+        <!--
+            <script>
+                document.getElementById('video').addEventListener('change', function() {
+                    const uploadButton = document.getElementById('uploadButton');
+                    uploadButton.disabled = !this.files.length;
+                });
+            </script>
+        -->
+        <!--
+            <div id="progressContainer" style="margin-top: 15px; display: none;">
+                <div style="display: flex; align-items: center; margin-bottom: 5px;">
+                    <span id="progressStatus">Processing: 0%</span>
+                </div>
+                <div style="width: 100%; background-color: #e0e0e0; border-radius: 4px; overflow: hidden;">
+                    <div id="progressBar" style="width: 0%; height: 20px; background-color: #1a73e8; transition: width 0.3s;"></div>
+                </div>
+            </div>
+
+            <script>
+                document.querySelector('form').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    // Show progress container
+                    document.getElementById('progressContainer').style.display = 'block';
+                    
+                    // Create FormData object
+                    const formData = new FormData(this);
+                    
+                    // Create and configure AJAX request
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('POST', '/analysis/', true);
+                    
+                    // Update progress bar
+                    xhr.upload.addEventListener('progress', function(event) {
+                        if (event.lengthComputable) {
+                            const percentComplete = Math.round((event.loaded / event.total) * 100);
+                            document.getElementById('progressBar').style.width = percentComplete + '%';
+                            document.getElementById('progressStatus').textContent = 'Processing: ' + percentComplete + '%';
+                        }
+                    });
+                    
+                    // Handle completion
+                    xhr.onload = function() {
+                        if (xhr.status === 200) {
+                            window.location.href = xhr.responseURL || '/results/';
+                        }
+                    };
+                    
+                    // Send the form data
+                    xhr.send(formData);
+                });
+            </script>
+        -->
+        </div>
     </form>
+    <footer style="margin-top: 40px; padding: 20px; background-color: #e4dcdc; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <div style="text-align: left;">
+            <style>
+                footer h3 {
+                    font-family: 'Times New Roman', serif;
+                }
+                footer p {
+                    font-family: 'Times New Roman', serif;
+                }
+            </style>
+            <h3 style="margin: 0; color: #041122; font-size: 1.8em;">SHAIRE</h3>
+            <p style="margin: 1px 0 0 0; color: #230303; font-size: 1.1em; font-style: italic;">a MiFa Cie Ltd</p>
+            <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+                <div style="flex: 1; margin-right: 20px;">
+                    <h4 style="color: #041122; margin-bottom: 10px;">SHAIRE Membership</h4>
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">Join Now</a></li>
+                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">Benefits</a></li>
+                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">Pricing</a></li>
+                    </ul>
+                </div>
+                <div style="flex: 1; margin-right: 20px;">
+                    <h4 style="color: #041122; margin-bottom: 10px;">Customer Service</h4>
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">Contact Us</a></li>
+                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">Support</a></li>
+                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">FAQ</a></li>
+                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">Specifications</a></li>
+                    </ul>
+                </div>
+                <div style="flex: 1;">
+                    <h4 style="color: #041122; margin-bottom: 10px;">Tools & Features</h4>
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">AI Analysis</a></li>
+                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">Video Upload</a></li>
+                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">Reports</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>

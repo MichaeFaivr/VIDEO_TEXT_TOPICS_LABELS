@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Create Account</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                max-width: 500px;
+                margin: 50px auto;
+                padding: 20px;
+                background-color: #f5f5f5;
+            }
+            .container {
+                background: white;
+                padding: 30px;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
+            h1 {
+                text-align: center;
+                color: #333;
+                margin-bottom: 30px;
+            }
+            .form-group {
+                margin-bottom: 20px;
+            }
+            label {
+                display: block;
+                margin-bottom: 5px;
+                font-weight: bold;
+                color: #333;
+            }
+            input[type="text"], input[type="password"] {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                font-size: 16px;
+            }
+            .topics-group {
+                margin-top: 10px;
+            }
+            .topic-item {
+                margin: 8px 0;
+            }
+            input[type="checkbox"] {
+                margin-right: 8px;
+            }
+            .submit-btn {
+                width: 100%;
+                padding: 12px;
+                background-color: #007bff;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                font-size: 16px;
+                cursor: pointer;
+                margin-top: 20px;
+            }
+            .submit-btn:hover {
+                background-color: #0056b3;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Create Account</h1>
+            <form action="/register" method="POST">
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Topics of Interest:</label>
+                    <div class="topics-group">```html
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>User Registration</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .registration-card {
+                background: rgba(255, 255, 255, 0.95);
+                padding: 2rem;
+                border-radius: 15px;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+                width: 90%;
+                max-width: 450px;
+            }
+            
+            .card-header {
+                text-align: center;
+                margin-bottom: 2rem;
+            }
+            
+            .card-title {
+                color: #2c3e50;
+                font-size: 1.8rem;
+                font-weight: 600;
+            }
+            
+            .input-group {
+                margin-bottom: 1.5rem;
+            }
+            
+            .input-label {
+                display: block;
+                color: #34495e;
+                font-weight: 500;
+                margin-bottom: 0.5rem;
+            }
+            
+            .text-input {
+                width: 100%;
+                padding: 0.75rem;
+                border: 2px solid #e0e6ed;
+                border-radius: 8px;
+                font-size: 1rem;
+                transition: border-color 0.3s ease;
+            }
+            
+            .text-input:focus {
+                outline: none;
+                border-color: #667eea;
+            }
+            
+            .interests-section {
+                margin-top: 1rem;
+            }
+            
+            .checkbox-wrapper {
+                display: flex;
+                align-items: center;
+                margin: 0.6rem 0;
+                cursor: pointer;
+            }
+            
+            .checkbox-input {
+                margin-right: 0.5rem;
+                transform: scale(1.2);
+            }
+            
+            .checkbox-label {
+                color: #2c3e50;
+                user-select: none;
+            }
+            
+            .register-button {
+                width: 100%;
+                padding: 0.9rem;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-size: 1.1rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: transform 0.2s ease;
+                margin-top: 1rem;
+            }
+            
+            .register-button:hover {
+                transform: translateY(-2px);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="registration-card">
+            <div class="card-header">
+                <h2 class="card-title">Join Our Platform</h2>
+            </div>
+            
+            <form method="POST" action="/register">
+                <div class="input-group">
+                    <label class="input-label" for="username">Full Name</label>
+                    <input class="text-input" type="text" id="username" name="username" required>
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label" for="userpass">Password</label>
+                    <input class="text-input" type="password" id="userpass" name="userpass" required>
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label">Select Your Interests</label>
+                    <div class="interests-section">
+                        <div class="checkbox-wrapper">
+                            <input class="checkbox-input" type="checkbox" id="tech" name="interests" value="technology">
+                            <label class="checkbox-label" for="tech">Technology</label>
+                        </div>
+                        <div class="checkbox-wrapper">
+                            <input class="checkbox-input" type="checkbox" id="sports" name="interests" value="sports">
+                            <label class="checkbox-label" for="sports">Sports</label>
+                        </div>
+                        <div class="checkbox-wrapper">
+                            <input class="checkbox-input" type="checkbox" id="music" name="interests" value="music">
+                            <label class="checkbox-label" for="music">Music</label>
+                        </div>
+                        <div class="checkbox-wrapper">
+                            <input class="checkbox-input" type="checkbox" id="travel" name="interests" value="travel">
+                            <label class="checkbox-label" for="travel">Travel</label>
+                        </div>
+                        <div class="checkbox-wrapper">
+                            <input class="checkbox-input" type="checkbox" id="cooking" name="interests" value="cooking">
+                            <label class="checkbox-label" for="cooking">Cooking</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="register-button">Create Account</button>
+            </form>
+        </div>
+    </body>
+    </html></div>

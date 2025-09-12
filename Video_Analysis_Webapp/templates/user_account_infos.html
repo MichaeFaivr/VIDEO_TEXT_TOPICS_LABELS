@@ -1,0 +1,81 @@
+<!-- Page to display connected user informations from Account sub-menu -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Account Information</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #444;
+        }
+        .info-group {
+            margin-bottom: 20px;
+        }
+        .info-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .info-group p {
+            margin: 0;
+            padding: 8px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        .topics-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .topics-list li {
+            padding: 8px;
+            margin-bottom: 5px;
+            background: #e9e9e9;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>User Account Information</h1>
+
+        <div class="info-group">
+            <label for="username">Username:</label>
+            <p id="username">{{ username }}</p>
+        </div>
+
+        <!-- next informations to be fetched from users.db with the PK: username -->
+        <div class="info-group">
+            <label for="email">Email:</label>
+            <p id="email">{{ email }}</p>
+        </div>
+
+        <div class="info-group">
+            <label for="interests">Topics of Interest:</label>
+            <ul class="topics-list" id="interests">
+                {% for topic in interests %}
+                    <li>{{ topic }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

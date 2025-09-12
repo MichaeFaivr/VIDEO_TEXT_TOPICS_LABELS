@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User History</title>
+</head>
+<body>
+    <h1>User Contribution History</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Video File</th>
+                <th>Date</th>
+                <th>Credit</th>
+                <th>Currency</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in contributions %}
+            <tr>
+                <td>{{ entry.file }}</td>
+                <td>{{ entry.date }}</td>
+                <td>{{ entry.credit }}</td>
+                <td>{{ entry.currency }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
