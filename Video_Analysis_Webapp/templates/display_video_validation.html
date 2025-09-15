@@ -42,7 +42,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Video Analysis Validation</h1>
+        <h1>{{ username }} - Video Analysis Validation</h1>
         
         <div class="video-info">
             <h2>Analyzed Video</h2>
@@ -91,6 +91,13 @@
             {% endfor %}
         </div>
     -->
-    </div>
+
+    <form action="{{ url_for('upload_data') }}" method="post" style="text-align: center;">
+        <!-- Optional: Add hidden input fields if needed -->
+        <input type="hidden" name="key" value="value">
+        <input type="hidden" name="username" value="{{ username }}">
+        <button type="submit" style="padding: 12px 24px; font-size: 16px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">Go back to Input page</button>
+    </form>
+
 </body>
 </html></div>

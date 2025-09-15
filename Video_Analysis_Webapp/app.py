@@ -231,13 +231,14 @@ def result():
         """
 
         """ Display only the validation results page """
-        return render_template('display_video_validation.html', 
-                                video_path=video_path,
-                                compliance_metrics=compliance_metrics,
-                                compliance_result=compliance_result,
-                                payment=payment,
-                                currency=currency,
-                                compliance_dict=analysis_results.get('compliance_dict', {}))
+        return render_template('display_video_validation.html',
+                            username=username,
+                            video_path=video_path,
+                            compliance_metrics=compliance_metrics,
+                            compliance_result=compliance_result,
+                            payment=payment,
+                            currency=currency,
+                            compliance_dict=analysis_results.get('compliance_dict', {}))
     
     except Exception as e:
         print(f'Error processing video: {e}')
@@ -260,20 +261,20 @@ def display_image():
 
         for _ in range(0, NB_SNAPSHOTS_VIDEO_ANALYSIS):
             # ===========================
-            # OPERATION.10: Extract objects from the video
+            # OPERATION.1: Extract objects from the video
             # ===========================
             # Save an image from the video with the detected objects framed in red boxes
             videoToObjects.save_frame_with_detections() # with current date and time in file name
 
             # ===========================
-            # OPERATION.11: Extract texts from the video
+            # OPERATION.2: Extract texts from the video
             # ===========================
             # Recognize text in the frame
-            object_labeling_method = "yolo" # "easyocr"
+            object_labeling_method = OBJECT_LABELLING_METHOD # "easyocr"
             videoToObjects.recognize_text_in_frame(object_labeling_method)
 
             # ===========================
-            # OPERATION.12: Detect faces in the frame and assess the age and the gender
+            # OPERATION.3: Detect faces in the frame and assess the age and the gender
             # ===========================
             videoToObjects.estimate_gender_age_from_faces()
 

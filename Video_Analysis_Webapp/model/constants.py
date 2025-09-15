@@ -60,6 +60,9 @@ LISTE_OBJETS = ['person', 'cup', 'dish', 'knife', 'bottle', 'scissor', 'cake', '
                 'television','remote','clock','watch','calculator','scale','tape measure','ruler','pencil','pen',
                 'lion','box']  # not used yet
 
+# OBJECT LABELLING METHOD
+OBJECT_LABELLING_METHOD = 'yolo' # 'ssd_mobilenet_v2'
+
 BOX_DIM_TOLERANCE = 10
 
 # VERIFCATION AND MARKING OF THE VIDEO
