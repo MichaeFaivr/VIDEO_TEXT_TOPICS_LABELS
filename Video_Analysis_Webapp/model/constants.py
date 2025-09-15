@@ -68,3 +68,10 @@ COMPLIANCE_DIRECTORY = 'compliance_metrics'
 COMPLIANCE_BASEFILE = 'compliance_metrics.json'
 WEIGHT_FOR_AUTH = 3
 WEIGHT_FOR_DURATION_NBWORDS = 3
+
+# AUDIO FILES
+TEMP_AUDIO_FILE = "temp_audio.wav"
+TEMP_AUDIO_FILE = "temp_mono_audio.wav"
+
+# DATABASE
+PATH_DATABASE_USERS = 'databases/user_accounts/users5.db'
