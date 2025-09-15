@@ -3,26 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User History</title>
+    <title>{{ username|title }} History</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #444;
+        }
+        .info-group {
+            margin-bottom: 20px;
+        }
+        .info-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .info-group p {
+            margin: 0;
+            padding: 8px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        .topics-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .topics-list li {
+            padding: 8px;
+            margin-bottom: 5px;
+            background: #e9e9e9;
+            border-radius: 3px;
+        }
+    </style>
 </head>
 <body>
-    <h1>User Contribution History</h1>
-    <table>
-        <thead>
+    <h1>{{ username|title }} Contributions History</h1>
+    <table style="border: 1px solid #ddd; border-collapse: collapse; width: 100%;">
+        <thead style="background-color: #589de3;">
             <tr>
-                <th>Video File</th>
-                <th>Date</th>
-                <th>Credit</th>
-                <th>Currency</th>
+                <th style="border: 1px solid #ddd; padding: 8px;">Type</th>
+                <th style="border: 1px solid #ddd; padding: 8px;">Video File</th>
+                <th style="border: 1px solid #ddd; padding: 8px;">Date Time</th>
+                <th style="border: 1px solid #ddd; padding: 8px;">Credit</th>
+                <th style="border: 1px solid #ddd; padding: 8px;">Currency</th>
             </tr>
         </thead>
         <tbody>
             {% for entry in contributions %}
             <tr>
-                <td>{{ entry.file }}</td>
-                <td>{{ entry.date }}</td>
-                <td>{{ entry.credit }}</td>
-                <td>{{ entry.currency }}</td>
+                <td style="border: 1px solid #ddd; padding: 8px;"></td>
+                <td style="border: 1px solid #ddd; padding: 8px;">{{ entry[2] }}</td>
+                <td style="border: 1px solid #ddd; padding: 8px;">{{ entry[3] }}</td>
+                <td style="border: 1px solid #ddd; padding: 8px;">{{ entry[4] }}</td>
+                <td style="border: 1px solid #ddd; padding: 8px;">{{ entry[5] }}</td>
             </tr>
             {% endfor %}
         </tbody>

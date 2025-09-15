@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Analysis Validation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .video-info {
+            margin-bottom: 30px;
+        }
+        .compliance-section {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .compliance-item {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: white;
+            border-radius: 4px;
+        }
+        .compliant {
+            border-left: 4px solid #28a745;
+        }
+        .non-compliant {
+            border-left: 4px solid #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Video Analysis Validation</h1>
+        
+        <div class="video-info">
+            <h2>Analyzed Video</h2>
+            <p><strong>File Name:</strong> {{ video_path }}</p>
+        </div>
+
+        <div class="compliance-section"></div>
+            {% if compliance_metrics >= 0.5 %}
+                <p style="color: #28a745; font-weight: bold; font-size: 22px; margin-bottom: 15px; text-align: center;">✓ Video accepted</p>
+            {% else %}
+                <p style="color: #dc3545; font-weight: bold; font-size: 22px; margin-bottom: 15px; text-align: center;">✗ Video rejected</p>
+            {% endif %}
+            <h2>Compliance Metrics</h2>
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                <tbody>
+                    <tr>
+                        <td style="padding: 12px; border: 1px solid #ddd;"><strong>Compliance Metrics</strong></td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">{{ compliance_metrics }}</td>
+                    </tr>
+                    <tr style="background-color: #f8f9fa;">
+                        <td style="padding: 12px; border: 1px solid #ddd;"><strong>Compliance Result</strong></td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">{{ compliance_result }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px; border: 1px solid #ddd;"><strong>Payment</strong></td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">{{ payment }}</td>
+                    </tr>
+                    <tr style="background-color: #f8f9fa;">
+                        <td style="padding: 12px; border: 1px solid #ddd;"><strong>Currency</strong></td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">{{ currency }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+    <!-- Display each compliance item with its status -->
+    <!--
+        <div class="compliance-section">
+            <h2>Compliance Results</h2>
+            {% for key, value in compliance_dict.items() %}
+                <div class="compliance-item {% if value[1] == 1 %}compliant{% else %}non-compliant{% endif %}">
+                    <strong>{{ key.replace('_', ' ').title() }}:</strong> 
+                    <span>{{ value[0] }}</span>
+                    <span>{{ 'Compliant' if value[1] == 1 else 'Non-Compliant' }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    -->
+    </div>
+</body>
+</html></div>

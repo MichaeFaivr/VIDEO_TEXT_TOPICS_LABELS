@@ -4,7 +4,7 @@
         <div style="display: flex; justify-content: space-between; align-items: center; max-width: 800px; margin: 0 auto;">
             <div style="font-size: 1.2em; font-weight: bold; color: #1a73e8;">SHAIRE</div>
             <div id="serverUsername" style="font-size: 1.2em; color: #1a73e8; margin-bottom: 10px; font-weight: bold;">
-                Welcome, {{ username }}
+                Welcome, {{ username|title }}
             </div>  
             <div style="position: relative;">
                 <button id="accountMenuBtn" style="background-color: #1a73e8; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">
@@ -40,7 +40,7 @@
         background-color: rgba(255, 255, 255, 0.85); /* Semi-transparent white for better readability */
         border-radius: 12px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        margin-top: 20px;
+        margin-top: 10px;
         margin-bottom: 20px;
     }
 </style>
@@ -61,17 +61,10 @@
                 color: rgb(10, 10, 100);
             }
         </style>
-        <h1>Welcome to Shaire</h1>
-        <p><em>Input your Data|Contributions, Get credits with our partners</em></p>
-    <!--
-        <div id="username" style="font-size: 1.2em; color: #1a73e8; margin-bottom: 10px; font-weight: bold;"></div>
-        <script>
-            // Retrieve the username from sessionStorage
-            const username = sessionStorage.getItem('username');
-            document.getElementById('username').textContent = username;
-        </script>
-        <p>Welcome, <span id="username"></span>!</p>
-    -->
+        <h1 style="margin-bottom: 2px;">Welcome to Shaire</h1>
+        <p style="margin: 1px 0;"><em>Input your Data|Contributions, Get credits with our partners</em></p>
+        <p style="margin: 1px 0;"><em>Thanks to our 20 AI-Services, convert Inputs into Incomes ! </em></p>
+
     </header>
     <style>
         body {
@@ -130,6 +123,7 @@
     </style>
     <h1>Select a Video for AI Analysis</h1>
     <form action="/analysis/" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="username" value="{{ username }}">
         <!-- <label for="video">Choose a video file:</label> -->
         <div style="margin-top: 20px;">
             <button type="submit" id="selectButton">Choose a video file for AI Analysis</button>

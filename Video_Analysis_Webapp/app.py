@@ -1,3 +1,4 @@
+from locale import currency
 import pickle
 import os
 from datetime import datetime
@@ -16,7 +17,7 @@ TEMP_AUDIO_FILE = "temp_audio.wav" # better to read from config file
 # 06-mai TEST
 TEMP_AUDIO_FILE = "temp_mono_audio.wav"
 
-PATH_DATABASE_USERS = 'databases/user_accounts/users4.db'
+PATH_DATABASE_USERS = 'databases/user_accounts/users5.db'
 
 # Initialize the database
 def init_db():
@@ -35,8 +36,9 @@ def init_db():
         )           
     ''')
     c.execute('''
-            CREATE TABLE IF NOT EXISTS history_ctbs (
-            username TEXT PRIMARY KEY NOT NULL,
+        CREATE TABLE IF NOT EXISTS history_ctbs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
             file TEXT NOT NULL,
             date DATE,
             credit INTEGER,
@@ -46,6 +48,20 @@ def init_db():
     conn.commit()
     conn.close()
 
+
+# save the database
+def save_video_analysis_to_db(username, video_filename, credit=0, currency='USD'):
+    if video_filename:
+        # Save the video analysis result in the database
+        if username:
+            conn = sqlite3.connect(PATH_DATABASE_USERS)
+            c = conn.cursor()
+            current_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            print(f'username: {username}, video filename: {video_filename}, current_date: {current_date}')
+            c.execute('INSERT INTO history_ctbs (username, file, date, credit, currency) VALUES (?, ?, ?, ?, ?)',
+                        (username, video_filename, current_date, credit, currency))
+            conn.commit()
+            conn.close()
 
 # Route for handling the upload video page post successful Login
 # Prompt to Claude4: Write the route for upload_data. Strong condition: I need the username value from the login page.
@@ -166,174 +182,155 @@ def user_history():
     return render_template('user_history.html', username=username, contributions=contributions)
     
 
+""" Keep the video analysis route, but do not display the AI analysis results. Display the result of the validation only. """
 @app.route('/analysis/', methods=['POST'])
 def result():
-    if request.method == 'POST':
-        video_file = request.files['video']
-
-        # get the username from the hidden input field
-        username = request.form.get('username') # TOFIX: username not retrieved !!
-        username = 'luca' 
-        print(f'username in analysis: {username}')
-        # Save the video analysis result in the database
-        if username:
-            conn = sqlite3.connect(PATH_DATABASE_USERS)
-            c = conn.cursor()
-            current_date = datetime.now().date()
-            print(f'username: {username}, video filename: {video_file.filename}, current_date: {current_date}')
-            c.execute('INSERT INTO history_ctbs (username, file, date, credit, currency) VALUES (?, ?, ?, ?, ?)',
-                        (username, video_file.filename, current_date, 0, 'USD')) # default credit and currency values
-            conn.commit()
-            conn.close()
-
-        print('filename:', video_file.filename) # ok: file: <FileStorage: 'VID20241018125303.mp4' ('video/mp4')>
-        # Save the video file in Uploads folder
-        video_file.save(DIRECTORY_VIDEOS + video_file.filename)
-
-        # ==========================
-        # OPERATION.1: Extract the text from the video
-        # ==========================
-        # Attention: Need the punctuation marks in the text
-        video_path = DIRECTORY_VIDEOS + video_file.filename
-        videoToSpeech = VideoToSpeechClass(video_path)
-        text_video = videoToSpeech.extract_speech_google_recognizer(TEMP_AUDIO_FILE)
-        #print('app.py extract_speech_google_recognizer - text_video:', text_video)   
-        #_ = videoToSpeech.extract_speech_with_vosk(TEMP_AUDIO_FILE) # find why not the model in the unzipped folder
-        text_video = videoToSpeech.process_text()
-        print('app.py process_text - text_video:', text_video) 
-
-        # Transcript of the audio extracted from the video into a text 
-        # NOK when called onto video longer than 1 minute
-        #_ = videoToSpeech.transcribe_audio_with_punctuation_google_speech_api()
-
-        # Save the text in a file in Outputs avec date et time
-        # TO FIX: marks are missing in the text
-        videoToSpeech.save_speech_from_video(video_path, text_video)
-        # ===========================
-        # OPERATION.2: Summarize the text extracted from the video
-        # ===========================
-        videoTopicsSummary = VideoTopicsSummaryClass(text_video, ['test'], 'test.json')
-        # Cancel Summarization
-        summary_text = videoTopicsSummary.from_text_to_sentences_and_summary()
-        # save summary in a file
-
-        # ===========================
-        # OPERATION.3: Key informations of the text from the video
-        # ===========================
-        # ---------------------------
-        # ** Analysis.1: Key infos from the text with NER
-        # ---------------------------
-        text_NER = videoTopicsSummary.perform_ner_analysis_second()
-        text_NER = str(text_NER)
-        # save NER in a file
-
-        # ---------------------------
-        # ** Analysis.2: NER entities with surrounding text
-        # ---------------------------
-        WINDOW_SIZE = 5 # need to take the sentences breaks into account
-        text_NER_surrounding = videoTopicsSummary.get_entities_surrounding_infos(window_size=WINDOW_SIZE) # needs a window size sufficiently large to get the context of the entity
-        text_NER_surrounding = str(text_NER_surrounding)
-
-        # ----------------------------
-        # ** Analysis.3: Key topics from the text with Complementary Content Analysis
-        # ----------------------------
-        _ = videoTopicsSummary.extract_key_infos()
-
-        # ----------------------------        
-        # ** Analysis.4: Key topics from the text with product type extracted from the text: TO COMPLETE
-        # ----------------------------
-        #_ = videoTopicsSummary.extract_type_product_specifications('laptop')
-
-        # ==========================
-        # OPERATION.4: TOPICS from summary
-        # ==========================
-        #videoTopicsSummary.topic_modeling_LSA()
-        #list_topics = videoTopicsSummary.list_topics_from_summary
-        #print(f'list_topics: {list_topics}')
-
-        # ===========================
-        # OPERATION.5: SENTIMENT ANALYSIS from summary
-        # ===========================
-        # save Json file in same directory as the text file from video
-        current_time = datetime.now().strftime('%H-%M-%S')
-        json_sentiments_filename = os.path.splitext(video_file.filename)[0] + '_' + current_time + '_json_sentiments_per_sentence.json'
-        videoTopicsSummary.sentiment_analysis_per_summary_sentence(json_sentiments_filename)
-        print(f'videoTextTopics.sentiment_scores: {videoTopicsSummary.sentiment_scores}')   
-
-        # ===========================
-        # SET THE CONDITION FOR THE NEXT OPERATIONS
-        # ===========================
-        print(f'summary_text: {summary_text}')
-        conditions_for_next_operations = text_video and text_video != '' and summary_text != '' and summary_text != videoTopicsSummary.default_text
-        print(f'conditions_for_next_operations: {conditions_for_next_operations}')
-
-        # ===========================
-        # OPERATION.6: Save the analysis data in a Json file
-        # ===========================
-        if conditions_for_next_operations:
-            analysis_json_filename = os.path.splitext(video_file.filename)[0] + '_' + current_time + '_json_video_analysis.json'
-            # Save the analysis data in a Json file with the function from build_analysis_json.py
-            json_video_analysis_file = read_fill_save_json_file(analysis_json_filename, video_path, text_video, videoTopicsSummary.entities, videoTopicsSummary.key_infos, videoTopicsSummary.sentiment_scores)
-            if not json_video_analysis_file:
-                print(f'Error: Unable to save the JSON file: {analysis_json_filename}')
-        # Save the analysis data in a pickle file
-
-        # ===========================
-        # OPERATION.7: COMPLIANCE of the text with the policy
-        # ===========================
-        # Attention: need priorly to have stored the analysis data in a Json file !
-        if conditions_for_next_operations:
-            policy_data_file = POLICY_DATA_FILE
-            video_analysis_file = json_video_analysis_file
-
-            # Read the policy JSON file
-            policy_data = read_json_file(policy_data_file)
-            if policy_data:
-                # Read the data JSON file
-                analysis_data = read_json_file(video_analysis_file)
-
-                # computation of the compliance metrics
-                compliance_dict, compliance_metrics = check_policy_compliance(policy_data, analysis_data)
-                print('compliance_dict filled:', compliance_dict)
-                print('compliance_metrics computed:', compliance_metrics)
-        else:
-            print('Conditions for next operations not fulfilled. Compliance metrics will not be computed: apply the default compliance metrics.')
-            compliance_dict, _ = check_policy_compliance_default()
+    if request.method != 'POST':
+        return redirect(url_for('login_page'))
+    
+    # Get video file and username
+    video_file = request.files.get('video')
+    username = request.form.get('username')
+    
+    if not video_file or not video_file.filename:
+        return redirect(url_for('upload_data'))
+    
+    print(f'Processing video: {video_file.filename} for user: {username}')
+    
+    # Save video file
+    video_path = DIRECTORY_VIDEOS + video_file.filename
+    video_file.save(video_path)
+    
+    try:
+        # Extract and process speech
+        analysis_results = _process_video_speech(video_path)
         
-        # Save the compliance metrics in a Json file in the case of not fulfilled conditions
-        #if not conditions_for_next_operations:
-
-        # ===========================
-        # OPERATION.8: Verify the speech was not generated by AI
-        # ===========================
-        # Add condition: output_text is not empty !!
-        if videoToSpeech.output_text and videoToSpeech.output_text != '':
-            videoPostValidation = VideoPostValidationClass(videoToSpeech.video_path, videoToSpeech.output_text)
-
-            # Check if the text is AI-generated
-            mode_test_or_production = 'test' # 'production'
-            if mode_test_or_production == 'test':
-                generated_speech = AI_GENERATED_SPEECH
-            else:
-                generated_speech = videoPostValidation.get_ai_generated_speech()
-            similarity_ratio, is_ai_generated = videoPostValidation.is_ai_generated_speech(generated_speech)
-            print(f'similarity_ratio: {similarity_ratio}, is_ai_generated: {is_ai_generated}')
-            # Save the result in a file
-            videoPostValidation.save_ai_validation_result(generated_speech, videoPostValidation.video_text, similarity_ratio, is_ai_generated, video_path)
-
-        # ===========================
-        # OPERATION.9: Fetch and count the favorite products from the text
-        # ===========================
-        if videoToSpeech.output_text and videoToSpeech.output_text != '':
-            videoPostValidation.fetch_count_favorite_products_from_speech()
-
-        # DISPLAY RESULTS FROM THE VIDEO ANALYSIS
+        # Perform text analysis if speech extraction was successful
+        if analysis_results['text_video']:
+            _perform_text_analysis(analysis_results, video_file.filename)
+            _check_compliance(analysis_results, video_file.filename)
+            _validate_speech(analysis_results, video_path)
+        
+        # Save to database
+        compliance_metrics = analysis_results.get('compliance_dict', {}).get('compliance_metrics', {})
+        compliance_result = analysis_results.get('compliance_dict', {}).get('result', 0)
+        payment = analysis_results.get('compliance_dict', {}).get('payment', 0)
+        currency = analysis_results.get('compliance_dict', {}).get('currency', 'USD')
+        save_video_analysis_to_db(username, video_file.filename, payment, currency)
+        
+        # Render results page
+        """
         return render_template('video_analysis.html', 
-                            video_path=video_path, 
-                            extracted_text=text_video, 
-                            summary_text=summary_text, 
-                            ner_text=text_NER,
-                            ner_surrounding_text=text_NER_surrounding)
+                             video_path=video_path,
+                             extracted_text=analysis_results['text_video'],
+                             summary_text=analysis_results['summary_text'],
+                             ner_text=analysis_results['text_NER'],
+                             ner_surrounding_text=analysis_results['text_NER_surrounding'])
+        """
+
+        """ Display only the validation results page """
+        return render_template('display_video_validation.html', 
+                                video_path=video_path,
+                                compliance_metrics=compliance_metrics,
+                                compliance_result=compliance_result,
+                                payment=payment,
+                                currency=currency,
+                                compliance_dict=analysis_results.get('compliance_dict', {}))
+    
+    except Exception as e:
+        print(f'Error processing video: {e}')
+        return redirect(url_for('upload_data'))
+
+
+def _process_video_speech(video_path):
+    """Extract and process speech from video"""
+    videoToSpeech = VideoToSpeechClass(video_path)
+    text_video = videoToSpeech.extract_speech_google_recognizer(TEMP_AUDIO_FILE)
+    text_video = videoToSpeech.process_text()
+    
+    videoToSpeech.save_speech_from_video(video_path, text_video)
+    
+    return {
+        'text_video': text_video,
+        'videoToSpeech': videoToSpeech,
+        'summary_text': '',
+        'text_NER': '',
+        'text_NER_surrounding': ''
+    }
+
+
+def _perform_text_analysis(analysis_results, filename):
+    """Perform comprehensive text analysis"""
+    text_video = analysis_results['text_video']
+    videoTopicsSummary = VideoTopicsSummaryClass(text_video, ['test'], 'test.json')
+    
+    # Generate summary and analysis
+    summary_text = videoTopicsSummary.from_text_to_sentences_and_summary()
+    text_NER = str(videoTopicsSummary.perform_ner_analysis_second())
+    text_NER_surrounding = str(videoTopicsSummary.get_entities_surrounding_infos(window_size=5))
+    
+    # Extract key information and perform sentiment analysis
+    videoTopicsSummary.extract_key_infos()
+    
+    current_time = datetime.now().strftime('%H-%M-%S')
+    json_sentiments_filename = f"{os.path.splitext(filename)[0]}_{current_time}_json_sentiments_per_sentence.json"
+    videoTopicsSummary.sentiment_analysis_per_summary_sentence(json_sentiments_filename)
+    
+    # Save analysis to JSON
+    analysis_json_filename = f"{os.path.splitext(filename)[0]}_{current_time}_json_video_analysis.json"
+    json_file = read_fill_save_json_file(analysis_json_filename, analysis_results['videoToSpeech'].video_path, 
+                                        text_video, videoTopicsSummary.entities, 
+                                        videoTopicsSummary.key_infos, videoTopicsSummary.sentiment_scores)
+    
+    # Update results
+    analysis_results.update({
+        'summary_text': summary_text,
+        'text_NER': text_NER,
+        'text_NER_surrounding': text_NER_surrounding,
+        'videoTopicsSummary': videoTopicsSummary,
+        'json_file': json_file
+    })
+
+
+def _check_compliance(analysis_results, filename):
+    """Check policy compliance"""
+    conditions_met = (analysis_results['text_video'] and 
+                     analysis_results['summary_text'] and 
+                     analysis_results['summary_text'] != analysis_results['videoTopicsSummary'].default_text)
+    
+    if conditions_met and analysis_results.get('json_file'):
+        policy_data = read_json_file(POLICY_DATA_FILE)
+        analysis_data = read_json_file(analysis_results['json_file'])
+        
+        if policy_data and analysis_data:
+            compliance_dict, compliance_metrics = check_policy_compliance(policy_data, analysis_data)
+        else:
+            compliance_dict, _ = check_policy_compliance_default()
+    else:
+        compliance_dict, _ = check_policy_compliance_default()
+    
+    analysis_results['compliance_dict'] = compliance_dict
+
+
+def _validate_speech(analysis_results, video_path):
+    """Validate if speech is AI-generated and extract favorite products"""
+    output_text = analysis_results['videoToSpeech'].output_text
+    
+    if not output_text:
+        return
+    
+    videoPostValidation = VideoPostValidationClass(video_path, output_text)
+    
+    # Check AI generation
+    mode_test_or_production = 'test'
+    generated_speech = AI_GENERATED_SPEECH if mode_test_or_production == 'test' else videoPostValidation.get_ai_generated_speech()
+    
+    similarity_ratio, is_ai_generated = videoPostValidation.is_ai_generated_speech(generated_speech)
+    videoPostValidation.save_ai_validation_result(generated_speech, output_text, 
+                                                 similarity_ratio, is_ai_generated, video_path)
+    
+    # Extract favorite products
+    videoPostValidation.fetch_count_favorite_products_from_speech()
 
 
 @app.route('/objectdetection/', methods=['POST'])
