@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+    <nav style="background-color: #fff; padding: 15px 20px; border-bottom: 2px solid #1a73e8; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <div style="display: flex; justify-content: space-between; align-items: center; max-width: 800px; margin: 0 auto;">
+            <div style="font-size: 1.2em; font-weight: bold; color: #1a73e8;">SHAIRE</div>
+            <div id="serverUsername" style="font-size: 1.2em; color: #1a73e8; margin-bottom: 10px; font-weight: bold;">
+                Hi {{ username|title }}
+            </div>  
+            <div style="position: relative;">
+                <button id="accountMenuBtn" style="background-color: #1a73e8; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">
+                    Account ▼
+                </button>
+                <div id="accountDropdown" style="display: none; position: absolute; right: 0; top: 100%; background-color: white; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); min-width: 150px; z-index: 1000;">
+                    <!-- <a href="/account_info" onclick="sessionStorage.setItem('username', '{{ username }}')" style="display: block; padding: 10px 15px; color: #333; text-decoration: none; border-bottom: 1px solid #eee;">{{ username }}</a> -->
+                    <a href="/account_info?username={{ username }}" style="display: block; padding: 10px 15px; color: #333; text-decoration: none; border-bottom: 1px solid #eee;">{{ username }} Account</a>
+                    <a href="/user_history?username={{ username }}" style="display: block; padding: 10px 15px; color: #333; text-decoration: none; border-bottom: 1px solid #eee;">History/Credits</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <script>
+        document.getElementById('accountMenuBtn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            const dropdown = document.getElementById('accountDropdown');
+            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+        });
+        
+        document.addEventListener('click', function() {
+            document.getElementById('accountDropdown').style.display = 'none';
+        });
+    </script>
+<style>
+    html {
+        background: url('/static/images/light-green-bg.jpg') no-repeat center center fixed;
+        background-color: #e8f5e9; /* Fallback color if image fails to load */
+        background-size: cover;
+    }
+    
+    body {
+        background-color: rgba(255, 255, 255, 0.85); /* Semi-transparent white for better readability */
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-top: 10px;
+        margin-bottom: 20px;
+    }
+</style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Contribution Type</title>
+</head>
+<body>
+    <header>
+        <style>
+            header h1 {
+                color: rgb(4, 4, 68);
+                font-size: clamp(2rem, 2.5vw, 3em); /* Responsive font size that adapts to screen size */
+            }
+            header p {
+                font-size: clamp(1rem, 2.5vw, 1.5em); /* Responsive font size that adapts to screen size */
+                color: rgb(10, 10, 100);
+            }
+        </style>
+        <h1 style="margin-top: 6px; margin-bottom: 2px;">Welcome to Shaire</h1>
+        <p style="margin: 1px 0;"><em>Get credits with our partners From your Inputs</em></p>
+        <p style="margin: 1px 0;"><em>20 AI-Services to convert your Inputs to Incomes! </em></p>
+
+    </header>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        header {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        h1 {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            color: #1a73e8;
+            text-align: center;
+            font-size: clamp(2rem, 2.5vw, 3em); /* Responsive font size that adapts to screen size */
+        }
+        form {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f5f5f5;
+        }
+        button {
+            background-color: #1a73e8;
+            color: white;
+            padding: 25px 25px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0d47a1;
+        }
+        label {
+            font-weight: bold;
+        }
+    </style>
+    <h1>Select the type of contribution</h1>
+    <style>
+        .button-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        .button-container form {
+            margin: 0;
+            flex: 1;
+            max-width: 300px;
+        }
+        .button-container button {
+            width: 100%;
+        }
+    </style>
+    <div class="button-container">
+    <form action="/verbatim_video_upload/" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="username" value="{{ username }}">
+        <button type="submit">Upload Verbatim Video</button>
+    </form>
+    <form action="/verbatim_video_upload/" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="username" value="{{ username }}">
+        <button type="submit">Create Ad Video</button>
+    </form>
+
+    </div>
+    <footer style="margin-top: 30px; padding: 20px; background-color: #e4dcdc; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <div style="text-align: left;">
+            <style>
+                footer h3 {
+                    font-family: 'Times New Roman', serif;
+                }
+                footer p {
+                    font-family: 'Times New Roman', serif;
+                }
+            </style>
+            <h3 style="margin: 0; color: #041122; font-size: 1.8em;">SHAIRE</h3>
+            <p style="margin: 1px 0 0 0; color: #230303; font-size: 1.1em; font-style: italic;">a MiFa Cie Ltd</p>
+            <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                <div style="flex: 1; margin-right: 20px;">
+                    <h4 style="color: #041122; margin-bottom: 10px;">SHAIRE Membership</h4>
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">Join Now</a></li>
+                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">Benefits</a></li>
+                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">Pricing</a></li>
+                    </ul>
+                </div>
+                <div style="flex: 1; margin-right: 20px;">
+                    <h4 style="color: #041122; margin-bottom: 10px;">Customer Service</h4>
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">Contact Us</a></li>
+                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">Support</a></li>
+                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">FAQ</a></li>
+                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">Specifications</a></li>
+                    </ul>
+                </div>
+                <div style="flex: 1;">
+                    <h4 style="color: #041122; margin-bottom: 10px;">Tools & Features</h4>
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">AI Analysis</a></li>
+                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">Video Upload</a></li>
+                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">Reports</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

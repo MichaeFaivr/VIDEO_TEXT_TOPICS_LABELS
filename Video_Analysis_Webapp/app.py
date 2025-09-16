@@ -83,7 +83,21 @@ def verbatim_video_upload():
     else:
         # For GET requests, redirect to login
         return redirect(url_for('login_page'))
+    
 
+# Select contribution type page route
+@app.route('/select_contribution_type/', methods=['GET', 'POST'])
+def select_contribution_type():
+    if request.method == 'POST':
+        # Get username from login form
+        username = request.form.get('username')
+        print(f'username in select_contribution_type: {username}') # ok: username value correctly retrieved
+        if username:
+            return render_template('select_contribution_type.html', username=username) # Pass username to the upload page
+        else:
+            # Redirect back to login if no username provided
+            return redirect(url_for('login_page')) 
+        
 
 @app.route('/', methods=['GET'])
 def login_page():
