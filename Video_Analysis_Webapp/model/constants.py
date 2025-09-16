@@ -69,6 +69,10 @@ BOX_DIM_TOLERANCE = 10
 COMPLIANCE_ACCEPTED_THRESHOLD = 0.5
 COMPLIANCE_DIRECTORY = 'compliance_metrics'
 COMPLIANCE_BASEFILE = 'compliance_metrics.json'
+COMPLIANCE_RESULT_DEFAULT = "Please check the following criteria: Format, Duration secs, Number of words, Nb words per minute, Nb speakers, User id number, Nb negative points, Type product, Product, Brand, Serial number, Budget for new item"
+COMPLIANCE_METRIC_DEFAULT = 0.0
+VALIDATION_CURRENCY_DEFAULT = 'USD'
+VALIDATION_PAYMENT_DEFAULT = 0.0
 WEIGHT_FOR_AUTH = 3
 WEIGHT_FOR_DURATION_NBWORDS = 3
 

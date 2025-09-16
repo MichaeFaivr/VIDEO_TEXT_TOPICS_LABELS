@@ -46,6 +46,21 @@ def init_db():
             currency TEXT
         )
     ''')
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS user_deals (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
+            deal_description TEXT NOT NULL,
+            deal_limit_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            brand TEXT,
+            product_category TEXT,
+            product TEXT,
+            product_specs TEXT,
+            discount_percentage TEXT,
+            discounted_price REAL,
+            currency TEXT 
+        )
+    ''')
     conn.commit()
     conn.close()
 
@@ -127,6 +142,18 @@ def register_user():
     conn.commit()
     conn.close()
 
+    #### FOR TESTING PURPOSES ONLY ####
+    # Create the user_deals table if it doesn't exist and fill it with dummy data
+    conn = sqlite3.connect(PATH_DATABASE_USERS)
+    c = conn.cursor()
+    # Insert dummy data into user_deals table
+    c.execute('INSERT INTO user_deals (username, deal_description, brand, product_category, product, product_specs, discount_percentage, discounted_price, currency) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+              (username, 'Deal of Samsung TVs', 'Samsung', 'TV', 'TV2025_JK0002154', 'Diag. Size 240 inches, 8K, dolbysourround', '30%', 850.0, 'USD'))
+    c.execute('INSERT INTO user_deals (username, deal_description, brand, product_category, product, product_specs, discount_percentage, discounted_price, currency) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+              (username, 'Deal of LG TVs', 'LG', 'TV', 'LG2024_MP211646', 'Diag. Size 250 inches, 8K, dolbysourround3D', '40%', 880.0, 'USD'))
+    conn.commit()
+    conn.close()
+
     return redirect(url_for('success'))
 
 
@@ -197,6 +224,26 @@ def user_history():
         conn.close()
 
     return render_template('user_history.html', username=username, contributions=contributions)
+
+# Route to display the deals by brands for the user
+@app.route('/user_deals/', methods=['GET'])
+def user_deals():
+    username = request.args.get('username')
+    print(f'username in user_deals: {username}')
+    # Get user deals from database based on username
+    deals = []
+
+    if username:
+        conn = sqlite3.connect(PATH_DATABASE_USERS)
+        c = conn.cursor()
+        c.execute('SELECT * FROM user_deals WHERE username = ?', (username,))
+        deals = c.fetchall()
+        for deal in deals:
+            print(f'Deal ID: {deal[0]}, Username: {deal[1]}, Description: {deal[2]}, Limit Date: {deal[3]}, Brand: {deal[4]}, Category: {deal[5]}, Product: {deal[6]}, Specs: {deal[7]}, Discount: {deal[8]}, Price: {deal[9]}, Currency: {deal[10]}')
+        print(f'deals in user_deals: {deals}')
+        conn.close()
+
+    return render_template('brands_deals/display_brands_deals.html', username=username, deals=deals)
     
 
 """ VIDEO VERBATIM ANALYSIS ROUTE """
@@ -230,10 +277,10 @@ def result():
             validate_speech(analysis_results, video_path)
         
         # Save to database
-        compliance_metrics = analysis_results.get('compliance_dict', {}).get('compliance_metrics', {})
-        compliance_result = analysis_results.get('compliance_dict', {}).get('result', 0)
-        payment = analysis_results.get('compliance_dict', {}).get('payment', 0)
-        currency = analysis_results.get('compliance_dict', {}).get('currency', 'USD')
+        compliance_metrics = analysis_results.get('compliance_dict', {}).get('compliance_metrics', COMPLIANCE_METRIC_DEFAULT)
+        compliance_result = analysis_results.get('compliance_dict', {}).get('result', COMPLIANCE_RESULT_DEFAULT)
+        payment = analysis_results.get('compliance_dict', {}).get('payment', VALIDATION_PAYMENT_DEFAULT)
+        currency = analysis_results.get('compliance_dict', {}).get('currency', VALIDATION_CURRENCY_DEFAULT)
         save_video_analysis_to_db(username, video_file.filename, payment, currency)
         
         # Render results page
@@ -247,6 +294,7 @@ def result():
         """
 
         """ Display only the validation results page """
+        # NB: at this stage, compliance_dict contains compliance_metrics, result, payment, currency (3 int/float values and 1 string value)
         return render_template('display_video_validation.html',
                             username=username,
                             video_path=video_path,
