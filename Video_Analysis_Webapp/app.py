@@ -66,15 +66,17 @@ def save_video_analysis_to_db(username, video_filename, credit=0, currency='USD'
 
 # Route for handling the upload video page post successful Login
 # Prompt to Claude4: Write the route for upload_data. Strong condition: I need the username value from the login page.
-@app.route('/upload_data/', methods=['GET', 'POST'])
-def upload_data():
+# Use decorators to route the specific use cases : verbatims, ads, others
+# rename upload_data to verbatim_upload_video for clarity
+@app.route('/verbatim_video_upload/', methods=['GET', 'POST'])
+def verbatim_video_upload():
     # POST method in login_page.html when clicking on Login button
     if request.method == 'POST':
         # Get username from login form
         username = request.form.get('username')
-        print(f'username in upload_data: {username}') # ok: username value correctly retrieved
+        print(f'username in verbatim_video_upload: {username}') # ok: username value correctly retrieved
         if username:
-            return render_template('video_upload.html', username=username) # Pass username to the upload page
+            return render_template('verbatims/verbatim_video_upload.html', username=username) # Pass username to the upload page
         else:
             # Redirect back to login if no username provided
             return redirect(url_for('login_page'))
@@ -195,8 +197,8 @@ def result():
     username = request.form.get('username')
     
     if not video_file or not video_file.filename:
-        return redirect(url_for('upload_data'))
-    
+        return redirect(url_for('verbatim_video_upload'))
+
     print(f'Processing video: {video_file.filename} for user: {username}')
     
     # Save video file
@@ -242,7 +244,7 @@ def result():
     
     except Exception as e:
         print(f'Error processing video: {e}')
-        return redirect(url_for('upload_data'))
+        return redirect(url_for('verbatim_video_upload'))
 
 
 
