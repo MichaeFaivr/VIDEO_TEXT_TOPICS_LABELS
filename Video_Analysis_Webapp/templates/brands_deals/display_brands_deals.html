@@ -9,82 +9,188 @@
             font-family: Arial, sans-serif;
             line-height: 1.6;
             margin: 0;
-            padding: 20px;
+            padding: 10px;
             background-color: #f4f4f4;
             color: #333;
         }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 20px;
+        
+        h1 {
+            position: sticky;
+            top: 0;
+            background-color: #fff;
+            z-index: 5;
+            margin: 0;
+            padding: 15px 10px;
+            text-align: center;
+            color: #444;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin: 20px 0;
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        h1 {
-            text-align: center;
-            color: #444;
-        }
-        .info-group {
-            margin-bottom: 20px;
-        }
-        .info-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        .info-group p {
-            margin: 0;
-            padding: 8px;
-            background: #f9f9f9;
+        
+        table {
             border: 1px solid #ddd;
-            border-radius: 3px;
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 800px;
+            background: white;
         }
-        .topics-list {
-            list-style-type: none;
-            padding: 0;
+        
+        thead {
+            background-color: #589de3;
+            position: sticky;
+            top: 0px;
+            z-index: 4;
         }
-        .topics-list li {
-            padding: 8px;
-            margin-bottom: 5px;
-            background: #e9e9e9;
-            border-radius: 3px;
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px 8px;
+            text-align: left;
+            word-wrap: break-word;
+        }
+        
+        th {
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        td {
+            font-size: 13px;
+        }
+        
+        .back-button-container {
+            text-align: center;
+            margin: 20px 0;
+            padding: 0 10px;
+        }
+        
+        .back-button {
+            padding: 12px 24px;
+            font-size: 16px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .back-button:hover {
+            background-color: #5a6268;
+        }
+        
+        /* Mobile styles */
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
+            
+            h1 {
+                font-size: 18px;
+                padding: 10px 5px;
+                top: 0;
+            }
+            
+            thead {
+                top: 0px;
+            }
+            
+            th, td {
+                padding: 8px 4px;
+                font-size: 12px;
+            }
+            
+            th {
+                font-size: 11px;
+            }
+            
+            table {
+                min-width: 700px;
+            }
+            
+            .back-button {
+                padding: 10px 20px;
+                font-size: 14px;
+                width: 100%;
+                max-width: 200px;
+            }
+        }
+        
+        /* Very small screens */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 16px;
+            }
+            
+            th, td {
+                padding: 6px 3px;
+                font-size: 11px;
+            }
+            
+            th {
+                font-size: 10px;
+            }
+            
+            table {
+                min-width: 600px;
+            }
+        }
+        
+        /* Landscape orientation on mobile */
+        @media (max-width: 768px) and (orientation: landscape) {
+            table {
+                min-width: 750px;
+            }
+            
+            th, td {
+                padding: 6px 4px;
+            }
         }
     </style>
 </head>
 <body>
-    <h1 style="position: sticky; top: 0; background-color: #fff; z-index: 5; margin: 0; padding: 20px 0; text-align: center; color: #444;">{{ username|title }} Deals</h1>
-    <table style="position: sticky; border: 1px solid #ddd; border-collapse: collapse; width: 100%;">
-        <thead style="background-color: #589de3; position: sticky; top: 80px; z-index: 10;">
-            <tr>
-            <th style="border: 1px solid #ddd; padding: 8px;">Deal Description</th>
-            <th style="border: 1px solid #ddd; padding: 8px;">Deal Limit Date</th>
-            <th style="border: 1px solid #ddd; padding: 8px;">Brand</th>
-            <th style="border: 1px solid #ddd; padding: 8px;">Product Category</th>
-            <th style="border: 1px solid #ddd; padding: 8px;">Product</th>
-            <th style="border: 1px solid #ddd; padding: 8px;">Product Specs</th>
-            <th style="border: 1px solid #ddd; padding: 8px;">Discount</th>
-            <th style="border: 1px solid #ddd; padding: 8px;">Price</th>
-            <th style="border: 1px solid #ddd; padding: 8px;">Currency</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for entry in deals %}
-            <tr>
-                {% for item in entry[2:] %}
-                <td style="border: 1px solid #ddd; padding: 8px;">{{ item }}</td>
+    <h1>{{ username|title }} Deals</h1>
+    
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Deal Description</th>
+                    <th>Deal Limit Date</th>
+                    <th>Brand</th>
+                    <th>Product Category</th>
+                    <th>Product</th>
+                    <th>Product Specs</th>
+                    <th>Discount</th>
+                    <th>Price</th>
+                    <th>Currency</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in deals %}
+                <tr>
+                    {% for item in entry[2:] %}
+                    <td>{{ item }}</td>
+                    {% endfor %}
+                </tr>
                 {% endfor %}
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <div style="margin: 20px 0;"></div>
-    <form action="{{ url_for('verbatim_video_upload') }}" method="post" style="text-align: center;">
-        <!-- Optional: Add hidden input fields if needed -->
-        <input type="hidden" name="key" value="value">
-        <input type="hidden" name="username" value="{{ username }}">
-        <button type="submit" style="padding: 12px 24px; font-size: 16px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">Go back to Input page</button>
-    </form>
-
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="back-button-container">
+        <form action="{{ url_for(request.endpoint) }}" method="get">
+            <input type="hidden" name="key" value="value">
+            <input type="hidden" name="username" value="{{ username }}">
+            <button type="button" onclick="history.back()" class="back-button">Go Back</button>
+        </form>
+    </div>
 </body>
 </html>

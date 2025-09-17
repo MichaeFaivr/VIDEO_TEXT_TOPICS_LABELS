@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
-    <nav style="background-color: #fff; padding: 15px 20px; border-bottom: 2px solid #1a73e8; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-        <div style="display: flex; justify-content: space-between; align-items: center; max-width: 800px; margin: 0 auto;">
-            <div style="font-size: 1.2em; font-weight: bold; color: #1a73e8;">SHAIRE</div>
-            <div id="serverUsername" style="font-size: 1.2em; color: #1a73e8; margin-bottom: 10px; font-weight: bold;">
-                Welcome, {{ username|title }}
-            </div>  
+    <nav style="background-color: #fff; padding: 10px 15px; border-bottom: 2px solid #1a73e8; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <div style="display: flex; justify-content: space-between; align-items: center; max-width: 800px; margin: 0 auto; flex-wrap: wrap; gap: 10px;">
+            <div style="font-size: clamp(1rem, 3vw, 1.2em); font-weight: bold; color: #1a73e8;">SHAIRE</div>
+            <div id="serverUsername" style="font-size: clamp(0.9rem, 2.5vw, 1.8em); color: #1a73e8; font-weight: bold; text-align: center; flex: 1; min-width: 120px;">
+                Hi {{ username|title }}
+            </div> 
             <div style="position: relative;">
-                <button id="accountMenuBtn" style="background-color: #1a73e8; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">
+                <button id="accountMenuBtn" style="background-color: #1a73e8; color: white; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: clamp(12px, 2vw, 14px); white-space: nowrap;">
                     Account ▼
                 </button>
-                <div id="accountDropdown" style="display: none; position: absolute; right: 0; top: 100%; background-color: white; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); min-width: 150px; z-index: 1000;">
-                    <!-- <a href="/account_info" onclick="sessionStorage.setItem('username', '{{ username }}')" style="display: block; padding: 10px 15px; color: #333; text-decoration: none; border-bottom: 1px solid #eee;">{{ username }}</a> -->
-                    <a href="/account_info?username={{ username }}" style="display: block; padding: 10px 15px; color: #333; text-decoration: none; border-bottom: 1px solid #eee;">{{ username }} Account</a>
-                    <a href="/user_history?username={{ username }}" style="display: block; padding: 10px 15px; color: #333; text-decoration: none; border-bottom: 1px solid #eee;">History/Credits</a>
+                <div id="accountDropdown" style="display: none; position: absolute; right: 0; top: 100%; background-color: white; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); min-width: 150px; max-width: 250px; z-index: 1000;">
+                    <a href="/account_info?username={{ username }}" style="display: block; padding: 10px 15px; color: #333; text-decoration: none; border-bottom: 1px solid #eee; font-size: clamp(12px, 2vw, 14px);">{{ username }} Account</a>
+                    <a href="/user_history?username={{ username }}" style="display: block; padding: 10px 15px; color: #333; text-decoration: none; border-bottom: 1px solid #eee; font-size: clamp(12px, 2vw, 14px);">History/Credits</a>
+                    <a href="/user_deals?username={{ username }}" style="display: block; padding: 10px 15px; color: #333; text-decoration: none; border-bottom: 1px solid #eee; font-size: clamp(12px, 2vw, 14px);">My Deals</a>
                 </div>
             </div>
         </div>
@@ -54,17 +54,16 @@
         <style>
             header h1 {
                 color: rgb(4, 4, 68);
-                font-size: 3em; /* Makes the font 2 sizes larger */
+                font-size: clamp(2rem, 2.5vw, 3em); /* Responsive font size that adapts to screen size */
             }
             header p {
-                font-size: 1.5em; /* Slightly larger font for the tagline */
+                font-size: clamp(1rem, 2.5vw, 1.5em); /* Responsive font size that adapts to screen size */
                 color: rgb(10, 10, 100);
             }
         </style>
-        <h1 style="margin-bottom: 2px;">Welcome to Shaire</h1>
-        <p style="margin: 1px 0;"><em>Input your Data|Contributions, Get credits with our partners</em></p>
-        <p style="margin: 1px 0;"><em>Thanks to our 20 AI-Services, convert Inputs into Incomes ! </em></p>
-
+        <h1 style="margin-top: 6px; margin-bottom: 2px;">Welcome to Shaire</h1>
+        <p style="margin: 1px 0;"><em>Get credits with our partners From your Inputs</em></p>
+        <p style="margin: 1px 0;"><em>20 AI-Services to convert your Inputs to Incomes! </em></p>
     </header>
     <style>
         body {
@@ -170,6 +169,15 @@
                         <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">AI Analysis</a></li>
                         <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">Video Upload</a></li>
                         <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">Reports</a></li>
+                    </ul>
+                </div>
+                <div style="flex: 1;">
+                    <h4 style="color: #041122; margin-bottom: 10px;">Sitemap</h4>
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">Select Contribution Type</a></li>
+                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">About</a></li>
+                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">Services</a></li>
+                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">Privacy Policy</a></li>
                     </ul>
                 </div>
             </div>
