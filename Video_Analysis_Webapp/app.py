@@ -268,6 +268,10 @@ def faq_and_bot():
 def specifications():
     return render_template('annexes/specifications.html')
 
+@app.route('/how_to_earn', methods=['GET'])
+def how_to_earn():
+    return render_template('annexes/table_reference_incomes.html')
+
 
 """ VIDEO VERBATIM ANALYSIS ROUTE """
 """ Keep the video analysis route, but do not display the AI analysis results. Display the result of the validation only. """

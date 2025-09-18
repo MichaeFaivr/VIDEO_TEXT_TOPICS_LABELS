@@ -3,22 +3,12 @@
     <nav style="background-color: #fff; padding: 10px 15px; border-bottom: 2px solid #1a73e8; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
         <div style="display: flex; justify-content: space-between; align-items: center; max-width: 800px; margin: 0 auto; flex-wrap: wrap; gap: 10px;">
             <div style="font-size: clamp(1rem, 3vw, 1.2em); font-family: 'Quicksand', sans-serif; font-weight: bold; color: #1a73e8; cursor: pointer;" onclick="window.location.href='/about_shaire'">SHAIRE</div>
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <svg width="32" height="32" viewBox="0 0 32 32" style="fill: #1a73e8;">
-                    <circle cx="8" cy="8" r="3"/>
-                    <circle cx="24" cy="8" r="3"/>
-                    <circle cx="16" cy="24" r="3"/>
-                    <path d="M10.5 10l5 12M21.5 10l-5 12M8 11l16 0" stroke="#1a73e8" stroke-width="2" fill="none"/>
-                    <path d="M12 6c0-1.1.9-2 2-2h4c1.1 0 2 .9 2 2v4c0 1.1-.9 2-2 2h-4c-1.1 0-2-.9-2-2V6z" fill="none" stroke="#1a73e8" stroke-width="1.5"/>
-                </svg>
-                <span style="font-size: clamp(1rem, 2vw, 1rem); color: #666; font-style: italic;">Share & Earn</span>
+            <div style="display: flex; justify-content: center; align-items: center; flex: 1;">
+                <img src="/static/logo/SHAIRE_Logo.png" alt="SHAIRE Logo" style="height: 120px; width: auto;">
             </div>
-            <div id="serverUsername" style="font-size: clamp(0.9rem, 2.5vw, 1.8em); color: #1a73e8; font-weight: bold; text-align: center; flex: 1; min-width: 120px;">
-                Hi {{ username|title }}
-            </div> 
             <div style="position: relative;">
                 <button id="accountMenuBtn" style="background-color: #1a73e8; color: white; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: clamp(12px, 2vw, 14px); white-space: nowrap;">
-                    Account ▼
+                    Hi {{ username|title }} ▼
                 </button>
                 <div id="accountDropdown" style="display: none; position: absolute; right: 0; top: 100%; background-color: white; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); min-width: 150px; max-width: 250px; z-index: 1000;">
                     <a href="/account_info?username={{ username }}" style="display: block; padding: 10px 15px; color: #333; text-decoration: none; border-bottom: 1px solid #eee; font-size: clamp(12px, 2vw, 14px);">{{ username }} Account</a>
@@ -151,7 +141,7 @@
     <div class="button-container">
     <form action="/verbatim_video_upload/" method="post" enctype="multipart/form-data">
         <input type="hidden" name="username" value="{{ username }}">
-        <button type="submit" class="tooltip-button">Upload Verbatim Video
+        <button type="submit" class="tooltip-button" style="font-size: clamp(14px, 2.5vw, 18px);">Upload Verbatim Video
             <span class="tooltip">Verbatim Reward Range US$2 - US$5,<br>if the video is validated by our algorithm.</span>
         </button>
         <style>
@@ -193,8 +183,8 @@
     </form>
     <form action="/verbatim_video_upload/" method="post" enctype="multipart/form-data">
         <input type="hidden" name="username" value="{{ username }}">
-        <button type="submit" class="tooltip-button">Create Ad Video
-            <span class="tooltip">Ad Reward Range US$20 - US$40,<br>if the video is validated by our algorithm.</span>
+        <button type="submit" class="tooltip-button" style="font-size: clamp(14px, 2.5vw, 18px);">Create Ad Video
+            <span class="tooltip">Ad Reward Range US$20 - $40,<br>if the video is validated by our algorithm.</span>
         </button>
 
     </form>
@@ -210,41 +200,40 @@
                     font-family: 'Times New Roman', serif;
                 }
             </style>
-            <h3 style="margin: 0; color: #041122; font-size: 1.8em;">SHAIRE</h3>
-            <p style="margin: 1px 0 0 0; color: #230303; font-size: 1.1em; font-style: italic;">a MiFa Cie Ltd</p>
-            <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+            <div style="display: flex; justify-content: space-between; margin-top: 1px;">
                 <div style="flex: 1; margin-right: 20px;">
-                    <h4 style="color: #041122; margin-bottom: 10px;">SHAIRE Membership</h4>
+                    <h4 style="color: #041122; margin-bottom: 10px; font-size: clamp(1rem, 2vw, 1.2em);">SHAIRE Membership</h4>
                     <ul style="list-style: none; padding: 0; margin: 0;">
-                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">Join Now</a></li>
-                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">Benefits</a></li>
-                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">Pricing</a></li>
+                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none; font-size: clamp(14px, 1.5vw, 16px);">Join Now</a></li>
+                        <li style="margin-bottom: 5px;"><a href="#" style="color: #4017e5; text-decoration: none; font-size: clamp(14px, 1.5vw, 16px);">Benefits</a></li>
+                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none; font-size: clamp(14px, 1.5vw, 16px);">Pricing</a></li>
                     </ul>
                 </div>
                 <div style="flex: 1; margin-right: 20px;">
-                    <h4 style="color: #041122; margin-bottom: 10px;">Customer Service</h4>
+                    <h4 style="color: #041122; margin-bottom: 10px; font-size: clamp(1rem, 2vw, 1.2em);">Customer Service</h4>
                     <ul style="list-style: none; padding: 0; margin: 0;">
-                        <li style="margin-bottom: 5px;"><a href="/contact_us" style="color: #230303; text-decoration: none;">Contact Us</a></li>
-                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">Support</a></li>
-                        <li style="margin-bottom: 5px;"><a href="/faq_and_bot" style="color: #230303; text-decoration: none;">FAQ</a></li>
-                        <li style="margin-bottom: 5px;"><a href="/specifications" style="color: #230303; text-decoration: none;">Specifications</a></li>
+                        <li style="margin-bottom: 5px;"><a href="/contact_us" style="color: #230303; text-decoration: none;  font-size: clamp(14px, 1.5vw, 16px);">Contact Us</a></li>
+                        <li style="margin-bottom: 5px;"><a href="#" style="color: #4017e5; text-decoration: none;  font-size: clamp(14px, 1.5vw, 16px);">Support</a></li>
+                        <li style="margin-bottom: 5px;"><a href="/faq_and_bot" style="color: #230303; text-decoration: none;  font-size: clamp(14px, 1.5vw, 16px);">FAQ</a></li>
+                        <li style="margin-bottom: 5px;"><a href="/specifications" style="color: #4017e5; text-decoration: none;  font-size: clamp(14px, 1.5vw, 16px);">Specifications</a></li>
                     </ul>
                 </div>
                 <div style="flex: 1;">
-                    <h4 style="color: #041122; margin-bottom: 10px;">Tools & Features</h4>
+                    <h4 style="color: #041122; margin-bottom: 10px; font-size: clamp(1rem, 2vw, 1.2em);">Tools & Features</h4>
                     <ul style="list-style: none; padding: 0; margin: 0;">
-                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">AI Analysis</a></li>
-                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">Video Upload</a></li>
-                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">Reports</a></li>
+                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none; font-size: clamp(14px, 1.5vw, 16px);">AI Analysis</a></li>
+                        <li style="margin-bottom: 5px;"><a href="#" style="color: #4017e5; text-decoration: none; font-size: clamp(14px, 1.5vw, 16px);">Video Upload</a></li>
+                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none; font-size: clamp(14px, 1.5vw, 16px);">Reports</a></li>
                     </ul>
                 </div>
                 <div style="flex: 1;">
-                    <h4 style="color: #041122; margin-bottom: 10px;">Sitemap</h4>
+                    <h4 style="color: #041122; margin-bottom: 10px; font-size: clamp(1rem, 2vw, 1.2em);">Sitemap</h4>
                     <ul style="list-style: none; padding: 0; margin: 0;">
-                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">Select Contribution Type</a></li>
-                        <li style="margin-bottom: 5px;"><a href="/about_shaire" style="color: #230303; text-decoration: none;">About</a></li>
-                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">Services</a></li>
-                        <li style="margin-bottom: 5px;"><a href="/private_policy" style="color: #230303; text-decoration: none;">Privacy Policy</a></li>
+                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none; font-size: clamp(14px, 1.5vw, 16px);">Select Contribution Type</a></li>
+                        <li style="margin-bottom: 5px;"><a href="/how_to_earn" style="color: #4017e5; text-decoration: none; font-size: clamp(14px, 1.5vw, 16px);">Table of Incomes</a></li>
+                        <li style="margin-bottom: 5px;"><a href="/about_shaire" style="color: #230303; text-decoration: none; font-size: clamp(14px, 1.5vw, 16px);">About</a></li>
+                        <li style="margin-bottom: 5px;"><a href="#" style="color: #4017e5; text-decoration: none; font-size: clamp(14px, 1.5vw, 16px);">Services</a></li>
+                        <li style="margin-bottom: 5px;"><a href="/private_policy" style="color: #230303; text-decoration: none; font-size: clamp(14px, 1.5vw, 16px);">Privacy Policy</a></li>
                     </ul>
                 </div>
             </div>

@@ -3,90 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- <title>Login Page</title> -->
-     <!-- the system must check if the username is in the users database -->
-     <!-- if not, display an error message -->
-     <!-- if the username is in the database, check if the password is correct -->
-    <header>
-        <style>
-            header h1 {
-                color: rgb(4, 4, 68);
-                font-size: 3em; /* Makes the font 2 sizes larger */
-            }
-            header p {
-                font-size: 1.5em; /* Slightly larger font for the tagline */
-                color: rgb(10, 10, 100);
-            }
-        </style>
-        <h1>Welcome to Shaire</h1>
-        <p><em>Please enter your Login and Password</em></p>
-    </header>
+    <title>SHAIRE Login Portal</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+        * {
             margin: 0;
-        }
-        .login-container {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            width: 300px;
-        }
-        .login-container h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #333;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            color: #555;
-        }
-        .form-group input {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            padding: 0;
             box-sizing: border-box;
         }
-        .login-button {
-            width: 100%;
-            padding: 10px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .login-button:hover {
-            background-color: #0056b3;
+        
+        .auth-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 3rem;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            width: 420px;
+            max-width: 90vw;
+        }
+        
+        .main-title {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 0.8rem;
+            font-weight: 700;
+        }
+        
+        .info-text {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 1rem;
+            margin-bottom: 2.5rem;
+            line-height: 1.4;
+        }
+        
+        .input-wrapper {
+            margin-bottom: 1.5rem;
+        }
+        
+        .field-label {
+            display: block;
+            color: #34495e;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .action-btn {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+        }
+        
+        .primary-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .secondary-btn {
+            background: #ecf0f1;
+            color: #2c3e50;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <h2>Login</h2>
-        <form action="/select_contribution_type/" method="post">
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" required>
+    <div class="auth-card">
+        <h1 class="main-title">Welcome to SHAIRE</h1>
+        <p class="info-text">No real ID data needed, just a valid email</p>
+        
+        <form action="{{ url_for('select_contribution_type') }}" method="post">
+            <div class="input-wrapper">
+                <label class="field-label" for="username">Username</label>
+                <input class="input-field" type="text" id="username" name="username" required>
             </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
+            
+            <div class="input-wrapper">
+                <label class="field-label" for="password">Password</label>
+                <input class="input-field" type="password" id="password" name="password" required>
             </div>
-            <button type="submit" class="login-button">Login</button>
+            
+            <button type="submit" class="action-btn primary-btn">Sign In</button>
         </form>
+        
         <form action="/register/" method="get">
             <div class="form-group">
                 <p style="text-align: center; margin-top: 20px;">
