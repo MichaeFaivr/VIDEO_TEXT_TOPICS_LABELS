@@ -244,7 +244,30 @@ def user_deals():
         conn.close()
 
     return render_template('brands_deals/display_brands_deals.html', username=username, deals=deals)
-    
+
+
+""" ANNEXE PAGES RELATED ROUTES """
+@app.route('/about_shaire', methods=['GET'])
+def about_shaire():
+    """ Need a presentation video of Shaire on this page """
+    return render_template('annexes/about_shaire.html')
+
+@app.route('/private_policy', methods=['GET'])
+def private_policy():
+    return render_template('annexes/private_policy.html')
+
+@app.route('/contact_us', methods=['GET'])
+def contact_us():
+    return render_template('annexes/contact_us.html')
+
+@app.route('/faq_and_bot', methods=['GET'])
+def faq_and_bot():
+    return render_template('annexes/faq_and_bot.html')
+
+@app.route('/specifications', methods=['GET'])
+def specifications():
+    return render_template('annexes/specifications.html')
+
 
 """ VIDEO VERBATIM ANALYSIS ROUTE """
 """ Keep the video analysis route, but do not display the AI analysis results. Display the result of the validation only. """

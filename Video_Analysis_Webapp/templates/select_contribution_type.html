@@ -2,7 +2,17 @@
 <html lang="en">
     <nav style="background-color: #fff; padding: 10px 15px; border-bottom: 2px solid #1a73e8; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
         <div style="display: flex; justify-content: space-between; align-items: center; max-width: 800px; margin: 0 auto; flex-wrap: wrap; gap: 10px;">
-            <div style="font-size: clamp(1rem, 3vw, 1.2em); font-weight: bold; color: #1a73e8;">SHAIRE</div>
+            <div style="font-size: clamp(1rem, 3vw, 1.2em); font-family: 'Quicksand', sans-serif; font-weight: bold; color: #1a73e8; cursor: pointer;" onclick="window.location.href='/about_shaire'">SHAIRE</div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <svg width="32" height="32" viewBox="0 0 32 32" style="fill: #1a73e8;">
+                    <circle cx="8" cy="8" r="3"/>
+                    <circle cx="24" cy="8" r="3"/>
+                    <circle cx="16" cy="24" r="3"/>
+                    <path d="M10.5 10l5 12M21.5 10l-5 12M8 11l16 0" stroke="#1a73e8" stroke-width="2" fill="none"/>
+                    <path d="M12 6c0-1.1.9-2 2-2h4c1.1 0 2 .9 2 2v4c0 1.1-.9 2-2 2h-4c-1.1 0-2-.9-2-2V6z" fill="none" stroke="#1a73e8" stroke-width="1.5"/>
+                </svg>
+                <span style="font-size: clamp(1rem, 2vw, 1rem); color: #666; font-style: italic;">Share & Earn</span>
+            </div>
             <div id="serverUsername" style="font-size: clamp(0.9rem, 2.5vw, 1.8em); color: #1a73e8; font-weight: bold; text-align: center; flex: 1; min-width: 120px;">
                 Hi {{ username|title }}
             </div> 
@@ -141,11 +151,52 @@
     <div class="button-container">
     <form action="/verbatim_video_upload/" method="post" enctype="multipart/form-data">
         <input type="hidden" name="username" value="{{ username }}">
-        <button type="submit">Upload Verbatim Video</button>
+        <button type="submit" class="tooltip-button">Upload Verbatim Video
+            <span class="tooltip">Verbatim Reward Range US$2 - US$5,<br>if the video is validated by our algorithm.</span>
+        </button>
+        <style>
+            .tooltip-button {
+            position: relative;
+            }
+            .tooltip {
+            visibility: hidden;
+            opacity: 0;
+            background-color: rgba(113, 21, 21, 0.626);
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1001;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            font-size: 14px;
+            transition: opacity 0.3s;
+            }
+            .tooltip::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: rgba(0, 0, 0, 0.8) transparent transparent transparent;
+            }
+            .tooltip-button:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+            }
+        </style>
     </form>
     <form action="/verbatim_video_upload/" method="post" enctype="multipart/form-data">
         <input type="hidden" name="username" value="{{ username }}">
-        <button type="submit">Create Ad Video</button>
+        <button type="submit" class="tooltip-button">Create Ad Video
+            <span class="tooltip">Ad Reward Range US$20 - US$40,<br>if the video is validated by our algorithm.</span>
+        </button>
+
     </form>
 
     </div>
@@ -173,10 +224,10 @@
                 <div style="flex: 1; margin-right: 20px;">
                     <h4 style="color: #041122; margin-bottom: 10px;">Customer Service</h4>
                     <ul style="list-style: none; padding: 0; margin: 0;">
-                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">Contact Us</a></li>
+                        <li style="margin-bottom: 5px;"><a href="/contact_us" style="color: #230303; text-decoration: none;">Contact Us</a></li>
                         <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">Support</a></li>
-                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">FAQ</a></li>
-                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">Specifications</a></li>
+                        <li style="margin-bottom: 5px;"><a href="/faq_and_bot" style="color: #230303; text-decoration: none;">FAQ</a></li>
+                        <li style="margin-bottom: 5px;"><a href="/specifications" style="color: #230303; text-decoration: none;">Specifications</a></li>
                     </ul>
                 </div>
                 <div style="flex: 1;">
@@ -191,9 +242,9 @@
                     <h4 style="color: #041122; margin-bottom: 10px;">Sitemap</h4>
                     <ul style="list-style: none; padding: 0; margin: 0;">
                         <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">Select Contribution Type</a></li>
-                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">About</a></li>
+                        <li style="margin-bottom: 5px;"><a href="/about_shaire" style="color: #230303; text-decoration: none;">About</a></li>
                         <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">Services</a></li>
-                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;">Privacy Policy</a></li>
+                        <li style="margin-bottom: 5px;"><a href="/private_policy" style="color: #230303; text-decoration: none;">Privacy Policy</a></li>
                     </ul>
                 </div>
             </div>
