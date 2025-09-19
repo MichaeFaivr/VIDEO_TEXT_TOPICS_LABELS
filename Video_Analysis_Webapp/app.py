@@ -18,7 +18,7 @@ TEMP_AUDIO_FILE = "temp_audio.wav" # better to read from config file
 # 06-mai TEST
 TEMP_AUDIO_FILE = "temp_mono_audio.wav"
 
-PATH_DATABASE_USERS = 'databases/user_accounts/users5.db'
+PATH_DATABASE_USERS = 'databases/user_accounts/users7.db'
 
 # Initialize the database
 def init_db():
@@ -33,8 +33,15 @@ def init_db():
             username TEXT NOT NULL,
             email TEXT NOT NULL,
             password TEXT NOT NULL,
-            interests TEXT
-        )           
+            interests TEXT,
+            monthly_hours_available INTEGER,
+            desired_extra_income TEXT,
+            five_favorite_product_categories TEXT,
+            why_favorite_brands TEXT,
+            five_favorite_brands TEXT,
+            five_favorite_products TEXT, 
+            UNIQUE(username, email)
+        )
     ''')
     c.execute('''
         CREATE TABLE IF NOT EXISTS history_ctbs (
@@ -151,6 +158,61 @@ def register_user():
               (username, 'Deal of Samsung TVs', 'Samsung', 'TV', 'TV2025_JK0002154', 'Diag. Size 240 inches, 8K, dolbysourround', '30%', 850.0, 'USD'))
     c.execute('INSERT INTO user_deals (username, deal_description, brand, product_category, product, product_specs, discount_percentage, discounted_price, currency) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
               (username, 'Deal of LG TVs', 'LG', 'TV', 'LG2024_MP211646', 'Diag. Size 250 inches, 8K, dolbysourround3D', '40%', 880.0, 'USD'))
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for('success'))
+
+
+# Fill or update the user profile information page route
+@app.route('/fill_update_your_profile/', methods=['GET'])
+def fill_update_your_profile():
+    # GET method to display the form with pre-filled values if they exist
+    username = request.args.get('username')
+    print(f'username in fill_update_your_profile: {username}')
+    if username:
+        conn = sqlite3.connect(PATH_DATABASE_USERS)
+        c = conn.cursor()
+        c.execute('SELECT monthly_hours_available, five_favorite_brands, desired_extra_income, why_favorite_brands FROM users WHERE username = ?', (username,))
+        result = c.fetchone()
+        conn.close()
+        
+        if result:
+            monthly_hours_available = result[0] if result[0] else ''
+            five_favorite_brands = result[1] if result[1] else ''
+            desired_extra_income = result[2] if result[2] else ''
+            why_favorite_brands = result[3] if result[3] else ''
+        else:
+            monthly_hours_available = ''
+            five_favorite_brands = ''
+            desired_extra_income = ''
+            why_favorite_brands = ''
+    else:
+        monthly_hours_available = ''
+        five_favorite_brands = ''
+        desired_extra_income = ''
+        why_favorite_brands = ''
+    print(f'five_favorite_brands: {five_favorite_brands}, desired_extra_income: {desired_extra_income}, why_favorite_brands: {why_favorite_brands}')
+
+    return render_template('annexes/profiling_page.html', username=username, 
+                         monthly_hours_available=monthly_hours_available,
+                         five_favorite_brands=five_favorite_brands, 
+                         desired_extra_income=desired_extra_income,
+                         why_favorite_brands=why_favorite_brands)
+
+""" POST method to handle form submission and update the database """
+@app.route('/submit_profile', methods=['POST'])
+def submit_profile():
+    username = request.form['username']
+    five_favorite_brands = request.form['five_favorite_brands']
+    monthly_hours_available = request.form['monthly_hours_available']
+    desired_extra_income = request.form['desired_extra_income']
+    why_favorite_brands = request.form['why_favorite_brands']
+
+    conn = sqlite3.connect(PATH_DATABASE_USERS)
+    c = conn.cursor()
+    c.execute('UPDATE users SET five_favorite_brands = ?, monthly_hours_available = ?, desired_extra_income = ?, why_favorite_brands = ? WHERE username = ?',
+              (five_favorite_brands, monthly_hours_available, desired_extra_income, why_favorite_brands, username))
     conn.commit()
     conn.close()
 

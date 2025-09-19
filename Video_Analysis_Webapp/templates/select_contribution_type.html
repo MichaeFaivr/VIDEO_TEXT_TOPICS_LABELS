@@ -14,6 +14,7 @@
                     <a href="/account_info?username={{ username }}" style="display: block; padding: 10px 15px; color: #333; text-decoration: none; border-bottom: 1px solid #eee; font-size: clamp(12px, 2vw, 14px);">{{ username }} Account</a>
                     <a href="/user_history?username={{ username }}" style="display: block; padding: 10px 15px; color: #333; text-decoration: none; border-bottom: 1px solid #eee; font-size: clamp(12px, 2vw, 14px);">History/Credits</a>
                     <a href="/user_deals?username={{ username }}" style="display: block; padding: 10px 15px; color: #333; text-decoration: none; border-bottom: 1px solid #eee; font-size: clamp(12px, 2vw, 14px);">My Deals</a>
+                    <a href="/" style="display: block; padding: 10px 15px; color: #333; text-decoration: none; font-size: clamp(12px, 2vw, 14px);">Logout</a>
                 </div>
             </div>
         </div>
@@ -186,7 +187,13 @@
         <button type="submit" class="tooltip-button" style="font-size: clamp(14px, 2.5vw, 18px);">Create Ad Video
             <span class="tooltip">Ad Reward Range US$20 - $40,<br>if the video is validated by our algorithm.</span>
         </button>
+    </form>
 
+    <form action="/fill_update_your_profile/" method="get" enctype="multipart/form-data">
+        <input type="hidden" name="username" value="{{ username }}">
+        <button type="submit" class="tooltip-button" style="font-size: clamp(14px, 2.5vw, 18px);">Fill or Update Profile
+            <span class="tooltip">Update your profile information.</span>
+        </button>
     </form>
 
     </div>

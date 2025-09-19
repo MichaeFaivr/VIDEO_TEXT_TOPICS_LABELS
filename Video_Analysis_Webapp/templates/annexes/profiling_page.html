@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profiling Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .form-container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"], input[type="number"], textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>{{ username|title }} Profiling Form</h2>
+    <!--
+        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+            <thead>
+            <tr style="background-color: #1a365d;">
+                <th style="color: white; padding: 12px; text-align: left; border: 1px solid #ddd;">5 favorite brands</th>
+                <th style="color: white; padding: 12px; text-align: left; border: 1px solid #ddd;">Desired extra income</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td style="padding: 12px; border: 1px solid #ddd; background-color: #f9f9f9;">{{ five_favorite_brands }}</td>
+                <td style="padding: 12px; border: 1px solid #ddd; background-color: #f9f9f9;">{{ desired_extra_income }}</td>
+            </tr>
+            </tbody>
+        </table>
+    -->
+        <form method="POST" action="/submit_profile" enctype="multipart/form-data"> 
+            <div class="form-group">
+                <label for="monthly_hours_available">monthly hours available?</label>
+                <input type="number" id="monthly_hours_available" name="monthly_hours_available" placeholder="Give the number of hours per month..." value="{{ monthly_hours_available or '' }}">
+            </div>
+            
+            <div class="form-group">
+                <label for="five_favorite_brands">What are your 5 favorite brands?</label>
+                <input type="text" id="five_favorite_brands" name="five_favorite_brands" placeholder="List your 5 favorite brands..." value="{{ five_favorite_brands or '' }}">
+            </div>
+
+            <div class="form-group">
+                <label for="why_favorite_brands">Why these brands?</label>
+                <textarea id="why_favorite_brands" name="why_favorite_brands" placeholder="Explain why these brands are your favorites...">{{ why_favorite_brands or '' }}</textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="extra_income">What extra monthly income on average would you like to earn from our services?</label>
+                <input type="text" id="desired_extra_income" name="desired_extra_income" placeholder="e.g., $500/month, $1000/month" value="{{ desired_extra_income or '' }}">
+            </div> 
+            <input type="hidden" name="username" value="{{ username }}">
+            <button type="submit">Submit Profile</button>
+        </form>
+    </div>
+</body>
+</html>
