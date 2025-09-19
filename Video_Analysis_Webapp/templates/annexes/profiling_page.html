@@ -62,22 +62,6 @@
 <body>
     <div class="form-container">
         <h2>{{ username|title }} Profiling Form</h2>
-    <!--
-        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
-            <thead>
-            <tr style="background-color: #1a365d;">
-                <th style="color: white; padding: 12px; text-align: left; border: 1px solid #ddd;">5 favorite brands</th>
-                <th style="color: white; padding: 12px; text-align: left; border: 1px solid #ddd;">Desired extra income</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td style="padding: 12px; border: 1px solid #ddd; background-color: #f9f9f9;">{{ five_favorite_brands }}</td>
-                <td style="padding: 12px; border: 1px solid #ddd; background-color: #f9f9f9;">{{ desired_extra_income }}</td>
-            </tr>
-            </tbody>
-        </table>
-    -->
         <form method="POST" action="/submit_profile" enctype="multipart/form-data"> 
             <div class="form-group">
                 <label for="monthly_hours_available">monthly hours available?</label>
@@ -93,13 +77,18 @@
                 <label for="why_favorite_brands">Why these brands?</label>
                 <textarea id="why_favorite_brands" name="why_favorite_brands" placeholder="Explain why these brands are your favorites...">{{ why_favorite_brands or '' }}</textarea>
             </div>
-            
+
+            <div class="form-group">
+                <label for="five_favorite_product_categories">What are your 5 favorite product categories?</label>
+                <input type="text" id="five_favorite_product_categories" name="five_favorite_product_categories" placeholder="List your 5 favorite product categories..." value="{{ five_favorite_product_categories or '' }}">
+            </div>
+
             <div class="form-group">
                 <label for="extra_income">What extra monthly income on average would you like to earn from our services?</label>
                 <input type="text" id="desired_extra_income" name="desired_extra_income" placeholder="e.g., $500/month, $1000/month" value="{{ desired_extra_income or '' }}">
             </div> 
             <input type="hidden" name="username" value="{{ username }}">
-            <button type="submit">Submit Profile</button>
+            <button type="submit" onclick="history.back()">Submit Profile</button>
         </form>
     </div>
 </body>

@@ -160,7 +160,7 @@ def register_user():
               (username, 'Deal of LG TVs', 'LG', 'TV', 'LG2024_MP211646', 'Diag. Size 250 inches, 8K, dolbysourround3D', '40%', 880.0, 'USD'))
     conn.commit()
     conn.close()
-
+    
     return redirect(url_for('success'))
 
 
@@ -173,7 +173,7 @@ def fill_update_your_profile():
     if username:
         conn = sqlite3.connect(PATH_DATABASE_USERS)
         c = conn.cursor()
-        c.execute('SELECT monthly_hours_available, five_favorite_brands, desired_extra_income, why_favorite_brands FROM users WHERE username = ?', (username,))
+        c.execute('SELECT monthly_hours_available, five_favorite_brands, desired_extra_income, why_favorite_brands, five_favorite_product_categories FROM users WHERE username = ?', (username,))
         result = c.fetchone()
         conn.close()
         
@@ -182,23 +182,27 @@ def fill_update_your_profile():
             five_favorite_brands = result[1] if result[1] else ''
             desired_extra_income = result[2] if result[2] else ''
             why_favorite_brands = result[3] if result[3] else ''
+            five_favorite_product_categories = result[4] if result[4] else ''
         else:
             monthly_hours_available = ''
             five_favorite_brands = ''
             desired_extra_income = ''
             why_favorite_brands = ''
+            five_favorite_product_categories = ''
     else:
         monthly_hours_available = ''
         five_favorite_brands = ''
         desired_extra_income = ''
         why_favorite_brands = ''
-    print(f'five_favorite_brands: {five_favorite_brands}, desired_extra_income: {desired_extra_income}, why_favorite_brands: {why_favorite_brands}')
+        five_favorite_product_categories = ''
+    print(f'five_favorite_brands: {five_favorite_brands}, desired_extra_income: {desired_extra_income}, why_favorite_brands: {why_favorite_brands}, five_favorite_product_categories: {five_favorite_product_categories}')
 
     return render_template('annexes/profiling_page.html', username=username, 
                          monthly_hours_available=monthly_hours_available,
                          five_favorite_brands=five_favorite_brands, 
                          desired_extra_income=desired_extra_income,
-                         why_favorite_brands=why_favorite_brands)
+                         why_favorite_brands=why_favorite_brands,
+                         five_favorite_product_categories=five_favorite_product_categories)
 
 """ POST method to handle form submission and update the database """
 @app.route('/submit_profile', methods=['POST'])
@@ -216,7 +220,8 @@ def submit_profile():
     conn.commit()
     conn.close()
 
-    return redirect(url_for('success'))
+    return render_template('select_contribution_type.html', username=username)
+    #return redirect(url_for('success'))
 
 
 # Route to display success message and redirect to login page
