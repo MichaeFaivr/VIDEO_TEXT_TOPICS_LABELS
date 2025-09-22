@@ -106,8 +106,8 @@
     <div class="auth-card">
         <h1 class="main-title">Welcome to SHAIRE</h1>
         <p class="info-text">No real ID data needed, just a valid email</p>
-        
-        <form action="{{ url_for('select_contribution_type') }}" method="post">
+
+        <form action="{{ url_for('login_user') }}" method="post">
             <div class="input-wrapper">
                 <label class="field-label" for="username">Username</label>
                 <input class="input-field" type="text" id="username" name="username" required>
@@ -120,6 +120,88 @@
             
             <button type="submit" class="action-btn primary-btn">Sign In</button>
         </form>
+
+        <!-- Display error messages in the page -->
+        <div id="error-message" style="display: none; background-color: #f8d7da; color: #721c24; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid #f5c6cb;"></div>
+        
+        <!-- check if the filled password is correct -->
+         <script>
+            document.getElementById('loginForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    alert('Login successful!');
+                } else {
+                    alert(result.error);
+                }
+            });
+        </script>
+    <!--
+        <script>
+            document.querySelector('form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const errorDiv = document.getElementById('error-message');
+
+                try {
+                    const response = await fetch('/login_checking', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+                    if (response.ok) {
+                        // Redirect on successful login
+                        window.location.href = result.redirect_url || '/select_contribution_type';
+                    } else {
+                        // Display error message in the page
+                        errorDiv.textContent = result.error;
+                        errorDiv.style.display = 'block';
+                    }
+                } catch (error) {
+                    errorDiv.textContent = 'Network error. Please try again.';
+                    errorDiv.style.display = 'block';
+                }
+            });
+        </script>
+    -->
+    <!--
+        <script>
+            document.querySelector('form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const errorDiv = document.getElementById('error-message');
+
+            try {
+                const response = await fetch('/login_checking', {
+                method: 'POST',
+                body: formData
+                });
+
+                const result = await response.json();
+                console.log(result);
+                if (response.ok) {
+                // Redirect on successful login
+                window.location.href = result.redirect_url || '/dashboard';
+                } else {
+                // Display error message in the page
+                errorDiv.textContent = result.error;
+                errorDiv.style.display = 'block';
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Network error. Please try again.';
+                errorDiv.style.display = 'block';
+            }
+            });
+        </script>
+    -->
         
         <form action="/register/" method="get">
             <div class="form-group">

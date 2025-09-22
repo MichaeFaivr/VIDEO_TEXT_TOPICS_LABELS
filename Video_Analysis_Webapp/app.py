@@ -125,6 +125,26 @@ def select_contribution_type():
 def login_page():
     return render_template('login_page.html') # check if the user exists in the database
 
+@app.route('/login_checking', methods=['POST'])
+def login_user():
+    username = request.form['username']
+    password = request.form['password']
+
+    conn = sqlite3.connect(PATH_DATABASE_USERS)
+    c = conn.cursor()
+    c.execute('SELECT * FROM users WHERE username = ? AND password = ?', (username, password))
+    user = c.fetchone()
+    conn.close()
+
+    if user:
+        # Redirect to the upload video page with username as a parameter
+        # Store the redirect URL in the session or pass it as a parameter
+        #redirect_url = url_for('verbatim_video_upload', username=username)
+        #return redirect(url_for('select_contribution_type', username=username, redirect_url=redirect_url))
+        return render_template('select_contribution_type.html', username=username) # Pass username to the upload page
+    else:
+        return "Invalid credentials. Please try again."
+
 
 # Register page route
 @app.route('/register/', methods=['GET'])

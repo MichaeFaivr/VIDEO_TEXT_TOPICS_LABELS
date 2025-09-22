@@ -66,8 +66,7 @@
             }
         </style>
         <h1 style="margin-top: 6px; margin-bottom: 2px;">Welcome to Shaire</h1>
-        <p style="margin: 1px 0;"><em>Get credits with our partners From your Inputs</em></p>
-        <p style="margin: 1px 0;"><em>20 AI-Services to convert your Inputs to Incomes! </em></p>
+        <p style="margin: 1px 0;"><em>Subtitle</em></p>
     </header>
     <style>
         body {
@@ -109,17 +108,27 @@
             background-color: #f5f5f5;
         }
         button {
-            background-color: #1a73e8;
-            color: white;
+            background: linear-gradient(145deg, #c0c5ce, #3872c3);
+            color: #2c3e50;
             padding: 25px 25px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-size: 18px;
-            transition: background-color 0.3s;
+            transition: all 0.3s;
+            box-shadow: 
+                inset 2px 2px 4px rgba(255,255,255,0.6),
+                inset -2px -2px 4px rgba(0,0,0,0.2),
+                2px 2px 8px rgba(0,0,0,0.2);
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
         }
         button:hover {
-            background-color: #0d47a1;
+            background: linear-gradient(145deg, #d4d9e2, #b1b8c3);
+            transform: translateY(-1px);
+            box-shadow: 
+                inset 1px 1px 2px rgba(255,255,255,0.7),
+                inset -1px -1px 2px rgba(0,0,0,0.3),
+                3px 3px 10px rgba(0,0,0,0.3);
         }
         label {
             font-weight: bold;
@@ -187,7 +196,7 @@
     </form>
     <form action="/verbatim_video_upload/" method="post" enctype="multipart/form-data">
         <input type="hidden" name="username" value="{{ username }}">
-        <button type="submit" class="tooltip-button" style="font-size: clamp(14px, 2.5vw, 18px);">Create Ad Video
+        <button type="submit" class="tooltip-button" style="font-size: clamp(14px, 2.5vw, 18px);">Create A Video
             <span class="tooltip">Ad Reward Range US$20 - $40,<br>if the video is validated by our algorithm.</span>
         </button>
     </form>
