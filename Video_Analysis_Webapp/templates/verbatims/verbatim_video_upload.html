@@ -62,8 +62,7 @@
             }
         </style>
         <h1 style="margin-top: 6px; margin-bottom: 2px;">Welcome to Shaire</h1>
-        <p style="margin: 1px 0;"><em>Get credits with our partners From your Inputs</em></p>
-        <p style="margin: 1px 0;"><em>20 AI-Services to convert your Inputs to Incomes! </em></p>
+        <p style="margin: 1px 0;"><em>Subtitle</em></p>
     </header>
     <style>
         body {
@@ -134,9 +133,27 @@
         <input type="hidden" name="username" value="{{ username }}">
         <!-- <label for="video">Choose a video file:</label> -->
         <div style="margin-top: 20px;">
-            <button type="submit" id="selectButton" style="font-size: clamp(14px, 2.5vw, 18px);">Choose a video file for AI Analysis</button>
+            <button type="button" id="selectButton" style="font-size: clamp(14px, 2.5vw, 18px);" onclick="document.getElementById('video').click();" required>Choose a video file for AI Analysis</button>
         </div>
-        <input type="file" id="video" name="video" accept="video/*" required>
+        <input type="file" id="video" name="video" accept="video/*" style="display: none;" onchange="displaySelectedFile()">
+        <div id="selectedFile" style="margin-top: 15px; padding: 10px; background-color: #f0f8ff; border: 1px solid #ccc; border-radius: 4px; display: none;">
+            <strong>Selected file: </strong><span id="fileName"></span>
+        </div>
+        <script>
+            function displaySelectedFile() {
+                const fileInput = document.getElementById('video');
+                const selectedFileDiv = document.getElementById('selectedFile');
+                const fileNameSpan = document.getElementById('fileName');
+                
+                if (fileInput.files.length > 0) {
+                    const file = fileInput.files[0];
+                    fileNameSpan.textContent = file.name;
+                    selectedFileDiv.style.display = 'block';
+                } else {
+                    selectedFileDiv.style.display = 'none';
+                }
+            }
+        </script>
         <br>
         <div style="margin-top: 20px;">
             <button type="submit" id="uploadButton" style="font-size: clamp(14px, 2.5vw, 18px);">Upload your Video for AI Analysis</button>   
