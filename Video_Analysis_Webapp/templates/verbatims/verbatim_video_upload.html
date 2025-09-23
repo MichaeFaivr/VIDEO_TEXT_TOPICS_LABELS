@@ -139,6 +139,10 @@
         <div id="selectedFile" style="margin-top: 15px; padding: 10px; background-color: #f0f8ff; border: 1px solid #ccc; border-radius: 4px; display: none;">
             <strong>Selected file: </strong><span id="fileName"></span>
         </div>
+        <br>
+        <div id="uploadButtonContainer" style="margin-top: 20px; display: none;">
+            <button type="submit" id="uploadButton" style="font-size: clamp(14px, 2.5vw, 18px);">Upload your Video for AI Analysis</button>
+        </div>
         <script>
             function displaySelectedFile() {
                 const fileInput = document.getElementById('video');
@@ -149,15 +153,13 @@
                     const file = fileInput.files[0];
                     fileNameSpan.textContent = file.name;
                     selectedFileDiv.style.display = 'block';
+                    document.getElementById('uploadButtonContainer').style.display = 'block';
                 } else {
                     selectedFileDiv.style.display = 'none';
+                    document.getElementById('uploadButtonContainer').style.display = 'none';
                 }
             }
         </script>
-        <br>
-        <div style="margin-top: 20px;">
-            <button type="submit" id="uploadButton" style="font-size: clamp(14px, 2.5vw, 18px);">Upload your Video for AI Analysis</button>   
-        </div>
     </form>
     <footer style="margin-top: 30px; padding: 20px; background-color: #e4dcdc; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
         <div style="text-align: left;">

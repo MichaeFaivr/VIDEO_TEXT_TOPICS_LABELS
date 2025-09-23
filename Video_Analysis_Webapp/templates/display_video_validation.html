@@ -8,7 +8,7 @@
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
-            background-color: #f5f5f5;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
         .container {
             max-width: 800px;
@@ -19,7 +19,7 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .video-info {
-            margin-bottom: 30px;
+            margin-bottom: 10px;
         }
         .compliance-section {
             background-color: #f8f9fa;
@@ -42,21 +42,21 @@
 </head>
 <body>
     <div class="container">
-        <h1>{{ username }} - Video Analysis Validation</h1>
-        
-        <div class="video-info">
-            <h2>Analyzed Video</h2>
-            <p><strong>File Name:</strong> {{ video_path }}</p>
+        <h1 style="color: rgb(53, 53, 234); font-size: clamp(1.5rem, 4vw, 2.5rem);">{{ username }} - Video Analysis Validation</h1>
+
+        <div class="video-info" style="font-size: clamp(1rem, 3vw, 1.5rem);">
+            <h2 style="font-size: clamp(1.2rem, 3vw, 1.8rem);">Analyzed Video</h2>
+            <p style="font-size: clamp(0.9rem, 2.5vw, 1.2rem);"><strong>File Name:</strong> {{ video_path }}</p>
         </div>
 
-        <div class="compliance-section"></div>
+        <div class="compliance-section">
             {% if compliance_metrics >= 0.5 %}
-                <p style="color: #28a745; font-weight: bold; font-size: 22px; margin-bottom: 15px; text-align: center;">✓ Video accepted</p>
+                <p style="color: #28a745; font-weight: bold; font-size: clamp(1rem, 3vw, 1.5rem); margin-bottom: 15px; text-align: center;">✓ Video accepted</p>
             {% else %}
-                <p style="color: #dc3545; font-weight: bold; font-size: 22px; margin-bottom: 15px; text-align: center;">✗ Video rejected</p>
+                <p style="color: #dc3545; font-weight: bold; font-size: clamp(1rem, 3vw, 1.5rem); margin-bottom: 15px; text-align: center;">✗ Video rejected</p>
             {% endif %}
-            <h2>Compliance Metrics</h2>
-            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+            <h2 style="font-size: clamp(1.1rem, 3vw, 1.6rem);">Compliance Metrics</h2>
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: clamp(0.9rem, 2.5vw, 1.2rem);">
                 <tbody>
                     <tr>
                         <td style="padding: 12px; border: 1px solid #ddd;"><strong>Compliance Metrics</strong></td>
