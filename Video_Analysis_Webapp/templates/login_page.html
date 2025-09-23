@@ -122,27 +122,30 @@
         </form>
 
         <!-- Display error messages in the page -->
-        <div id="error-message" style="display: none; background-color: #f8d7da; color: #721c24; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid #f5c6cb;"></div>
+        <div id="error-message" style="display: none; background-color: #f8d7da; color: #721c24; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid #f5c6cb;">
+            <p id="error-text"></p>
         
-        <!-- check if the filled password is correct -->
-         <script>
-            document.getElementById('loginForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const formData = new FormData(e.target);
+            <!-- check if the filled password is correct -->
+            <script>
+                document.getElementById('loginForm').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData(e.target);
 
-                const response = await fetch('/login', {
-                    method: 'POST',
-                    body: formData
+                    const response = await fetch('/login_checking', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+                    if (response.ok) {
+                        alert('Login successful!');
+                        window.location.href = '/select_contribution_type';
+                    } else {
+                        alert(result.error);
+                    }
                 });
-
-                const result = await response.json();
-                if (response.ok) {
-                    alert('Login successful!');
-                } else {
-                    alert(result.error);
-                }
-            });
-        </script>
+            </script>
+        </div>
     <!--
         <script>
             document.querySelector('form').addEventListener('submit', async (e) => {

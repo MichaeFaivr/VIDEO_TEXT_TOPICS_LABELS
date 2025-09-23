@@ -86,6 +86,7 @@ def save_video_analysis_to_db(username, video_filename, credit=0, currency='USD'
             conn.commit()
             conn.close()
 
+
 # Route for handling the upload video page post successful Login
 # Prompt to Claude4: Write the route for upload_data. Strong condition: I need the username value from the login page.
 # Use decorators to route the specific use cases : verbatims, ads, others
@@ -93,9 +94,12 @@ def save_video_analysis_to_db(username, video_filename, credit=0, currency='USD'
 @app.route('/verbatim_video_upload/', methods=['GET', 'POST'])
 def verbatim_video_upload():
     # POST method in login_page.html when clicking on Login button
+    print(f'Request method: {request.method}')
     if request.method == 'POST':
         # Get username from login form
         username = request.form.get('username')
+        if not username:
+            username = request.args.get('username')
         print(f'username in verbatim_video_upload: {username}') # ok: username value correctly retrieved
         if username:
             return render_template('verbatims/verbatim_video_upload.html', username=username) # Pass username to the upload page
@@ -138,12 +142,11 @@ def login_user():
 
     if user:
         # Redirect to the upload video page with username as a parameter
-        # Store the redirect URL in the session or pass it as a parameter
-        #redirect_url = url_for('verbatim_video_upload', username=username)
-        #return redirect(url_for('select_contribution_type', username=username, redirect_url=redirect_url))
-        return render_template('select_contribution_type.html', username=username) # Pass username to the upload page
+        # Login successful, redirect to select_contribution_type route  
+        return redirect(url_for('select_contribution_type'), code=307)
     else:
-        return "Invalid credentials. Please try again."
+        error_message = "Invalid credentials. Please try again."
+        return render_template('login_page.html', error=error_message)
 
 
 # Register page route
@@ -357,7 +360,9 @@ def specifications():
 
 @app.route('/how_to_earn', methods=['GET'])
 def how_to_earn():
-    return render_template('annexes/table_reference_incomes.html')
+    username = request.args.get('username')
+    print(f'username in how_to_earn: {username}')
+    return render_template('annexes/table_reference_incomes.html', username=username)
 
 
 """ VIDEO VERBATIM ANALYSIS ROUTE """
