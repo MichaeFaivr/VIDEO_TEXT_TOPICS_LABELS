@@ -121,90 +121,46 @@
             <button type="submit" class="action-btn primary-btn">Sign In</button>
         </form>
 
-        <!-- Display error messages in the page -->
-        <div id="error-message" style="display: none; background-color: #f8d7da; color: #721c24; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid #f5c6cb;">
-            <p id="error-text"></p>
-        
-            <!-- check if the filled password is correct -->
+        <!-- Display error messages in the login page -->
+        <div id="error-message" style="background-color: #f8d7da; color: #721c24; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid #f5c6cb;">
+            <p id="error-text">{{ error }}</p>
             <script>
-                document.getElementById('loginForm').addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    const formData = new FormData(e.target);
-
-                    const response = await fetch('/login_checking', {
-                        method: 'POST',
-                        body: formData
-                    });
-
-                    const result = await response.json();
-                    if (response.ok) {
-                        alert('Login successful!');
-                        window.location.href = '/select_contribution_type';
-                    } else {
-                        alert(result.error);
-                    }
-                });
+            document.getElementById('username').addEventListener('input', function() {
+                const errorDiv = document.getElementById('error-message');
+                errorDiv.style.display = 'none';
+                document.getElementById('error-text').textContent = '';
+            });
             </script>
-        </div>
-    <!--
-        <script>
-            document.querySelector('form').addEventListener('submit', async (e) => {
+        
+            <!-- check if the filled password is correct js script -->
+            <!-- Using Fetch API to handle form submission and display errors -->
+            <!-- This script prevents the default form submission, sends the data via Fetch API, and handles the response -->
+            <!-- If login is successful, it redirects to the select_contribution_type page -->
+            <!-- If there's an error, it displays the error message in the error-message div -->
+            <!--  
+            <script>
+            document.getElementById('loginForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const formData = new FormData(e.target);
-                const errorDiv = document.getElementById('error-message');
 
-                try {
-                    const response = await fetch('/login_checking', {
-                        method: 'POST',
-                        body: formData
-                    });
-
-                    const result = await response.json();
-                    if (response.ok) {
-                        // Redirect on successful login
-                        window.location.href = result.redirect_url || '/select_contribution_type';
-                    } else {
-                        // Display error message in the page
-                        errorDiv.textContent = result.error;
-                        errorDiv.style.display = 'block';
-                    }
-                } catch (error) {
-                    errorDiv.textContent = 'Network error. Please try again.';
-                    errorDiv.style.display = 'block';
-                }
-            });
-        </script>
-    -->
-    <!--
-        <script>
-            document.querySelector('form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const errorDiv = document.getElementById('error-message');
-
-            try {
                 const response = await fetch('/login_checking', {
                 method: 'POST',
                 body: formData
                 });
 
                 const result = await response.json();
-                console.log(result);
+                document.getElementById('error-text').textContent = "ERROR TEST";
                 if (response.ok) {
-                // Redirect on successful login
-                window.location.href = result.redirect_url || '/dashboard';
+                alert('Login successful!');
+                window.location.href = '/select_contribution_type';
                 } else {
-                // Display error message in the page
-                errorDiv.textContent = result.error;
-                errorDiv.style.display = 'block';
+                document.getElementById('error-text').textContent = result.error;
+                document.getElementById('error-message').style.display = 'block';
                 }
-            } catch (error) {
-                errorDiv.textContent = 'Network error. Please try again.';
-                errorDiv.style.display = 'block';
-            }
             });
-        </script>
-    -->
+            </script>
+            -->
+        </div>
         
         <form action="/register/" method="get">
             <div class="form-group">
