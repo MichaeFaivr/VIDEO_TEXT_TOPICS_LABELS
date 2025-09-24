@@ -96,11 +96,10 @@ def verbatim_video_upload():
     # POST method in login_page.html when clicking on Login button
     print(f'Request method: {request.method}')
     if request.method == 'POST':
-        # Get username from login form
-        username = request.form.get('username')
-        if not username:
-            username = request.args.get('username')
-        print(f'username in verbatim_video_upload: {username}') # ok: username value correctly retrieved
+        # Get username from login form data
+        # Also check for username in URL parameters for GET requests
+        username = request.form.get('username') or request.args.get('username')
+        print(f'username retrieved from form or args: {username}')
         if username:
             return render_template('verbatims/verbatim_video_upload.html', username=username) # Pass username to the upload page
         else:
