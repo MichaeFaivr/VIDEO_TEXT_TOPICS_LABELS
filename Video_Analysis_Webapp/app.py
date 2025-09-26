@@ -307,12 +307,13 @@ def user_history():
     if username:
         conn = sqlite3.connect(PATH_DATABASE_USERS)
         c = conn.cursor()
-        c.execute('SELECT * FROM history_ctbs WHERE username = ?', (username,))
+        c.execute('SELECT * FROM history_ctbs WHERE username = ? AND credit > 0', (username,))
         contributions = c.fetchall()
         print(f'contributions in user_history: {contributions}')
         conn.close()
 
     return render_template('user_history.html', username=username, contributions=contributions)
+
 
 # Route to display the deals by brands for the user
 @app.route('/user_deals/', methods=['GET'])

@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ username|title }} History</title>
+    {% set total_credit = contributions|sum(attribute='4')|default(0) %}
+    {% set currency = contributions[0][5] if contributions else 'USD' %}
+    {% set total_contributions = contributions|length %}
+    <p style="text-align: center; font-size: 1.2rem; margin: 10px 0; color: #333;">
+        Total Valid Contributions: {{ total_contributions }}
+    </p>
+    <p style="text-align: center; font-size: 1.2rem; margin: 10px 0; color: #333;">
+        Total Credits: {{ total_credit }} {{ currency }}
+    </p>
     <style>
         body {
             font-family: Arial, sans-serif;
