@@ -8,14 +8,103 @@
 <body>
     <h1>Create a New Account</h1>
     <form action="/register" method="POST">
+        <style>
+        .required::after {
+            content: "*";
+            color: red;
+            margin-left: 3px;
+        }
+        </style>
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required><br><br>
 
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required><br><br>
-
         <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required><br><br>
+        <div class="tooltip-container">
+            <span class="tooltip-icon">?</span>
+            <div class="tooltip-content">
+            Password must contain:
+            <ul>
+                <li>10+ characters</li>
+                <li>1+ capital letter</li>
+                <li>1+ symbol</li>
+                <li>1+ digit</li>
+            </ul>
+            </div>
+        </div>
+
+        <input type="password" id="password" name="password" required><br>
+        <div id="password-error" style="color: red; font-size: 12px; margin-top: 5px; display: none;">
+            Please comply to the rules for password.
+        </div><br>
+
+        <!-- in order to enable No private data including email, this field is optional
+         and an inside messaging will be implemented -->
+        <label for="email">Email (optional):</label>
+        <input type="email" id="email" name="email"><br><br>
+
+        <style>
+        .tooltip-container {
+            position: relative;
+            display: inline-block;
+            margin-left: 5px;
+        }
+
+        .tooltip-icon {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            font-size: 12px;
+            line-height: 16px;
+            cursor: help;
+        }
+
+        .tooltip-content {
+            visibility: hidden;
+            width: 200px;
+            background-color: #333;
+            color: white;
+            text-align: left;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+        }
+
+        .tooltip-content::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+        }
+
+        .tooltip-container:hover .tooltip-content {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .tooltip-content ul {
+            margin: 5px 0;
+            padding-left: 15px;
+        }
+
+        .tooltip-content li {
+            margin: 2px 0;
+        }
+        </style>
 
         <div class="input-group">
             <label class="input-label">Select Your Interests</label>
@@ -40,10 +129,46 @@
                     <input class="checkbox-input" type="checkbox" id="cooking" name="interests" value="cooking">
                     <label class="checkbox-label" for="cooking">Cooking</label>
                 </div>
-            </div>
-        </div>
-
         <button type="submit">Register</button>
+    </form>
+
+    <script>
+        document.getElementById('password').addEventListener('blur', function() {
+            const password = this.value;
+            const errorDiv = document.getElementById('password-error');
+            
+            // Check password requirements
+            const hasMinLength = password.length >= 10;
+            const hasCapital = /[A-Z]/.test(password);
+            const hasSymbol = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+            const hasDigit = /\d/.test(password);
+            
+            if (!hasMinLength || !hasCapital || !hasSymbol || !hasDigit) {
+                this.value = '';
+                errorDiv.style.display = 'block';
+            } else {
+                errorDiv.style.display = 'none';
+            }
+        });
+        
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('password-error');
+            
+            const hasMinLength = password.length >= 10;
+            const hasCapital = /[A-Z]/.test(password);
+            const hasSymbol = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+            const hasDigit = /\d/.test(password);
+            
+            if (!hasMinLength || !hasCapital || !hasSymbol || !hasDigit) {
+                e.preventDefault();
+                document.getElementById('password').value = '';
+                errorDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html> <button type="submit">Register</button>
     </form>
 </body>
 </html>

@@ -105,7 +105,7 @@
 <body>
     <div class="auth-card">
         <h1 class="main-title">Welcome to SHAIRE</h1>
-        <p class="info-text">No real ID data needed, just a valid email</p>
+        <p class="info-text">No personal data needed, not even your email</p>
 
         <form action="{{ url_for('login_user') }}" method="post">
             <div class="input-wrapper">
@@ -122,8 +122,16 @@
         </form>
 
         <!-- Display error messages in the login page -->
-        <div id="error-message" style="background-color: #f8d7da; color: #721c24; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid #f5c6cb;">
+        <div id="error-message" style="background-color: #f8d7da; color: #721c24; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid #f5c6cb; display: none;">
             <p id="error-text">{{ error }}</p>
+            <script>
+                // Show error message if error text is not empty
+                const errorText = document.getElementById('error-text');
+                const errorMessage = document.getElementById('error-message');
+                if (errorText.textContent.trim() !== '') {
+                    errorMessage.style.display = 'block';
+                }
+            </script>
             <script>
             document.getElementById('username').addEventListener('input', function() {
                 const errorDiv = document.getElementById('error-message');

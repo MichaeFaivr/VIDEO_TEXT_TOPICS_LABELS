@@ -124,6 +124,62 @@
                 </div>
 
                 <div class="input-group">
+                    <div class="tooltip-container" style="position: relative; display: inline-block;">
+                        <span class="tooltip-icon" style="
+                            display: inline-block;
+                            width: 16px;
+                            height: 16px;
+                            background-color: #667eea;
+                            color: white;
+                            border-radius: 50%;
+                            text-align: center;
+                            line-height: 16px;
+                            font-size: 12px;
+                            font-weight: bold;
+                            cursor: help;
+                            margin-left: 5px;
+                        ">?</span>
+                        <div class="tooltip-text" style="
+                            visibility: hidden;
+                            width: 280px;
+                            background-color: #2c3e50;
+                            color: white;
+                            text-align: left;
+                            border-radius: 6px;
+                            padding: 8px;
+                            position: absolute;
+                            z-index: 1;
+                            bottom: 125%;
+                            left: 50%;
+                            margin-left: -140px;
+                            opacity: 0;
+                            transition: opacity 0.3s;
+                            font-size: 0.85rem;
+                            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                        ">
+                            Password requirements:<br>
+                            • At least 10 characters<br>
+                            • At least 1 capital letter<br>
+                            • At least 1 symbol<br>
+                            • At least 1 digit
+                            <div style="
+                                content: '';
+                                position: absolute;
+                                top: 100%;
+                                left: 50%;
+                                margin-left: -5px;
+                                border-width: 5px;
+                                border-style: solid;
+                                border-color: #2c3e50 transparent transparent transparent;
+                            "></div>
+                        </div>
+                    </div>
+                    <style>
+                    .tooltip-container:hover .tooltip-text {
+                        visibility: visible;
+                        opacity: 1;
+                    }
+                    </style>
                     <label class="input-label" for="userpass">Password</label>
                     <input class="text-input" type="password" id="userpass" name="userpass" required>
                 </div>
