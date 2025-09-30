@@ -18,7 +18,7 @@ TEMP_AUDIO_FILE = "temp_audio.wav" # better to read from config file
 # 06-mai TEST
 TEMP_AUDIO_FILE = "temp_mono_audio.wav"
 
-PATH_DATABASE_USERS = 'databases/user_accounts/users7.db'
+PATH_DATABASE_USERS = 'databases/user_accounts/users8.db'
 
 # Initialize the database
 def init_db():
@@ -39,8 +39,10 @@ def init_db():
             five_favorite_product_categories TEXT,
             why_favorite_brands TEXT,
             five_favorite_brands TEXT,
-            five_favorite_products TEXT, 
-            UNIQUE(username, email)
+            five_favorite_products TEXT,
+            age_group TEXT,
+            date_joined DATE DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(username)
         )
     ''')
     c.execute('''
@@ -163,11 +165,14 @@ def register_user():
     email = request.form['email']
     password = request.form['password']
     interests = request.form.getlist('interests')
+    age_group = request.form['age_group']
+
+    print(f'username: {username}, email: {email}, password: {password}, interests: {interests}, age_group: {age_group}')
 
     conn = sqlite3.connect(PATH_DATABASE_USERS)
     c = conn.cursor()
-    c.execute('INSERT INTO users (username, email, password, interests) VALUES (?, ?, ?, ?)',
-              (username, email, password, ', '.join(interests)))
+    c.execute('INSERT INTO users (username, email, password, interests, age_group) VALUES (?, ?, ?, ?, ?)',
+              (username, email, password, ', '.join(interests), age_group))
     conn.commit()
     conn.close()
 
@@ -261,6 +266,7 @@ def account_info():
     # Get email from database based on username
     email = None
     interests = None
+    age_group = None
 
     # Display the first record of users in the database for debugging purposes
     conn = sqlite3.connect(PATH_DATABASE_USERS)
@@ -270,7 +276,7 @@ def account_info():
     first_record = c.fetchone()
     conn.close()
     if first_record:
-        print(f'First record: ID={first_record[0]}, Username={first_record[1]}, Email={first_record[2]}, Password={first_record[3]}, Interests={first_record[4]}')
+        print(f'First record: ID={first_record[0]}, Username={first_record[1]}, Email={first_record[2]}, Password={first_record[3]}, Interests={first_record[4]}, Age Group={first_record[11]} ')
     else:
         print('No records found in the database')
 
@@ -278,22 +284,24 @@ def account_info():
     if username:
         conn = sqlite3.connect(PATH_DATABASE_USERS)
         c = conn.cursor()
-        c.execute('SELECT email, interests FROM users WHERE username = ?', (username,))
+        c.execute('SELECT email, interests, age_group FROM users WHERE username = ?', (username,))
         result = c.fetchone()
         conn.close()
         
         if result:
             email = result[0]
             interests = result[1].split(', ') if result[1] else []
+            age_group = result[2] if result[2] else "Not specified"
         else:
             email = "Email not found"
             interests = []
+            age_group = "Not specified"
     else:
         email = "No username provided"
     print(f'email in account_info: {email}')
     # Open on click the user contributions history page
     # add a link to user_history page with username as parameter
-    return render_template('user_account_infos.html', username=username, email=email, interests=interests)
+    return render_template('user_account_infos.html', username=username, email=email, interests=interests, age_group=age_group)
                            # history_link=url_for('user_history', username=username))
 
 # Route for the history of contributions page display  
