@@ -44,6 +44,11 @@
 </head>
 <body>
     <div class="contact-container">
+    <!--
+        <script>
+            const username = document.getElementById('username').value;
+        </script>
+    -->
         <h1>Contact Us</h1>
         <div class="contact-info">
             <div class="contact-item">
@@ -62,6 +67,16 @@
                 <span>shairehono0122@emailtest</span>
             </div>
         </div>
+
+        <h1>Write a message</h1>
+            <form action="{{ url_for('messages') }}" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="username" value="{{ username }}">
+                <div>
+                    <label for="content">Message:</label>
+                    <textarea id="content" name="content" maxlength="300" rows="5" cols="50" required></textarea>
+                </div>
+                <button type="submit">Send</button>
+            </form>
     </div>
 </body>
 </html>

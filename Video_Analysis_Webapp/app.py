@@ -18,7 +18,7 @@ TEMP_AUDIO_FILE = "temp_audio.wav" # better to read from config file
 # 06-mai TEST
 TEMP_AUDIO_FILE = "temp_mono_audio.wav"
 
-PATH_DATABASE_USERS = 'databases/user_accounts/users8.db'
+PATH_DATABASE_USERS = 'databases/user_accounts/users10.db'
 
 # Initialize the database
 def init_db():
@@ -70,6 +70,18 @@ def init_db():
             currency TEXT 
         )
     ''')
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS user_messages (
+            id SERIAL PRIMARY KEY,
+            username TEXT NOT NULL,
+            content TEXT,
+            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            is_read BOOLEAN DEFAULT FALSE
+        )
+    ''')
+    # user_id INT REFERENCES users(id), : voir cette approche plus tard
+    # Add an index on username for faster lookups
+    # c.execute('CREATE INDEX IF NOT EXISTS idx_username ON users (username)')
     conn.commit()
     conn.close()
 
@@ -344,6 +356,71 @@ def user_deals():
     return render_template('brands_deals/display_brands_deals.html', username=username, deals=deals)
 
 
+""" FUNCTIONS FOR MESSAGING SYSTEM """
+# Save a message
+def save_message(username, content):
+    conn = sqlite3.connect(PATH_DATABASE_USERS)
+    cursor = conn.cursor()
+    # Get user_id from username
+    cursor.execute("SELECT id, username FROM users WHERE username =  ?", (username,))
+    user = cursor.fetchone()
+    if not user:
+        conn.close()
+        raise ValueError("User not found")
+    user_id = user[0]
+    username = user[1]
+    print(f'save_message user_id: {user_id}, username: {username}, content: {content}')
+    # Insert message into user_messages table
+    query = "INSERT INTO user_messages (username, content) VALUES (?, ?)"
+    cursor.execute(query, (username, content))
+    conn.commit()
+    conn.close()
+
+
+# Fetch messages for a user
+def get_messages(username, limit=20):
+    conn = sqlite3.connect(PATH_DATABASE_USERS)
+    cursor = conn.cursor()
+    # Fetch messages from user_messages table
+    query = "SELECT * FROM user_messages WHERE username = ? ORDER BY timestamp DESC LIMIT ?;"
+    cursor.execute(query, (username, limit))
+    return cursor.fetchall()
+
+
+@app.route('/messages/', methods=['GET', 'POST'])
+def messages():
+    if request.method == 'POST':
+        username = request.form.get('username') or request.args.get('username')
+        content = request.form.get('content')
+        print(f'username in messages POST: username {username}, content: {content}')
+        if username and content:
+            try:
+                message_id = save_message(username, content)
+                print(f'Message saved with ID: {message_id}')
+            except Exception as e:
+                print(f'Error saving message: {e}')
+                return "Error saving message", 500
+        return redirect(url_for('messages', username=username))
+    else:
+        username = request.form.get('username') or request.args.get('username')
+        print(f'username in messages GET: {username}')
+        user_id = None
+        messages = []
+        if username:
+            conn = sqlite3.connect(PATH_DATABASE_USERS)
+            cursor = conn.cursor()
+            cursor.execute("SELECT id, username FROM users WHERE username = ?", (username,))
+            user = cursor.fetchone()
+            if user:
+                user_id = user[0]
+                username = user[1]
+                messages = get_messages(username)
+                print(f'Fetched messages for user_id {user_id}, username {username}: {messages}')
+            conn.close()
+        return render_template('select_contribution_type.html', username=username)
+        ##return render_template('messaging/messaging_system.html', username=username, messages=messages)
+
+
 """ ANNEXE PAGES RELATED ROUTES """
 @app.route('/about_shaire', methods=['GET'])
 def about_shaire():
@@ -356,7 +433,9 @@ def private_policy():
 
 @app.route('/contact_us', methods=['GET'])
 def contact_us():
-    return render_template('annexes/contact_us.html')
+    username = request.form.get('username') or request.args.get('username')
+    print(f'username in contact_us: {username}')
+    return render_template('annexes/contact_us.html', username=username)
 
 @app.route('/faq_and_bot', methods=['GET'])
 def faq_and_bot():
