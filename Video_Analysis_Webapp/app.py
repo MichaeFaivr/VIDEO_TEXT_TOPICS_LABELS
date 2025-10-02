@@ -176,11 +176,24 @@ def register_page():
 # Fill the user infos in the users table 
 @app.route('/register', methods=['POST'])
 def register_user():
+    # mandatory fields: username, password
     username = request.form['username']
-    email = request.form['email']
     password = request.form['password']
+    # optional fields: email, interests (multiple choice), age_group
+    email = request.form['email']
     interests = request.form.getlist('interests')
     age_group = request.form['age_group']
+
+    # Check if username already exists!
+    conn = sqlite3.connect(PATH_DATABASE_USERS)
+    c = conn.cursor()
+    c.execute('SELECT username FROM users WHERE username = ?', (username,))
+    existing_user = c.fetchone()
+    conn.close()
+
+    if existing_user:
+        error_message = "Username already exists. Please choose a different username."
+        return render_template('simple_registration_form.html', error=error_message)
 
     # Generate a random 20-character password
     password_length = 20

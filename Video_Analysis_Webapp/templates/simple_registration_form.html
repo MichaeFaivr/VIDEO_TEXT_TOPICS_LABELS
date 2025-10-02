@@ -15,6 +15,11 @@
             margin-left: 3px;
         }
         </style>
+        {% if error %}
+        <div style="color: red; background-color: #ffebee; padding: 10px; border: 1px solid #e57373; border-radius: 4px; margin-bottom: 15px;">
+            {{ error }}
+        </div>
+        {% endif %}
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required><br><br>
 
