@@ -11,6 +11,8 @@ from verifications.check_policy_compliance import *
 from verifications.build_analysis_json import *
 from model.constants import *
 from commons.advanced_functions import *
+import random
+import string
 
 app = Flask(__name__)
 
@@ -18,7 +20,7 @@ TEMP_AUDIO_FILE = "temp_audio.wav" # better to read from config file
 # 06-mai TEST
 TEMP_AUDIO_FILE = "temp_mono_audio.wav"
 
-PATH_DATABASE_USERS = 'databases/user_accounts/users10.db'
+PATH_DATABASE_USERS = 'databases/user_accounts/users11.db'
 
 # Initialize the database
 def init_db():
@@ -33,6 +35,7 @@ def init_db():
             username TEXT NOT NULL,
             email TEXT NOT NULL,
             password TEXT NOT NULL,
+            long_account_recovery_token TEXT,
             interests TEXT,
             monthly_hours_available INTEGER,
             desired_extra_income TEXT,
@@ -179,12 +182,21 @@ def register_user():
     interests = request.form.getlist('interests')
     age_group = request.form['age_group']
 
-    print(f'username: {username}, email: {email}, password: {password}, interests: {interests}, age_group: {age_group}')
+    # Generate a random 20-character password
+    password_length = 20
+    characters = string.ascii_letters + string.digits + string.punctuation
+    generated_password = ''.join(random.choice(characters) for _ in range(password_length))
+    print(f'Generated password: {generated_password}')
+    long_account_recovery_token = generated_password
+
+    print(f'username: {username}, email: {email}, password: {password}, long_account_recovery_token: {long_account_recovery_token}, interests: {interests}, age_group: {age_group}')
 
     conn = sqlite3.connect(PATH_DATABASE_USERS)
     c = conn.cursor()
-    c.execute('INSERT INTO users (username, email, password, interests, age_group) VALUES (?, ?, ?, ?, ?)',
-              (username, email, password, ', '.join(interests), age_group))
+    c.execute('INSERT INTO users (username, email, password, long_account_recovery_token, interests, age_group) VALUES (?, ?, ?, ?, ?, ?)',
+              (username, email, password, long_account_recovery_token, ', '.join(interests), age_group))
+    # Attention: need to handle the case where the username already exists (UNIQUE constraint)
+    # Attention: the user for the newly created account has to know the long_account_recovery_token
     conn.commit()
     conn.close()
 
