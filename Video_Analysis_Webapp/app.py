@@ -180,9 +180,9 @@ def register_user():
     username = request.form['username']
     password = request.form['password']
     # optional fields: email, interests (multiple choice), age_group
-    email = request.form['email']
+    email = request.form.get('email', '')
     interests = request.form.getlist('interests')
-    age_group = request.form['age_group']
+    age_group = request.form.get('age_group', '')
 
     # Check if username already exists!
     conn = sqlite3.connect(PATH_DATABASE_USERS)
