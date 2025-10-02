@@ -103,6 +103,11 @@
     </style>
 </head>
 <body>
+    <style>
+        body {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 30%, #fd79a8 70%, #fdcb6e 100%);
+        }
+    </style>
     <div class="auth-card">
         <h1 class="main-title">Welcome to SHAIRE</h1>
         <p class="info-text">No personal data needed, Not even your email</p>
@@ -119,6 +124,10 @@
                 <label class="field-label" for="password">Password</label>
                 <input class="input-field" type="password" id="password" name="password" required>
             </div>
+
+            <ul style="list-style: none; padding: 0; margin-top: 0; margin-bottom: 1.5rem;">
+                <li style="margin-bottom: 5px; border-bottom: 1px solid #ccc; padding-bottom: 5px;"><a href="/forgot-password" style="color: #230303; text-decoration: none; font-size: clamp(14px, 1.5vw, 16px);transition: font-weight 0.2s;" onmouseover="this.style.fontWeight='bold'" onmouseout="this.style.fontWeight='normal'">Forgot your password?</a></li>
+            </ul>
             
             <button type="submit" class="action-btn primary-btn">Sign In</button>
         </form>
