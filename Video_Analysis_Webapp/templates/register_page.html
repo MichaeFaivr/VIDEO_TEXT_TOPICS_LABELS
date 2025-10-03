@@ -103,6 +103,31 @@
             .register-button:hover {
                 transform: translateY(-2px);
             }
+            
+            .tooltip {
+                position: relative;
+                display: inline-block;
+            }
+            
+            .tooltip-content {
+                visibility: hidden;
+                width: 250px;
+                background-color: #333;
+                color: #fff;
+                text-align: left;
+                border-radius: 6px;
+                padding: 10px;
+                position: absolute;
+                z-index: 1;
+                border-width: 5px;
+                border-style: solid;
+                border-color: #333 transparent transparent transparent;
+            }
+            
+            .tooltip:hover .tooltip-content {
+                visibility: visible;
+                opacity: 1;
+            }
         </style>
     </head>
     <body>
@@ -117,71 +142,30 @@
                     <input class="text-input" type="text" id="username" name="username" required>
                 </div>
                 <!-- ATTENTION: the system needs to check if the username already exists -->
-                
+    
                 <div class="input-group">
-                    <label class="input-label" for="email">Email</label>
-                    <input class="text-input" type="email" id="email" name="email">
+                    <label class="input-label" for="password">Password</label>
+                    <div class="tooltip">
+                        <span style="cursor: help; color: #667eea; margin-left: 5px;">ℹ️</span>
+                        <div class="tooltip-content">
+                            Password must contain:
+                            <ul>
+                                <li>10+ characters</li>
+                                <li>1+ capital letter</li>
+                                <li>1+ symbol</li>
+                                <li>1+ digit</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <input class="text-input" type="password" id="password" name="password" required>
+                    <div id="password-error" style="color: red; font-size: 12px; margin-top: 5px; display: none;">
+                        Please comply to the rules for password.
+                    </div><br>
                 </div>
 
                 <div class="input-group">
-                    <div class="tooltip-container" style="position: relative; display: inline-block;">
-                        <span class="tooltip-icon" style="
-                            display: inline-block;
-                            width: 16px;
-                            height: 16px;
-                            background-color: #667eea;
-                            color: white;
-                            border-radius: 50%;
-                            text-align: center;
-                            line-height: 16px;
-                            font-size: 12px;
-                            font-weight: bold;
-                            cursor: help;
-                            margin-left: 5px;
-                        ">?</span>
-                        <div class="tooltip-text" style="
-                            visibility: hidden;
-                            width: 280px;
-                            background-color: #2c3e50;
-                            color: white;
-                            text-align: left;
-                            border-radius: 6px;
-                            padding: 8px;
-                            position: absolute;
-                            z-index: 1;
-                            bottom: 125%;
-                            left: 50%;
-                            margin-left: -140px;
-                            opacity: 0;
-                            transition: opacity 0.3s;
-                            font-size: 0.85rem;
-                            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-                        ">
-                            Password requirements:<br>
-                            • At least 10 characters<br>
-                            • At least 1 capital letter<br>
-                            • At least 1 symbol<br>
-                            • At least 1 digit
-                            <div style="
-                                content: '';
-                                position: absolute;
-                                top: 100%;
-                                left: 50%;
-                                margin-left: -5px;
-                                border-width: 5px;
-                                border-style: solid;
-                                border-color: #2c3e50 transparent transparent transparent;
-                            "></div>
-                        </div>
-                    </div>
-                    <style>
-                    .tooltip-container:hover .tooltip-text {
-                        visibility: visible;
-                        opacity: 1;
-                    }
-                    </style>
-                    <label class="input-label" for="userpass">Password</label>
-                    <input class="text-input" type="password" id="userpass" name="userpass" required>
+                    <label class="input-label" for="email">Email (optional)</label>
+                    <input class="text-input" type="email" id="email" name="email">
                 </div>
                 
                 <div class="input-group">
@@ -209,47 +193,73 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="input-group">
+                    <label class="input-label">Select Your Age Group</label>
+                    <div class="age-group-section">
+                        <div class="radio-wrapper">
+                            <input class="radio-input" type="radio" id="age-18-25" name="age_group" value="18-25">
+                            <label class="radio-label" for="age-18-25">18 - 25</label>
+                        </div>
+                        <div class="radio-wrapper">
+                            <input class="radio-input" type="radio" id="age-26-35" name="age_group" value="26-35">
+                            <label class="radio-label" for="age-26-35">26 - 35</label>
+                        </div>
+                        <div class="radio-wrapper">
+                            <input class="radio-input" type="radio" id="age-36-45" name="age_group" value="36-45">
+                            <label class="radio-label" for="age-36-45">36 - 45</label>
+                        </div>
+                        <div class="radio-wrapper">
+                            <input class="radio-input" type="radio" id="age-46-55" name="age_group" value="46-55">
+                            <label class="radio-label" for="age-46-55">46 - 55</label>
+                        </div>
+                        <div class="radio-wrapper">
+                            <input class="radio-input" type="radio" id="age-55-plus" name="age_group" value="55+">
+                            <label class="radio-label" for="age-55-plus">55+</label>
+                        </div>
+                    </div>
+                </div>
                 
                 <button type="submit" class="register-button">Create Account</button>
                 <!-- TODO: Here the system needs to register the new user in the users database -->
                 <!-- create in the folder: databases/user_accounts the account as a Json file with the following informations: 
                  username, email, password, list of topics of interest -->
                  
+
                 <script>
-                document.querySelector('form').addEventListener('submit', async function(e) {
-                    e.preventDefault();
-                    
-                    const formData = new FormData(this);
-                    const interests = [];
-                    formData.getAll('interests').forEach(interest => interests.push(interest));
-                    
-                    const userData = {
-                        username: formData.get('username'),
-                        email: formData.get('email'),
-                        password: formData.get('userpass'),
-                        interests: interests
-                    };
-                    
-                    try {
-                        const response = await fetch('/register', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify(userData)
-                        });
+                    document.getElementById('password').addEventListener('blur', function() {
+                        const password = this.value;
+                        const errorDiv = document.getElementById('password-error');
                         
-                        if (response.ok) {
-                            alert('Account created successfully!');
-                            window.location.href = '/login_page';
+                        // Check password requirements
+                        const hasMinLength = password.length >= 10;
+                        const hasCapital = /[A-Z]/.test(password);
+                        const hasSymbol = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+                        const hasDigit = /\d/.test(password);
+                        
+                        if (!hasMinLength || !hasCapital || !hasSymbol || !hasDigit) {
+                            this.value = '';
+                            errorDiv.style.display = 'block';
                         } else {
-                            const error = await response.text();
-                            alert('Registration failed: ' + error);
+                            errorDiv.style.display = 'none';
                         }
-                    } catch (error) {
-                        alert('Registration failed: ' + error.message);
-                    }
-                });
+                    });
+                    
+                    document.querySelector('form').addEventListener('submit', function(e) {
+                        const password = document.getElementById('password').value;
+                        const errorDiv = document.getElementById('password-error');
+                        
+                        const hasMinLength = password.length >= 10;
+                        const hasCapital = /[A-Z]/.test(password);
+                        const hasSymbol = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+                        const hasDigit = /\d/.test(password);
+                        
+                        if (!hasMinLength || !hasCapital || !hasSymbol || !hasDigit) {
+                            e.preventDefault();
+                            document.getElementById('password').value = '';
+                            errorDiv.style.display = 'block';
+                        }
+                    });
                 </script>
             </form>
         </div>

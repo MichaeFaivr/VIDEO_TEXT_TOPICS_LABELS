@@ -168,8 +168,8 @@ def login_user():
 # Register page route
 @app.route('/register/', methods=['GET'])
 def register_page():
-    return render_template('simple_registration_form.html')
-    #return render_template('register_page.html') # voir bug lié à username
+    #return render_template('simple_registration_form.html')
+    return render_template('register_page.html') # voir bug lié à username
 
 
 # Route to handle form submission for a new user registration
@@ -193,7 +193,8 @@ def register_user():
 
     if existing_user:
         error_message = "Username already exists. Please choose a different username."
-        return render_template('simple_registration_form.html', error=error_message)
+        #return render_template('simple_registration_form.html', error=error_message)
+        return render_template('register_page.html', error=error_message)
 
     # Generate a random 20-character password
     password_length = 20
