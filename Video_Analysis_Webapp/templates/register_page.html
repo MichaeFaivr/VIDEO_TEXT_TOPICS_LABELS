@@ -128,6 +128,40 @@
                 visibility: visible;
                 opacity: 1;
             }
+
+            .form-columns {
+                display: flex;
+                gap: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .form-column {
+                flex: 1;
+            }
+
+            .radio-wrapper {
+                display: flex;
+                align-items: center;
+                margin: 0.6rem 0;
+                cursor: pointer;
+            }
+
+            .radio-input {
+                margin-right: 0.5rem;
+                transform: scale(1.2);
+            }
+
+            .radio-label {
+                color: #2c3e50;
+                user-select: none;
+            }
+
+            @media (max-width: 600px) {
+                .form-columns {
+                    flex-direction: column;
+                    gap: 0;
+                }
+            }
         </style>
     </head>
     <body>

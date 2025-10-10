@@ -13,6 +13,8 @@ from model.constants import *
 from commons.advanced_functions import *
 import random
 import string
+from flask_sqlalchemy import SQLAlchemy
+from model.classes_tables_sqlalchemy import db, User, History_ctbs, User_messages, User_deals  # Import the db instance and User model
 
 app = Flask(__name__)
 
@@ -20,94 +22,39 @@ TEMP_AUDIO_FILE = "temp_audio.wav" # better to read from config file
 # 06-mai TEST
 TEMP_AUDIO_FILE = "temp_mono_audio.wav"
 
-PATH_DATABASE_USERS = 'databases/user_accounts/users11.db'
+USERS_DATABASE_NAME = 'users10_sqlalchemy.db' # better to read from config file
+#PATH_DATABASE_USERS = '/databases/user_accounts/users.db'
 
-# Initialize the database
-def init_db():
-    # connect to the SQLite database (it will be created if it doesn't exist)
-    # in databases/user_accounts/users.db
-    # CREATE USERS TABLE
-    conn = sqlite3.connect(PATH_DATABASE_USERS)
-    c = conn.cursor()
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT NOT NULL,
-            email TEXT NOT NULL,
-            password TEXT NOT NULL,
-            long_account_recovery_token TEXT,
-            interests TEXT,
-            monthly_hours_available INTEGER,
-            desired_extra_income TEXT,
-            five_favorite_product_categories TEXT,
-            why_favorite_brands TEXT,
-            five_favorite_brands TEXT,
-            five_favorite_products TEXT,
-            age_group TEXT,
-            date_joined DATE DEFAULT CURRENT_TIMESTAMP,
-            UNIQUE(username)
-        )
-    ''')
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS history_ctbs (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT NOT NULL,
-            file TEXT NOT NULL,
-            date DATE,
-            credit INTEGER,
-            currency TEXT
-        )
-    ''')
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS user_deals (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT NOT NULL,
-            deal_description TEXT NOT NULL,
-            deal_limit_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            brand TEXT,
-            product_category TEXT,
-            product TEXT,
-            product_specs TEXT,
-            discount_percentage TEXT,
-            discounted_price REAL,
-            currency TEXT 
-        )
-    ''')
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS user_messages (
-            id SERIAL PRIMARY KEY,
-            username TEXT NOT NULL,
-            content TEXT,
-            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            is_read BOOLEAN DEFAULT FALSE
-        )
-    ''')
-    # user_id INT REFERENCES users(id), : voir cette approche plus tard
-    # Add an index on username for faster lookups
-    # c.execute('CREATE INDEX IF NOT EXISTS idx_username ON users (username)')
-    conn.commit()
-    conn.close()
+# Initialize the database with SQLAlchemy
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{}'.format(USERS_DATABASE_NAME)
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Initialize the database with the app
+db.init_app(app)
+
+# Create the database and tables
+with app.app_context():
+    db.create_all()
 
 
-# save the database
-def save_video_analysis_to_db(username, video_filename, credit=0, currency='USD'):
+""" save the video analysis in the database - SQLAlchemy version """
+def save_video_analysis_to_db_sqlalchemy(username, video_filename, credit=0, currency='USD'):
     if video_filename:
-        # Save the video analysis result in the database
+        # Save the video analysis result in the database using SQLAlchemy
         if username:
-            conn = sqlite3.connect(PATH_DATABASE_USERS)
-            c = conn.cursor()
-            current_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            print(f'username: {username}, video filename: {video_filename}, current_date: {current_date}')
-            c.execute('INSERT INTO history_ctbs (username, file, date, credit, currency) VALUES (?, ?, ?, ?, ?)',
-                        (username, video_filename, current_date, credit, currency))
-            conn.commit()
-            conn.close()
+            user = User.query.filter_by(username=username).first()
+            if user:
+                current_date = datetime.now()
+                new_entry = History_ctbs(user_id=user.id, username=username, contribution_file=video_filename, contribution_date=current_date, credit=credit, currency=currency)
+                db.session.add(new_entry)
+                db.session.commit()
+            else:
+                print(f'User {username} not found in the database.')
 
-
-# Route for handling the upload video page post successful Login
-# Prompt to Claude4: Write the route for upload_data. Strong condition: I need the username value from the login page.
-# Use decorators to route the specific use cases : verbatims, ads, others
-# rename upload_data to verbatim_upload_video for clarity
+""" Route for handling the upload video page post successful Login
+Prompt to Claude Sonnet 4: Write the route for upload_data. Strong condition: I need the username value from the login page.
+Use decorators to route the specific use cases : verbatims, ads, others
+rename upload_data to verbatim_upload_video for clarity """
 @app.route('/verbatim_video_upload/', methods=['GET', 'POST'])
 def verbatim_video_upload():
     # POST method in login_page.html when clicking on Login button
@@ -127,7 +74,7 @@ def verbatim_video_upload():
         return redirect(url_for('login_page'))
     
 
-# Select contribution type page route
+""" Select contribution type page route """
 @app.route('/select_contribution_type/', methods=['GET', 'POST'])
 def select_contribution_type():
     if request.method == 'POST':
@@ -145,20 +92,18 @@ def select_contribution_type():
 def login_page():
     return render_template('login_page.html') # check if the user exists in the database
 
+
+""" Route to handle form submission for user login - SQLAlchemy version """
 @app.route('/login_checking', methods=['POST'])
 def login_user():
     username = request.form['username']
     password = request.form['password']
 
-    conn = sqlite3.connect(PATH_DATABASE_USERS)
-    c = conn.cursor()
-    c.execute('SELECT * FROM users WHERE username = ? AND password = ?', (username, password))
-    user = c.fetchone()
-    conn.close()
+    user = User.query.filter_by(username=username, password=password).first()
 
     if user:
         # Redirect to the upload video page with username as a parameter
-        # Login successful, redirect to select_contribution_type route  
+        # Login successful, redirect to select_contribution_type route
         return redirect(url_for('select_contribution_type'), code=307)
     else:
         error_message = "Invalid credentials. Please try again."
@@ -168,12 +113,10 @@ def login_user():
 # Register page route
 @app.route('/register/', methods=['GET'])
 def register_page():
-    #return render_template('simple_registration_form.html')
-    return render_template('register_page.html') # voir bug lié à username
+    return render_template('register_page.html')
 
 
-# Route to handle form submission for a new user registration
-# Fill the user infos in the users table 
+""" Route to handle form submission for a new user registration - SQLAlchemy version """
 @app.route('/register', methods=['POST'])
 def register_user():
     # mandatory fields: username, password
@@ -184,16 +127,13 @@ def register_user():
     interests = request.form.getlist('interests')
     age_group = request.form.get('age_group', '')
 
+    print(f'register_user_alchemy username: {username}')
+
     # Check if username already exists!
-    conn = sqlite3.connect(PATH_DATABASE_USERS)
-    c = conn.cursor()
-    c.execute('SELECT username FROM users WHERE username = ?', (username,))
-    existing_user = c.fetchone()
-    conn.close()
+    existing_user = User.query.filter_by(username=username).first()
 
     if existing_user:
         error_message = "Username already exists. Please choose a different username."
-        #return render_template('simple_registration_form.html', error=error_message)
         return render_template('register_page.html', error=error_message)
 
     # Generate a random 20-character password
@@ -205,49 +145,27 @@ def register_user():
 
     print(f'username: {username}, email: {email}, password: {password}, long_account_recovery_token: {long_account_recovery_token}, interests: {interests}, age_group: {age_group}')
 
-    conn = sqlite3.connect(PATH_DATABASE_USERS)
-    c = conn.cursor()
-    c.execute('INSERT INTO users (username, email, password, long_account_recovery_token, interests, age_group) VALUES (?, ?, ?, ?, ?, ?)',
-              (username, email, password, long_account_recovery_token, ', '.join(interests), age_group))
-    # Attention: need to handle the case where the username already exists (UNIQUE constraint)
-    # Attention: the user for the newly created account has to know the long_account_recovery_token
-    conn.commit()
-    conn.close()
+    new_user = User(username=username, email=email, password=password, long_account_recovery_token=long_account_recovery_token, interests=', '.join(interests), age_group=age_group)
+    db.session.add(new_user)
+    db.session.commit()
 
-    #### FOR TESTING PURPOSES ONLY ####
-    # Create the user_deals table if it doesn't exist and fill it with dummy data
-    conn = sqlite3.connect(PATH_DATABASE_USERS)
-    c = conn.cursor()
-    # Insert dummy data into user_deals table
-    c.execute('INSERT INTO user_deals (username, deal_description, brand, product_category, product, product_specs, discount_percentage, discounted_price, currency) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-              (username, 'Deal of Samsung TVs', 'Samsung', 'TV', 'TV2025_JK0002154', 'Diag. Size 240 inches, 8K, dolbysourround', '30%', 850.0, 'USD'))
-    c.execute('INSERT INTO user_deals (username, deal_description, brand, product_category, product, product_specs, discount_percentage, discounted_price, currency) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-              (username, 'Deal of LG TVs', 'LG', 'TV', 'LG2024_MP211646', 'Diag. Size 250 inches, 8K, dolbysourround3D', '40%', 880.0, 'USD'))
-    conn.commit()
-    conn.close()
-    
     return redirect(url_for('success'))
 
 
-# Fill or update the user profile information page route
+""" Fill or update the user profile information page route - SQLAlchemy version """
 @app.route('/fill_update_your_profile/', methods=['GET'])
-def fill_update_your_profile():
+def fill_update_your_profile_sqlalchemy():
     # GET method to display the form with pre-filled values if they exist
     username = request.args.get('username')
-    print(f'username in fill_update_your_profile: {username}')
+    print(f'username in fill_update_your_profile_sqlalchemy: {username}')
     if username:
-        conn = sqlite3.connect(PATH_DATABASE_USERS)
-        c = conn.cursor()
-        c.execute('SELECT monthly_hours_available, five_favorite_brands, desired_extra_income, why_favorite_brands, five_favorite_product_categories FROM users WHERE username = ?', (username,))
-        result = c.fetchone()
-        conn.close()
-        
-        if result:
-            monthly_hours_available = result[0] if result[0] else ''
-            five_favorite_brands = result[1] if result[1] else ''
-            desired_extra_income = result[2] if result[2] else ''
-            why_favorite_brands = result[3] if result[3] else ''
-            five_favorite_product_categories = result[4] if result[4] else ''
+        user = User.query.filter_by(username=username).first()
+        if user:
+            monthly_hours_available = user.monthly_hours_available if user.monthly_hours_available else ''
+            five_favorite_brands = user.five_favorite_brands if user.five_favorite_brands else ''
+            desired_extra_income = user.desired_extra_income if user.desired_extra_income else ''
+            why_favorite_brands = user.why_favorite_brands if user.why_favorite_brands else ''
+            five_favorite_product_categories = user.five_favorite_product_categories if user.five_favorite_product_categories else ''
         else:
             monthly_hours_available = ''
             five_favorite_brands = ''
@@ -269,80 +187,71 @@ def fill_update_your_profile():
                          why_favorite_brands=why_favorite_brands,
                          five_favorite_product_categories=five_favorite_product_categories)
 
-""" POST method to handle form submission and update the database """
+
+""" POST method to handle form submission and update the database - SQLAlchemy version """
 @app.route('/submit_profile', methods=['POST'])
-def submit_profile():
+def submit_profile_sqlalchemy():
     username = request.form['username']
     five_favorite_brands = request.form['five_favorite_brands']
     monthly_hours_available = request.form['monthly_hours_available']
     desired_extra_income = request.form['desired_extra_income']
     why_favorite_brands = request.form['why_favorite_brands']
 
-    conn = sqlite3.connect(PATH_DATABASE_USERS)
-    c = conn.cursor()
-    c.execute('UPDATE users SET five_favorite_brands = ?, monthly_hours_available = ?, desired_extra_income = ?, why_favorite_brands = ? WHERE username = ?',
-              (five_favorite_brands, monthly_hours_available, desired_extra_income, why_favorite_brands, username))
-    conn.commit()
-    conn.close()
+    user = User.query.filter_by(username=username).first()
+    if user:
+        user.five_favorite_brands = five_favorite_brands
+        user.monthly_hours_available = monthly_hours_available
+        user.desired_extra_income = desired_extra_income
+        user.why_favorite_brands = why_favorite_brands
+        db.session.commit()
 
     return render_template('select_contribution_type.html', username=username)
-    #return redirect(url_for('success'))
+
 
 
 # Route to display success message and redirect to login page
 @app.route('/success')
 def success():
-    ##return "User registered successfully!"
     return render_template('login_page.html')
 
-
-# Route for the user account information page display  
+    
+""" Route for the user account information page display - SQLAlchemy version """
 @app.route('/account_info/', methods=['GET'])
-def account_info():
+def account_info_sqlalchemy():
     username = request.args.get('username')
-    print(f'username in account_info: {username}')
+    print(f'username in account_info_sqlalchemy: {username}')
     # Get email from database based on username
     email = None
     interests = None
     age_group = None
 
     # Display the first record of users in the database for debugging purposes
-    conn = sqlite3.connect(PATH_DATABASE_USERS)
-    c = conn.cursor()
-    # First user record
-    c.execute('SELECT * FROM users LIMIT 1')
-    first_record = c.fetchone()
-    conn.close()
-    if first_record:
-        print(f'First record: ID={first_record[0]}, Username={first_record[1]}, Email={first_record[2]}, Password={first_record[3]}, Interests={first_record[4]}, Age Group={first_record[11]} ')
+    first_user = User.query.first()
+    if first_user:
+        print(f'First record: ID={first_user.id}, Username={first_user.username}, Email={first_user.email}, Password={first_user.password}, Interests={first_user.interests}, Age Group={first_user.age_group} ')
     else:
         print('No records found in the database')
 
     # Fetch user info if username is provided
     if username:
-        conn = sqlite3.connect(PATH_DATABASE_USERS)
-        c = conn.cursor()
-        c.execute('SELECT email, interests, age_group FROM users WHERE username = ?', (username,))
-        result = c.fetchone()
-        conn.close()
-        
-        if result:
-            email = result[0]
-            interests = result[1].split(', ') if result[1] else []
-            age_group = result[2] if result[2] else "Not specified"
+        user = User.query.filter_by(username=username).first()
+        if user:
+            email = user.email
+            interests = user.interests.split(', ') if user.interests else []
+            age_group = user.age_group if user.age_group else "Not specified"
         else:
             email = "Email not found"
             interests = []
             age_group = "Not specified"
     else:
         email = "No username provided"
-    print(f'email in account_info: {email}')
+    print(f'email in account_info_sqlalchemy: {email}')
     # Open on click the user contributions history page
     # add a link to user_history page with username as parameter
     return render_template('user_account_infos.html', username=username, email=email, interests=interests, age_group=age_group)
-                           # history_link=url_for('user_history', username=username))
 
-# Route for the history of contributions page display  
+
+""" Route for the history of contributions page display - SQLAlchemy version """
 @app.route('/user_history/', methods=['GET'])
 def user_history():
     username = request.args.get('username')
@@ -351,68 +260,96 @@ def user_history():
     contributions = []
 
     if username:
-        conn = sqlite3.connect(PATH_DATABASE_USERS)
-        c = conn.cursor()
-        c.execute('SELECT * FROM history_ctbs WHERE username = ? AND credit > 0', (username,))
-        contributions = c.fetchall()
+        contributions = History_ctbs.query.filter_by(username=username).filter(History_ctbs.credit > 0).all()
         print(f'contributions in user_history: {contributions}')
-        conn.close()
 
     return render_template('user_history.html', username=username, contributions=contributions)
 
 
-# Route to display the deals by brands for the user
+""" Route to display the deals by brands for the user - SQLAlchemy version """
 @app.route('/user_deals/', methods=['GET'])
 def user_deals():
     username = request.args.get('username')
-    print(f'username in user_deals: {username}')
+    print(f'username in user_deals_sqlalchemy: {username}')
     # Get user deals from database based on username
     deals = []
 
     if username:
-        conn = sqlite3.connect(PATH_DATABASE_USERS)
-        c = conn.cursor()
-        c.execute('SELECT * FROM user_deals WHERE username = ?', (username,))
-        deals = c.fetchall()
+        user = User.query.filter_by(username=username).first()
+        if not user:
+            return render_template('brands_deals/display_brands_deals.html', username=username, deals=deals)
+        deals = User_deals.query.filter_by(username=username).all()
+
+        # Add dummy data if no deals found for the user
+        if not deals:
+            deal1 = User_deals(
+                user_id=user.id,
+                username=username,
+                deal_name='Deal on TVs CYSUIBSQ0125',
+                description='Deal of Samsung TVs',
+                brand='Samsung',
+                category='TV',
+                product='TV2025_JK0002154',
+                specs='Diag. Size 240 inches, 8K, dolbysourround',
+                discount='30%',
+                price=850.0,
+                currency='USD',
+                start_date=datetime(2024, 1, 1),
+                end_date=datetime(2024, 12, 31)
+            )
+            
+            deal2 = User_deals(
+                user_id=user.id,
+                username=username,
+                deal_name='Deal on LG TVs MLSMDSS0312254',
+                description='Deal of LG TVs',
+                brand='LG',
+                category='TV',
+                product='LG2024_MP211646',
+                specs='Diag. Size 250 inches, 8K, dolbysourround3D',
+                discount='40%',
+                price=880.0,
+                currency='USD',
+                start_date=datetime(2024, 2, 1),
+                end_date=datetime(2024, 11, 30)
+            )
+            
+            db.session.add(deal1)
+            db.session.add(deal2)
+            db.session.commit()
+            deals = [deal1, deal2]
+
         for deal in deals:
-            print(f'Deal ID: {deal[0]}, Username: {deal[1]}, Description: {deal[2]}, Limit Date: {deal[3]}, Brand: {deal[4]}, Category: {deal[5]}, Product: {deal[6]}, Specs: {deal[7]}, Discount: {deal[8]}, Price: {deal[9]}, Currency: {deal[10]}')
+            print(f'Deal ID: {deal.id}, Username: {deal.username}, Description: {deal.description}, End Date: {deal.end_date}, Brand: {deal.brand}, Category: {deal.category}, Product: {deal.product}, Specs: {deal.specs}, Discount: {deal.discount}, Price: {deal.price}, Currency: {deal.currency}')
         print(f'deals in user_deals: {deals}')
-        conn.close()
 
     return render_template('brands_deals/display_brands_deals.html', username=username, deals=deals)
 
 
 """ FUNCTIONS FOR MESSAGING SYSTEM """
-# Save a message
+
+""" Save a message - SQLAlchemy version """
 def save_message(username, content):
-    conn = sqlite3.connect(PATH_DATABASE_USERS)
-    cursor = conn.cursor()
-    # Get user_id from username
-    cursor.execute("SELECT id, username FROM users WHERE username =  ?", (username,))
-    user = cursor.fetchone()
+    user = User.query.filter_by(username=username).first()
     if not user:
-        conn.close()
         raise ValueError("User not found")
-    user_id = user[0]
-    username = user[1]
-    print(f'save_message user_id: {user_id}, username: {username}, content: {content}')
-    # Insert message into user_messages table
-    query = "INSERT INTO user_messages (username, content) VALUES (?, ?)"
-    cursor.execute(query, (username, content))
-    conn.commit()
-    conn.close()
+    print(f'save_message_sqlalchemy user_id: {user.id}, username: {user.username}, content: {content}')
+    message = User_messages(user_id=user.id, content=content)
+    db.session.add(message)
+    db.session.commit()
+    return message.id
 
 
-# Fetch messages for a user
+""" Fetch messages for a user - SQLAlchemy version """
 def get_messages(username, limit=20):
-    conn = sqlite3.connect(PATH_DATABASE_USERS)
-    cursor = conn.cursor()
-    # Fetch messages from user_messages table
-    query = "SELECT * FROM user_messages WHERE username = ? ORDER BY timestamp DESC LIMIT ?;"
-    cursor.execute(query, (username, limit))
-    return cursor.fetchall()
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        return []
+    messages = User_messages.query.filter_by(user_id=user.id).order_by(User_messages.timestamp.desc()).limit(limit).all()
+    return messages
 
 
+""" Route for the messaging system - SQLAlchemy version """
 @app.route('/messages/', methods=['GET', 'POST'])
 def messages():
     if request.method == 'POST':
@@ -426,25 +363,20 @@ def messages():
             except Exception as e:
                 print(f'Error saving message: {e}')
                 return "Error saving message", 500
-        return redirect(url_for('messages', username=username))
+        return redirect(url_for('messages_sqlalchemy', username=username))
     else:
         username = request.form.get('username') or request.args.get('username')
-        print(f'username in messages GET: {username}')
+        print(f'username in messages_sqlalchemy GET: {username}')
         user_id = None
         messages = []
         if username:
-            conn = sqlite3.connect(PATH_DATABASE_USERS)
-            cursor = conn.cursor()
-            cursor.execute("SELECT id, username FROM users WHERE username = ?", (username,))
-            user = cursor.fetchone()
+            user = User.query.filter_by(username=username).first()
             if user:
-                user_id = user[0]
-                username = user[1]
+                user_id = user.id
+                username = user.username
                 messages = get_messages(username)
                 print(f'Fetched messages for user_id {user_id}, username {username}: {messages}')
-            conn.close()
         return render_template('select_contribution_type.html', username=username)
-        ##return render_template('messaging/messaging_system.html', username=username, messages=messages)
 
 
 """ ANNEXE PAGES RELATED ROUTES """
@@ -513,7 +445,7 @@ def result():
         compliance_result = analysis_results.get('compliance_dict', {}).get('result', COMPLIANCE_RESULT_DEFAULT)
         payment = analysis_results.get('compliance_dict', {}).get('payment', VALIDATION_PAYMENT_DEFAULT)
         currency = analysis_results.get('compliance_dict', {}).get('currency', VALIDATION_CURRENCY_DEFAULT)
-        save_video_analysis_to_db(username, video_file.filename, payment, currency)
+        save_video_analysis_to_db_sqlalchemy(username, video_file.filename, payment, currency)
         
         # Render results page
         """
@@ -580,7 +512,10 @@ def display_image():
 if __name__ == '__main__':
     app.debug = True
     # Initialize the database
-    init_db()
+    # db.init_app(app) # Bind the db instance to the Flask app
+    #with app.app_context():
+    #    db.create_all()  # Create database tables for all models
+    # Run the Flask app
     app.run(
         host='127.0.0.1',
         port=8000,

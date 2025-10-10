@@ -163,7 +163,7 @@
             <thead>
                 <tr>
                     <th>Deal Description</th>
-                    <th>Deal Limit Date</th>
+                    <th>Deal End Date</th>
                     <th>Brand</th>
                     <th>Product Category</th>
                     <th>Product</th>
@@ -174,11 +174,17 @@
                 </tr>
             </thead>
             <tbody>
-                {% for entry in deals %}
+                {% for deal in deals %}
                 <tr>
-                    {% for item in entry[2:] %}
-                    <td>{{ item }}</td>
-                    {% endfor %}
+                    <td>{{ deal.description }}</td>
+                    <td>{{ deal.end_date }}</td>
+                    <td>{{ deal.brand }}</td>
+                    <td>{{ deal.category }}</td>
+                    <td>{{ deal.product }}</td>
+                    <td>{{ deal.specs }}</td>
+                    <td>{{ deal.discount }}</td>
+                    <td>{{ deal.price }}</td>
+                    <td>{{ deal.currency }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
