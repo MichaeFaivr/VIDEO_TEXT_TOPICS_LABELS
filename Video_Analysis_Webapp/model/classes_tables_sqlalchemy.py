@@ -102,6 +102,8 @@ class User_messages(db.Model):
     content = db.Column(db.Text, nullable=False)
     sent_at = db.Column(db.DateTime, server_default=db.func.now())
     is_read = db.Column(db.Boolean, default=False)
+    message_type = db.Column(db.String(50), nullable=True)  # e.g., 'notification', 'alert'
+    timestamp = db.Column(db.DateTime, server_default=db.func.now())
 
     user = db.relationship('User', backref=db.backref('messages', lazy=True))
 
