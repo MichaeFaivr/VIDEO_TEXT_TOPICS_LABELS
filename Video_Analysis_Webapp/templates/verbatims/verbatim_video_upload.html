@@ -138,6 +138,8 @@
         <input type="file" id="video" name="video" accept="video/*" style="display: none;" onchange="displaySelectedFile()">
         <div id="selectedFile" style="margin-top: 15px; padding: 10px; background-color: #f0f8ff; border: 1px solid #ccc; border-radius: 4px; display: none;">
             <strong>Selected file: </strong><span id="fileName"></span>
+            <br><strong>File size: </strong><span id="fileSize"></span> MB
+            <br><strong>Creation date: </strong><span id="fileDate"></span>
         </div>
         <br>
         <div id="uploadButtonContainer" style="margin-top: 20px; display: none;">
@@ -148,10 +150,14 @@
                 const fileInput = document.getElementById('video');
                 const selectedFileDiv = document.getElementById('selectedFile');
                 const fileNameSpan = document.getElementById('fileName');
+                const fileSizeSpan = document.getElementById('fileSize');
+                const fileDateSpan = document.getElementById('fileDate');
                 
                 if (fileInput.files.length > 0) {
                     const file = fileInput.files[0];
                     fileNameSpan.textContent = file.name;
+                    fileSizeSpan.textContent = (file.size / (1024 * 1024)).toFixed(2); // Convert bytes to MB
+                    fileDateSpan.textContent = new Date(file.lastModified).toLocaleDateString(); // Format date
                     selectedFileDiv.style.display = 'block';
                     document.getElementById('uploadButtonContainer').style.display = 'block';
                 } else {
