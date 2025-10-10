@@ -22,7 +22,7 @@ TEMP_AUDIO_FILE = "temp_audio.wav" # better to read from config file
 # 06-mai TEST
 TEMP_AUDIO_FILE = "temp_mono_audio.wav"
 
-USERS_DATABASE_NAME = 'users10_sqlalchemy.db' # better to read from config file
+USERS_DATABASE_NAME = 'users12_sqlalchemy.db' # better to read from config file
 #PATH_DATABASE_USERS = '/databases/user_accounts/users.db'
 
 # Initialize the database with SQLAlchemy
@@ -66,6 +66,25 @@ def verbatim_video_upload():
         print(f'username retrieved from form or args: {username}')
         if username:
             return render_template('verbatims/verbatim_video_upload.html', username=username) # Pass username to the upload page
+        else:
+            # Redirect back to login if no username provided
+            return redirect(url_for('login_page'))
+    else:
+        # For GET requests, redirect to login
+        return redirect(url_for('login_page'))
+    
+
+@app.route('/place_video_upload/', methods=['GET', 'POST'])
+def place_video_upload():
+    # POST method in login_page.html when clicking on Login button
+    print(f'Request method: {request.method}')
+    if request.method == 'POST':
+        # Get username from login form data
+        # Also check for username in URL parameters for GET requests
+        username = request.form.get('username') or request.args.get('username')
+        print(f'username retrieved from form or args: {username}')
+        if username:
+            return render_template('home_kitchen_outdoor/home_kitchen_outdoor_vid_upload.html', username=username) # Pass username to the upload page
         else:
             # Redirect back to login if no username provided
             return redirect(url_for('login_page'))
@@ -363,10 +382,10 @@ def messages():
             except Exception as e:
                 print(f'Error saving message: {e}')
                 return "Error saving message", 500
-        return redirect(url_for('messages_sqlalchemy', username=username))
+        return redirect(url_for('messages', username=username))
     else:
         username = request.form.get('username') or request.args.get('username')
-        print(f'username in messages_sqlalchemy GET: {username}')
+        print(f'username in messages GET: {username}')
         user_id = None
         messages = []
         if username:
@@ -402,6 +421,12 @@ def faq_and_bot():
 @app.route('/specifications', methods=['GET'])
 def specifications():
     return render_template('annexes/specifications.html')
+
+@app.route('/back_to_selection_contribution', methods=['GET'])
+def back_to_selection_contribution():
+    username = request.args.get('username')
+    print(f'username in back_to_selection_contribution: {username}')
+    return render_template('select_contribution_type.html', username=username)
 
 @app.route('/how_to_earn', methods=['GET'])
 def how_to_earn():
