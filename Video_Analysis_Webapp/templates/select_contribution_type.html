@@ -65,7 +65,7 @@
             }
         </style>
         <h1 style="margin-top: 6px; margin-bottom: 2px;">Welcome to Shaire</h1>
-        <p style="margin: 1px 0;"><em>Subtitle</em></p>
+        <p style="margin: 1px 0;"><em>Choose/Make/Upload a Contribution & Earn Credits</em></p>
     </header>
     <style>
         body {
@@ -131,9 +131,6 @@
         label {
             font-weight: bold;
         }
-    </style>
-    <h1>Select the type of contribution</h1>
-    <style>
         .button-container {
             display: flex;
             gap: 10px;
@@ -149,57 +146,120 @@
             width: 100%;
         }
     </style>
-    <div class="button-container">
-    <form action="/verbatim_video_upload/" method="post" enctype="multipart/form-data">
-        <input type="hidden" name="username" value="{{ username }}">
-        <button type="submit" class="tooltip-button" style="font-size: clamp(14px, 2.5vw, 18px);">Upload Verbatim Video
-            <span class="tooltip">Verbatim Reward Range US$2 - US$5,<br>if the video is validated by our algorithm.</span>
-        </button>
-        <style>
-            .tooltip-button {
-            position: relative;
-            }
-            .tooltip {
-            visibility: hidden;
-            opacity: 0;
-            background-color: rgba(113, 21, 21, 0.626);
-            color: white;
-            text-align: center;
-            border-radius: 6px;
-            padding: 10px;
-            position: absolute;
-            z-index: 1001;
-            bottom: 125%;
-            left: 50%;
-            transform: translateX(-50%);
-            white-space: nowrap;
-            font-size: 14px;
-            transition: opacity 0.3s;
-            }
-            .tooltip::after {
-            content: "";
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            margin-left: -5px;
-            border-width: 5px;
-            border-style: solid;
-            border-color: rgba(0, 0, 0, 0.8) transparent transparent transparent;
-            }
-            .tooltip-button:hover .tooltip {
-            visibility: visible;
-            opacity: 1;
-            }
-        </style>
-    </form>
-    <form action="/verbatim_video_upload/" method="post" enctype="multipart/form-data">
-        <input type="hidden" name="username" value="{{ username }}">
-        <button type="submit" class="tooltip-button" style="font-size: clamp(14px, 2.5vw, 18px);">Create A Video
-            <span class="tooltip">Ad Reward Range US$20 - $40,<br>if the video is validated by our algorithm.</span>
-        </button>
-    </form>
 
+    <style>
+    /* Styles for the contribution grid */
+    .contribution-grid {
+        display: grid;
+        margin-left: 0;
+        margin-right: 30px;
+        column-gap: 40px;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+        max-width: 600px;
+        justify-items: stretch;
+    }
+    .contribution-grid form {
+        width: 100%;
+    } 
+    .contribution-button {
+        padding: 15px 10px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: clamp(16px, 2vw, 18px);
+        font-weight: bold;
+        color: white;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        min-height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        width: 100%;
+    }
+
+    @media (max-width: 480px) {
+        .contribution-grid {
+            grid-template-columns: 1fr;
+            grid-template-rows: repeat(6, 1fr);
+        }       
+        .contribution-button {
+            min-height: 60px;
+            font-size: 14px;
+        }
+    }
+
+    @media (min-width: 769px) and (max-width: 1200px) {
+        .contribution-grid {
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+        }   
+        .contribution-button {
+            min-height: 80px;
+            font-size: 16px;
+        }
+    }
+
+    @media (min-width: 1201px) {
+        .contribution-grid {
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            max-width: 900px;
+        }
+        
+        .contribution-button {
+            min-height: 90px;
+            font-size: 17px;
+        }
+    }
+        .contribution-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+        
+        .btn-verbatim { background-color: #87CEEB; }
+        .btn-place { background-color: #90EE90; }
+        .btn-wardrobe { background-color: #FFB347; }
+        .btn-games { background-color: #FF6B6B; }
+        .btn-electronic { background-color: #D3D3D3; color: #333; text-shadow: none; }
+        .btn-kitchen { background-color: #4682B4; }
+    </style>
+
+    <div class="contribution-grid">
+        <form action="/verbatim_video_upload/" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="username" value="{{ username }}">
+            <button type="submit" class="contribution-button btn-verbatim">Verbatim</button>
+        </form>
+        
+        <form action="/place_video_upload/" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="username" value="{{ username }}">
+            <button type="submit" class="contribution-button btn-place">Video of your place</button>
+        </form>
+        
+        <form action="/wardrobe_video_upload/" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="username" value="{{ username }}">
+            <button type="submit" class="contribution-button btn-wardrobe">Wardrobe Video</button>
+        </form>
+        
+        <form action="/games_video_upload/" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="username" value="{{ username }}">
+            <button type="submit" class="contribution-button btn-games">Games & Toys Video</button>
+        </form>
+        
+        <form action="/electronic_video_upload/" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="username" value="{{ username }}">
+            <button type="submit" class="contribution-button btn-electronic">Electronic device</button>
+        </form>
+        
+        <form action="/kitchen_video_upload/" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="username" value="{{ username }}">
+            <button type="submit" class="contribution-button btn-kitchen">Kitchen Equipt</button>
+        </form>
     </div>
+
     <footer style="margin-top: 30px; padding: 20px; background-color: #e4dcdc; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
         <div style="text-align: left;">
             <style>
