@@ -156,21 +156,21 @@
         column-gap: 40px;
         grid-template-columns: repeat(2, 1fr);
         grid-template-rows: repeat(3, 1fr);
-        max-width: 600px;
+        max-width: 900px;
         justify-items: stretch;
     }
     .contribution-grid form {
-        width: 100%;
+        width: 95%;
+        max-width: 300px;
     } 
     .contribution-button {
-        padding: 15px 10px;
+        padding: 10px 5px;
         border: none;
         border-radius: 8px;
         cursor: pointer;
         font-size: clamp(16px, 2vw, 18px);
         font-weight: bold;
         color: white;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
         transition: all 0.3s ease;
         box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         min-height: 80px;
@@ -220,44 +220,229 @@
             box-shadow: 0 6px 12px rgba(0,0,0,0.3);
         }
         
-        .btn-verbatim { background-color: #87CEEB; }
-        .btn-place { background-color: #90EE90; }
-        .btn-wardrobe { background-color: #FFB347; }
-        .btn-games { background-color: #FF6B6B; }
-        .btn-electronic { background-color: #D3D3D3; color: #333; text-shadow: none; }
-        .btn-kitchen { background-color: #4682B4; }
+        .btn-verbatim { 
+            color: rgba(0, 0, 0, 0.841);
+            background-image: url('/static/images/verbatim.jpg');
+            background-size: cover; /* Ensures the image covers the entire button */
+            background-position: center; /* Centers the image */
+            background-repeat: no-repeat; /* Prevents the image from repeating */
+            width: 200px; /* Set a width */
+            height: 60px; /* Set a height */
+            border: none; /* Removes the default border */
+            color: rgb(26, 2, 2); /* Text color */
+            font-size: 16px; /* Text size */
+            cursor: pointer; /* Changes cursor to pointer on hover */
+            border-radius: 5px; /* Optional: rounded corners */
+        }
+        .btn-place { 
+            color: rgba(0, 0, 0, 0.841);
+            background-image: url('/static/images/mega_mansion.jpg');
+            background-size: cover; /* Ensures the image covers the entire button */
+            background-position: center; /* Centers the image */
+            background-repeat: no-repeat; /* Prevents the image from repeating */
+            width: 200px; /* Set a width */
+            height: 60px; /* Set a height */
+            border: none; /* Removes the default border */
+            color: rgb(26, 2, 2); /* Text color */
+            font-size: 16px; /* Text size */
+            cursor: pointer; /* Changes cursor to pointer on hover */
+            border-radius: 5px; /* Optional: rounded corners */
+        }
+        .btn-outdoor { 
+            color: rgba(0, 0, 0, 0.841);
+            background-image: url('/static/images/garden.jpg');
+            background-size: cover; /* Ensures the image covers the entire button */
+            background-position: center; /* Centers the image */
+            background-repeat: no-repeat; /* Prevents the image from repeating */
+            width: 200px; /* Set a width */
+            height: 60px; /* Set a height */
+            border: none; /* Removes the default border */
+            color: rgb(26, 2, 2); /* Text color */
+            font-size: 16px; /* Text size */
+            cursor: pointer; /* Changes cursor to pointer on hover */
+            border-radius: 5px; /* Optional: rounded corners */
+        }
+        .btn-wardrobe {
+            color: rgba(0, 0, 0, 0.841);
+            background-image: url('/static/images/wardrobe.jpg');
+            background-size: cover; /* Ensures the image covers the entire button */
+            background-position: center; /* Centers the image */
+            background-repeat: no-repeat; /* Prevents the image from repeating */
+            width: 200px; /* Set a width */
+            height: 60px; /* Set a height */
+            border: none; /* Removes the default border */
+            color: rgb(26, 2, 2); /* Text color */
+            font-size: 16px; /* Text size */
+            cursor: pointer; /* Changes cursor to pointer on hover */
+            border-radius: 5px; /* Optional: rounded corners */
+        }
+        .btn-games { 
+            color: rgba(0, 0, 0, 0.841);
+            background-image: url('/static/images/games.jpg');
+            background-size: cover; /* Ensures the image covers the entire button */
+            background-position: center; /* Centers the image */
+            background-repeat: no-repeat; /* Prevents the image from repeating */
+            width: 200px; /* Set a width */
+            height: 60px; /* Set a height */
+            border: none; /* Removes the default border */
+            color: rgb(26, 2, 2); /* Text color */
+            font-size: 16px; /* Text size */
+            cursor: pointer; /* Changes cursor to pointer on hover */
+            border-radius: 5px; /* Optional: rounded corners */
+        }
+        .btn-electronic { 
+            color: rgba(0, 0, 0, 0.841);
+            background-image: url('/static/images/consumer_electronics.jpg');
+            background-size: cover; /* Ensures the image covers the entire button */
+            background-position: center; /* Centers the image */
+            background-repeat: no-repeat; /* Prevents the image from repeating */
+            width: 200px; /* Set a width */
+            height: 60px; /* Set a height */
+            border: none; /* Removes the default border */
+            color: rgb(26, 2, 2); /* Text color */
+            font-size: 16px; /* Text size */
+            cursor: pointer; /* Changes cursor to pointer on hover */
+            border-radius: 5px; /* Optional: rounded corners */
+        }
+        .btn-kitchen { 
+            color: rgba(0, 0, 0, 0.841);
+            background-image: url('/static/images/kitchen.jpg');
+            background-size: cover; /* Ensures the image covers the entire button */
+            background-position: center; /* Centers the image */
+            background-repeat: no-repeat; /* Prevents the image from repeating */
+            width: 200px; /* Set a width */
+            height: 60px; /* Set a height */
+            border: none; /* Removes the default border */
+            color: rgb(26, 2, 2); /* Text color */
+            font-size: 16px; /* Text size */
+            cursor: pointer; /* Changes cursor to pointer on hover */
+            border-radius: 5px; /* Optional: rounded corners */
+        }
+        .btn-device-usage { background-color: #b888de; color: rgba(0, 0, 0, 0.841);}
+        .btn-design-agent-sales { background-color: #b888de; color: rgba(0, 0, 0, 0.841);}
+        .btn-design-agent-network { background-color: #b888de; color: rgba(0, 0, 0, 0.841);}
     </style>
 
+    <div style="grid-column: 1 / -1; background-color: #90ee906f; padding: 6px; border-radius: 8px; margin-bottom: 0px; max-height: 30px">
+        <h2 style="text-align: center; margin: 0; color: #1a73e8; font-weight: bold; font-size: clamp(1.2rem, 1vw, 1rem); display: flex; align-items: center; justify-content: center; height: 100%;">
+            LIGHT : Video Presentation - Credits of 2€ to 4€ 
+        </h2>
+    </div>
+    <div class="contribution-scroll-container">
+        <div class="contribution-scroll-track">
+            <form action="/verbatim_video_upload/" method="post" enctype="multipart/form-data" class="contribution-item">
+                <input type="hidden" name="username" value="{{ username }}">
+                <button type="submit" class="contribution-button btn-verbatim">Verbatim</button>
+            </form>
+            
+            <form action="/place_video_upload/" method="post" enctype="multipart/form-data" class="contribution-item">
+                <input type="hidden" name="username" value="{{ username }}">
+                <button type="submit" class="contribution-button btn-place">Video of your place</button>
+            </form>
+
+            <form action="/outdoor_video_upload/" method="post" enctype="multipart/form-data" class="contribution-item">
+                <input type="hidden" name="username" value="{{ username }}">
+                <button type="submit" class="contribution-button btn-outdoor">Outdoor Video</button>
+            </form>
+            
+            <form action="/wardrobe_video_upload/" method="post" enctype="multipart/form-data" class="contribution-item">
+                <input type="hidden" name="username" value="{{ username }}">
+                <button type="submit" class="contribution-button btn-wardrobe">Wardrobe Video</button>
+            </form>
+            
+            <form action="/games_video_upload/" method="post" enctype="multipart/form-data" class="contribution-item">
+                <input type="hidden" name="username" value="{{ username }}">
+                <button type="submit" class="contribution-button btn-games">Games & Toys Video</button>
+            </form>
+            
+            <form action="/electronic_video_upload/" method="post" enctype="multipart/form-data" class="contribution-item">
+                <input type="hidden" name="username" value="{{ username }}">
+                <button type="submit" class="contribution-button btn-electronic">Electronic device</button>
+            </form>
+            
+            <form action="/kitchen_video_upload/" method="post" enctype="multipart/form-data" class="contribution-item">
+                <input type="hidden" name="username" value="{{ username }}">
+                <button type="submit" class="contribution-button btn-kitchen">Kitchen Equipt</button>
+            </form>
+        </div>
+    </div>
+
+    <style>
+        .contribution-scroll-container {
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 20px 0;
+            margin: 20px 0;
+            scroll-behavior: smooth;
+        }
+
+        .contribution-scroll-track {
+            display: flex;
+            gap: 20px;
+            padding: 0 50px;
+            align-items: center;
+        }
+
+        .contribution-item {
+            min-width: 200px;
+            flex-shrink: 0;
+            transition: transform 0.3s ease;
+            margin: 0;
+        }
+
+        .contribution-scroll-container:hover .contribution-item:hover {
+            transform: scale(1.1);
+            z-index: 10;
+        }
+
+        .contribution-scroll-container:hover .contribution-item:not(:hover) {
+            transform: scale(0.9);
+            opacity: 0.7;
+        }
+
+        .contribution-scroll-container::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .contribution-scroll-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .contribution-scroll-container::-webkit-scrollbar-thumb {
+            background: #1a73e8;
+            border-radius: 4px;
+        }
+
+        .contribution-scroll-container::-webkit-scrollbar-thumb:hover {
+            background: #0d47a1;
+        }
+    </style>
+
+    <div style="grid-column: 1 / -1; background-color: #800cdee3; padding: 6px; border-radius: 8px; margin-top: 10px; margin-bottom: 0px; max-height: 30px">
+        <h2 style="text-align: center; margin: 0; color: #03162e; font-weight: bold; font-size: clamp(1.2rem, 2.5vw, 1.4rem); display: flex; align-items: center; justify-content: center; height: 100%;">
+            MEDIUM : 20 - 200€ / 1 to 20 hours / Ponctual Income
+        </h2>
+    </div>
     <div class="contribution-grid">
-        <form action="/verbatim_video_upload/" method="post" enctype="multipart/form-data">
+        <form action="/AAI A/" method="post" enctype="multipart/form-data">
             <input type="hidden" name="username" value="{{ username }}">
-            <button type="submit" class="contribution-button btn-verbatim">Verbatim</button>
+            <button type="submit" class="contribution-button btn-device-usage">AAI A</button>
         </form>
-        
-        <form action="/place_video_upload/" method="post" enctype="multipart/form-data">
+        <form action="/AAI B/" method="post" enctype="multipart/form-data">
             <input type="hidden" name="username" value="{{ username }}">
-            <button type="submit" class="contribution-button btn-place">Video of your place</button>
+            <button type="submit" class="contribution-button btn-design-agent-sales">AAI B</button>
         </form>
-        
-        <form action="/wardrobe_video_upload/" method="post" enctype="multipart/form-data">
+        <form action="/AAI C/" method="post" enctype="multipart/form-data">
             <input type="hidden" name="username" value="{{ username }}">
-            <button type="submit" class="contribution-button btn-wardrobe">Wardrobe Video</button>
+            <button type="submit" class="contribution-button btn-design-agent-network">AAI C</button>
         </form>
-        
-        <form action="/games_video_upload/" method="post" enctype="multipart/form-data">
-            <input type="hidden" name="username" value="{{ username }}">
-            <button type="submit" class="contribution-button btn-games">Games & Toys Video</button>
-        </form>
-        
-        <form action="/electronic_video_upload/" method="post" enctype="multipart/form-data">
-            <input type="hidden" name="username" value="{{ username }}">
-            <button type="submit" class="contribution-button btn-electronic">Electronic device</button>
-        </form>
-        
-        <form action="/kitchen_video_upload/" method="post" enctype="multipart/form-data">
-            <input type="hidden" name="username" value="{{ username }}">
-            <button type="submit" class="contribution-button btn-kitchen">Kitchen Equipt</button>
-        </form>
+    </div>
+
+    <div style="grid-column: 1 / -1; background-color: #9e6d70e7; padding: 6px; border-radius: 8px; margin-top: 10px; margin-bottom: 0px; max-height: 30px">
+        <h2 style="text-align: center; margin: 0; color: #03162e; font-weight: bold; font-size: clamp(1.2rem, 2.5vw, 1.4rem); display: flex; align-items: center; justify-content: center; height: 100%;">
+            HEAVY : 200€+/mth / 10 - 30 hrs/mth / Recurring Income
+        </h2>
     </div>
 
     <footer style="margin-top: 30px; padding: 20px; background-color: #e4dcdc; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
