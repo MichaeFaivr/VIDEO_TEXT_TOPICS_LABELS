@@ -14,9 +14,11 @@ from commons.advanced_functions import *
 import random
 import string
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 from model.classes_tables_sqlalchemy import db, User, History_ctbs, User_messages, User_deals  # Import the db instance and User model
 
 app = Flask(__name__)
+CORS(app)
 
 TEMP_AUDIO_FILE = "temp_audio.wav" # better to read from config file
 # 06-mai TEST
