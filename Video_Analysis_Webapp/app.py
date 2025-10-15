@@ -2,7 +2,7 @@ from locale import currency
 import pickle
 import os
 from datetime import datetime
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, app, render_template, request, redirect, url_for
 import sqlite3
 
 from model.class_video_copilot import VideoToSpeechClass, VideoToObjectsClass, VideoTopicsSummaryClass, VideoPostValidationClass
@@ -15,28 +15,18 @@ import random
 import string
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from model.classes_tables_sqlalchemy import db, User, History_ctbs, User_messages, User_deals  # Import the db instance and User model
+from model.classes_tables_sqlalchemy import User, History_ctbs, User_messages, User_deals  # Import the db instance and User model
 
-app = Flask(__name__)
-CORS(app)
+# Import the config
+from config import app, db
+####app.config.from_object(Config) : see later if create a Config class in config.py
 
 TEMP_AUDIO_FILE = "temp_audio.wav" # better to read from config file
 # 06-mai TEST
 TEMP_AUDIO_FILE = "temp_mono_audio.wav"
 
-USERS_DATABASE_NAME = 'users12_sqlalchemy.db' # better to read from config file
-#PATH_DATABASE_USERS = '/databases/user_accounts/users.db'
-
-# Initialize the database with SQLAlchemy
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{}'.format(USERS_DATABASE_NAME)
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-# Initialize the database with the app
-db.init_app(app)
-
-# Create the database and tables
-with app.app_context():
-    db.create_all()
+# Initialize the database with the app : done in config.py
+# Create the database and tables: displaced to the main section
 
 
 """ save the video analysis in the database - SQLAlchemy version """
@@ -221,7 +211,7 @@ def submit_profile_sqlalchemy():
     user = User.query.filter_by(username=username).first()
     if user:
         user.five_favorite_brands = five_favorite_brands
-        user.monthly_hours_available = monthly_hours_available
+        user.monthly_hours_available = monthly_hours_available if monthly_hours_available else 0.0
         user.desired_extra_income = desired_extra_income
         user.why_favorite_brands = why_favorite_brands
         db.session.commit()
@@ -538,10 +528,9 @@ def display_image():
 
 if __name__ == '__main__':
     app.debug = True
-    # Initialize the database
-    # db.init_app(app) # Bind the db instance to the Flask app
-    #with app.app_context():
-    #    db.create_all()  # Create database tables for all models
+    # Initialize the database : done in config.py
+    with app.app_context():
+        db.create_all()  # Create database tables for all models
     # Run the Flask app
     app.run(
         host='127.0.0.1',
