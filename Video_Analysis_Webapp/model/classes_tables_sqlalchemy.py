@@ -1,7 +1,8 @@
 from flask_sqlalchemy import SQLAlchemy
 
 # Initialize SQLAlchemy without binding it to the app yet
-db = SQLAlchemy()
+from config import db
+#db = SQLAlchemy()
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -32,6 +33,20 @@ class User(db.Model):
     def __repr__(self):
         return f'<User {self.username}>'
     
+    def to_json(self):
+        return {
+            'id': self.id,
+            'username': self.username,
+            'email': self.email,
+            'created_at': self.created_at,
+            'is_admin': self.is_admin,
+            'is_active': self.is_active,
+            'is_premium': self.is_premium,
+            'premium_expiration': self.premium_expiration,
+            'monthly_hours_available': self.monthly_hours_available,
+            'country': self.country,
+            'age_group': self.age_group
+        }
 
 """ Store video analysis results including labels, text, topics, sentiment, and additional info """
 class Video_analysis(db.Model):
