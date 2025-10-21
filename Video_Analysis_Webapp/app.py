@@ -408,7 +408,7 @@ def send_email():
     # For now, we'll just print the email content
     print(f'Email content:\n{email_content}')
 
-    return redirect(url_for('contact_us', username=username))
+    return redirect(url_for('contact_brands', username=username))
 
 
 """ ANNEXE PAGES RELATED ROUTES """
@@ -451,6 +451,7 @@ def faq_and_bot():
         """
         SOLVE THE 429 RATE LIMIT ERROR FROM OPENAI HERE
         openai.RateLimitError: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+        SOLUTION: CREDIT OPENAI ACCOUNT WITH 6 USD AT LEAST
         """
         print(f'Answer generated: {answer}')
     return render_template('annexes/faq_and_bot.html', answer=answer if request.method == 'POST' else None)
@@ -458,6 +459,12 @@ def faq_and_bot():
 @app.route('/specifications', methods=['GET'])
 def specifications():
     return render_template('annexes/specifications.html')
+
+@app.route('/contact_brands', methods=['GET'])
+def contact_brands():
+    username = request.args.get('username')
+    print(f'username in contact_brands: {username}')
+    return render_template('annexes/contact_brands.html', username=username)
 
 @app.route('/back_to_selection_contribution', methods=['GET'])
 def back_to_selection_contribution():

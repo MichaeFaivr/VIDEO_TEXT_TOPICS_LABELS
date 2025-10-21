@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .contact-container {
+            background-color: #f9f9f9;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .contact-item i {
+            width: 20px;
+            color: #007bff;
+        }
+        .contact-item strong {
+            min-width: 80px;
+        }
+    </style>
+</head>
+<body>
+    <div class="contact-container">
+        <div>
+            <label for="brand_select">Select a Brand:</label>
+            <input type="text" id="brand_input" name="brand_name" placeholder="Type to search brands..." autocomplete="off" required>
+            <div id="brand_suggestions" style="display: none; border: 1px solid #ccc; max-height: 200px; overflow-y: auto; background: white; position: absolute; z-index: 1000; width: 100%;"></div>
+            <script>
+                const brands = ["Nike", "Adidas", "Apple", "Samsung", "Coca-Cola", "McDonald's", "Google", "Microsoft", "Amazon", "Tesla"];
+                const brandInput = document.getElementById('brand_input');
+                const suggestions = document.getElementById('brand_suggestions');
+                
+                brandInput.addEventListener('input', function() {
+                    const value = this.value.toLowerCase();
+                    suggestions.innerHTML = '';
+                    
+                    if (value.length > 0) {
+                        const filtered = brands.filter(brand => brand.toLowerCase().startsWith(value));
+                        
+                        if (filtered.length > 0) {
+                            suggestions.style.display = 'block';
+                            filtered.forEach(brand => {
+                                const div = document.createElement('div');
+                                div.textContent = brand;
+                                div.style.padding = '10px';
+                                div.style.cursor = 'pointer';
+                                div.addEventListener('click', function() {
+                                    brandInput.value = brand;
+                                    suggestions.style.display = 'none';
+                                });
+                                suggestions.appendChild(div);
+                            });
+                        } else {
+                            suggestions.style.display = 'none';
+                        }
+                    } else {
+                        suggestions.style.display = 'none';
+                    }
+                });
+                
+                document.addEventListener('click', function(e) {
+                    if (!brandInput.contains(e.target) && !suggestions.contains(e.target)) {
+                        suggestions.style.display = 'none';
+                    }
+                });
+            </script>
+            <select id="brand_select" name="brand_name" required>
+                <option value="">Choose a brand...</option>
+                <option value="Nike">Nike</option>
+                <option value="Adidas">Adidas</option>
+                <option value="Apple">Apple</option>
+                <option value="Samsung">Samsung</option>
+                <option value="Coca-Cola">Coca-Cola</option>
+                <option value="McDonald's">McDonald's</option>
+                <option value="Google">Google</option>
+                <option value="Microsoft">Microsoft</option>
+                <option value="Amazon">Amazon</option>
+                <option value="Tesla">Tesla</option>
+            </select>
+        </div>
+        <h1>Write an email to a brand</h1>
+            <form action="{{ url_for('send_email') }}" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="username" value="{{ username }}">
+                <div>
+                    <label for="recipient">To:</label>
+                    <input type="email" id="recipient" name="recipient" required>
+                </div>
+                <div>
+                    <label for="subject">Subject:</label>
+                    <input type="text" id="subject" name="subject" maxlength="100" required>
+                </div>
+                <div>
+                    <label for="email_content">Message:</label>
+                    <textarea id="email_content" name="email_content" maxlength="500" rows="6" cols="50" required>Hi, I'm {{ username }},</textarea>
+                </div>
+                <button type="submit">Send Email</button>
+            </form>
+
+            <div style="margin-top: 20px; text-align: center;">
+                <a href="/back_to_selection_contribution?username={{ username }}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">Go to Contribution Selection</a>
+            </div>
+    </div>
+</body>
+</html>
