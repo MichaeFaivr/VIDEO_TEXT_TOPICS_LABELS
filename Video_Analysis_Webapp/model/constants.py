@@ -82,3 +82,6 @@ TEMP_AUDIO_FILE = "temp_mono_audio.wav"
 
 # DATABASE
 PATH_DATABASE_USERS = 'databases/user_accounts/users5.db'
+
+# FAQ CSV FILE
+FAQ_CSV_FILE_PATH = 'static/documents/csv_ai_agents.csv'

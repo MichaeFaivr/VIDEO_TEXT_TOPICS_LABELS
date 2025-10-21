@@ -2,7 +2,7 @@ from locale import currency
 import pickle
 import os
 from datetime import datetime
-from flask import Flask, app, render_template, request, redirect, url_for
+from flask import Flask, app, flash, render_template, request, redirect, url_for
 import sqlite3
 
 from model.class_video_copilot import VideoToSpeechClass, VideoToObjectsClass, VideoTopicsSummaryClass, VideoPostValidationClass
@@ -16,6 +16,8 @@ import string
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from model.classes_tables_sqlalchemy import User, History_ctbs, User_messages, User_deals  # Import the db instance and User model
+from model.classes_ai_agents import create_research_ai_agent_openai, create_research_ai_agent_anthropic, create_csv_ai_agent
+
 
 # Import the config
 from config import app, db
@@ -223,6 +225,7 @@ def submit_profile_sqlalchemy():
 # Route to display success message and redirect to login page
 @app.route('/success')
 def success():
+    ##flash('Profile updated successfully!', 'success') # requires a secret key in config.py
     return render_template('login_page.html')
 
     
@@ -285,6 +288,8 @@ def user_deals():
     # Get user deals from database based on username
     deals = []
 
+    # The deals provided by the brands will be filtered based on the user's credit balance
+    # and which represent a deal of at least 30% discount on the regular price of the product
     if username:
         user = User.query.filter_by(username=username).first()
         if not user:
@@ -388,6 +393,22 @@ def messages():
                 messages = get_messages(username)
                 print(f'Fetched messages for user_id {user_id}, username {username}: {messages}')
         return render_template('select_contribution_type.html', username=username)
+    
+
+@app.route('/emails/', methods=['POST'])
+def send_email():
+    username = request.form.get('username')
+    recipient = request.form.get('recipient')
+    subject = request.form.get('subject')
+    email_content = request.form.get('email_content')
+    
+    print(f'Sending email from {username} to {recipient} with subject "{subject}"')
+
+    # Here you would add the logic to send the email
+    # For now, we'll just print the email content
+    print(f'Email content:\n{email_content}')
+
+    return redirect(url_for('contact_us', username=username))
 
 
 """ ANNEXE PAGES RELATED ROUTES """
@@ -406,9 +427,18 @@ def contact_us():
     print(f'username in contact_us: {username}')
     return render_template('annexes/contact_us.html', username=username)
 
-@app.route('/faq_and_bot', methods=['GET'])
+@app.route('/faq_and_bot', methods=['GET', 'POST'])
 def faq_and_bot():
-    return render_template('annexes/faq_and_bot.html')
+    if request.method == 'POST':
+        question = request.form.get('question')
+        print(f'Question submitted: {question}')
+        # Here you would add the logic to process the question
+        username = request.form.get('username')
+        #csv_ai_agent = create_research_ai_agent_openai()
+        #csv_ai_agent = create_research_ai_agent_anthropic()
+        csv_ai_agent = create_csv_ai_agent(FAQ_CSV_FILE_PATH)
+        answer = csv_ai_agent.run(question)
+    return render_template('annexes/faq_and_bot.html', answer=answer if request.method == 'POST' else None)
 
 @app.route('/specifications', methods=['GET'])
 def specifications():
