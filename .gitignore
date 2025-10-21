@@ -26,3 +26,6 @@ GoogleServices/
 
 # Ignore language model folder
 language_models/
+
+# Ignore .env files
+**/.env
