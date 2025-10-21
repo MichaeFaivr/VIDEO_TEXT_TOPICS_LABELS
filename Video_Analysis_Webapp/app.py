@@ -16,7 +16,7 @@ import string
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from model.classes_tables_sqlalchemy import User, History_ctbs, User_messages, User_deals  # Import the db instance and User model
-from model.classes_ai_agents import create_research_ai_agent_openai, create_research_ai_agent_anthropic, create_csv_ai_agent
+from model.classes_ai_agents import SpecificAIAgentResponse, create_research_ai_agent_openai, create_research_ai_agent_anthropic, create_csv_ai_agent
 
 
 # Import the config
@@ -436,8 +436,23 @@ def faq_and_bot():
         username = request.form.get('username')
         #csv_ai_agent = create_research_ai_agent_openai()
         #csv_ai_agent = create_research_ai_agent_anthropic()
-        csv_ai_agent = create_csv_ai_agent(FAQ_CSV_FILE_PATH)
-        answer = csv_ai_agent.run(question)
+        #csv_ai_agent = create_csv_ai_agent(FAQ_CSV_FILE_PATH)
+        csv_ai_agent = SpecificAIAgentResponse(
+            specificity="csv-rows-columns",
+            ai_model="chatgpt-4o-mini",
+            additional_context=COLS_ROWS_CSV_PATH_FILE,
+            question=question,
+            topic="Cost of industrial gadgets",
+            summary="The cost of industrial gadgets varies between $100 and $1000 depending on features.",
+            sources=["https://example.com/source1", "https://example.com/source2"],
+            tools_used=["web_search", "calculator"]
+            )
+        answer = csv_ai_agent.ask_csv_research_bot()
+        """
+        SOLVE THE 429 RATE LIMIT ERROR FROM OPENAI HERE
+        openai.RateLimitError: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+        """
+        print(f'Answer generated: {answer}')
     return render_template('annexes/faq_and_bot.html', answer=answer if request.method == 'POST' else None)
 
 @app.route('/specifications', methods=['GET'])

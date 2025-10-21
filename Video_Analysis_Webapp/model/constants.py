@@ -85,3 +85,6 @@ PATH_DATABASE_USERS = 'databases/user_accounts/users5.db'
 
 # FAQ CSV FILE
 FAQ_CSV_FILE_PATH = 'static/documents/csv_ai_agents.csv'
+
+# COLS AND ROWS FOR CSV AI AGENT
+COLS_ROWS_CSV_PATH_FILE = 'static/documents/csv_test_21oct2025.csv'
