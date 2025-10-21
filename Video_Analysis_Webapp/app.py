@@ -15,7 +15,7 @@ import random
 import string
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from model.classes_tables_sqlalchemy import User, History_ctbs, User_messages, User_deals  # Import the db instance and User model
+from model.classes_tables_sqlalchemy import User, History_ctbs, User_messages, User_deals, Brands  # Import the db instance and User model
 from model.classes_ai_agents import SpecificAIAgentResponse, create_research_ai_agent_openai, create_research_ai_agent_anthropic, create_csv_ai_agent
 
 
@@ -463,8 +463,23 @@ def specifications():
 @app.route('/contact_brands', methods=['GET'])
 def contact_brands():
     username = request.args.get('username')
+    # Check if Brands table is empty and create initial records if needed
+    try:
+        brands_count = Brands.query.count()
+        if brands_count == 0:
+            # Create initial brand records
+            initial_brands = INITIAL_BRANDS
+            for brand_name in initial_brands:
+                brand_email = f'contact@{brand_name.lower()}.com'
+                new_brand = Brands(name=brand_name, contact_email=brand_email)
+                db.session.add(new_brand)
+            db.session.commit()
+            print(f'Created {len(initial_brands)} initial brand records')
+    except Exception as e:
+        print(f'Error creating initial brands: {e}')
+        db.session.rollback()
     print(f'username in contact_brands: {username}')
-    return render_template('annexes/contact_brands.html', username=username)
+    return render_template('annexes/contact_brands.html', username=username, brands_list=INITIAL_BRANDS)
 
 @app.route('/back_to_selection_contribution', methods=['GET'])
 def back_to_selection_contribution():

@@ -88,17 +88,10 @@
                 });
             </script>
             <select id="brand_select" name="brand_name" required>
-                <option value="">Choose a brand...</option>
-                <option value="Nike">Nike</option>
-                <option value="Adidas">Adidas</option>
-                <option value="Apple">Apple</option>
-                <option value="Samsung">Samsung</option>
-                <option value="Coca-Cola">Coca-Cola</option>
-                <option value="McDonald's">McDonald's</option>
-                <option value="Google">Google</option>
-                <option value="Microsoft">Microsoft</option>
-                <option value="Amazon">Amazon</option>
-                <option value="Tesla">Tesla</option>
+                <option value="">Select a brand...</option>
+                {% for brand in brands_list %}
+                    <option value="{{ brand }}">{{ brand }}</option>
+                {% endfor %}
             </select>
         </div>
         <h1>Write an email to a brand</h1>

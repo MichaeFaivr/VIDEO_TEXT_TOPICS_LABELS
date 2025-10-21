@@ -88,3 +88,6 @@ FAQ_CSV_FILE_PATH = 'static/documents/csv_ai_agents.csv'
 
 # COLS AND ROWS FOR CSV AI AGENT
 COLS_ROWS_CSV_PATH_FILE = 'static/documents/csv_test_21oct2025.csv'
+
+# INITIAL BRANDS FOR TESTING
+INITIAL_BRANDS = ['Apple', 'Adidas', 'Coca-Cola', 'Google', 'Microsoft', 'Nike', 'Scorer', 'Zenta']
