@@ -68,7 +68,7 @@
             </div>
         </div>
 
-        <h1>Write a message</h1>
+        <h1>Write a message for us</h1>
             <form action="{{ url_for('messages') }}" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="username" value="{{ username }}">
                 <div>
@@ -76,6 +76,24 @@
                     <textarea id="content" name="content" maxlength="300" rows="5" cols="50" required>Hi, I'm {{ username }},</textarea>
                 </div>
                 <button type="submit">Send</button>
+            </form>
+
+        <h1>Write an email to a brand</h1>
+            <form action="{{ url_for('send_email') }}" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="username" value="{{ username }}">
+                <div>
+                    <label for="recipient">To:</label>
+                    <input type="email" id="recipient" name="recipient" required>
+                </div>
+                <div>
+                    <label for="subject">Subject:</label>
+                    <input type="text" id="subject" name="subject" maxlength="100" required>
+                </div>
+                <div>
+                    <label for="email_content">Message:</label>
+                    <textarea id="email_content" name="email_content" maxlength="500" rows="6" cols="50" required>Hi, I'm {{ username }},</textarea>
+                </div>
+                <button type="submit">Send Email</button>
             </form>
     </div>
 </body>
