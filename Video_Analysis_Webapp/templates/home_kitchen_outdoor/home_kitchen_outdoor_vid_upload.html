@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+    <nav style="background-color: #fff; padding: 10px 15px; border-bottom: 2px solid #1a73e8; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <div style="display: flex; justify-content: space-between; align-items: center; max-width: 800px; margin: 0 auto; flex-wrap: wrap; gap: 10px;">
+            <div style="font-size: clamp(1rem, 3vw, 1.2em); font-family: 'Quicksand', sans-serif; font-weight: bold; color: #1a73e8; cursor: pointer;" onclick="window.location.href='/about_shaire'">SHAIRE</div>
+            <div style="display: flex; justify-content: center; align-items: center; flex: 1;">
+                <img src="/static/logo/SHAIRE_Logo.png" alt="SHAIRE Logo" style="height: 120px; width: auto;">
+            </div>
+            <div style="position: relative;">
+                <button id="accountMenuBtn" style="background-color: #1a73e8; color: white; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: clamp(12px, 2vw, 14px); white-space: nowrap;">
+                    Hi {{ username|title }} ▼
+                </button>
+                <div id="accountDropdown" style="display: none; position: absolute; right: 0; top: 100%; background-color: white; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); min-width: 150px; max-width: 250px; z-index: 1000;">
+                    <a href="/account_info?username={{ username }}" style="display: block; padding: 10px 15px; color: #333; text-decoration: none; border-bottom: 1px solid #eee; font-size: clamp(12px, 2vw, 14px);">{{ username }} Account</a>
+                    <a href="/user_history?username={{ username }}" style="display: block; padding: 10px 15px; color: #333; text-decoration: none; border-bottom: 1px solid #eee; font-size: clamp(12px, 2vw, 14px);">History/Credits</a>
+                    <a href="/user_deals?username={{ username }}" style="display: block; padding: 10px 15px; color: #333; text-decoration: none; border-bottom: 1px solid #eee; font-size: clamp(12px, 2vw, 14px);">My Deals</a>
+                    <a href="/fill_update_your_profile/?username={{ username }}" style="display: block; padding: 10px 15px; color: #333; text-decoration: none; border-bottom: 1px solid #eee; font-size: clamp(12px, 2vw, 14px);">Preferences</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <script>
+        document.getElementById('accountMenuBtn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            const dropdown = document.getElementById('accountDropdown');
+            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+        });
+        
+        document.addEventListener('click', function() {
+            document.getElementById('accountDropdown').style.display = 'none';
+        });
+    </script>
+<style>
+    html {
+        background: linear-gradient(135deg, #74b9ff 0%, #0984e3 30%, #fd79a8 70%, #fdcb6e 100%);
+        background-size: cover;
+    }
+    
+    body {
+        background-color: rgba(255, 255, 255, 0.962); /* Semi-transparent white for better readability */
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-top: 10px;
+        margin-bottom: 20px;
+    }
+</style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Upload</title>
+</head>
+<body>
+    <header>
+        <style>
+            header h1 {
+                color: rgb(4, 4, 68);
+                font-size: clamp(2rem, 2.5vw, 3em); /* Responsive font size that adapts to screen size */
+            }
+            header p {
+                font-size: clamp(1rem, 2.5vw, 1.5em); /* Responsive font size that adapts to screen size */
+                color: rgb(10, 10, 100);
+            }
+        </style>
+        <h1 style="margin-top: 6px; margin-bottom: 2px;">Welcome to Shaire</h1>
+        <p style="margin: 1px 0;"><em>Subtitle</em></p>
+    </header>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        header {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 3px;
+            text-align: center;
+        }
+        h1 {
+            margin-top: 3px;
+            margin-bottom: 0px;
+            color: #1a73e8;
+            text-align: center;
+            font-size: clamp(1rem, 2.5vw, 3em); /* Responsive font size that adapts to screen size */
+        }
+        form {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f5f5f5;
+        }
+        button {
+            background-color: #1a73e8;
+            color: white;
+            padding: 25px 25px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s;
+            box-shadow: 
+                inset 2px 2px 4px rgba(255,255,255,0.6),
+                inset -2px -2px 4px rgba(0,0,0,0.2),
+                2px 2px 8px rgba(0,0,0,0.2);
+        }
+        button:hover {
+            background-color: #0d47a1;
+            transform: translateY(-1px);
+            box-shadow: 
+                inset 1px 1px 2px rgba(255,255,255,0.7),
+                inset -1px -1px 2px rgba(0,0,0,0.3),
+                3px 3px 10px rgba(0,0,0,0.3);
+        }
+        label {
+            font-weight: bold;
+        }
+    </style>
+    <form action="/analysis/" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="username" value="{{ username }}">
+        <!-- <label for="video">Choose a video file:</label> -->
+        <div style="margin-top: 20px;">
+            <button type="button" id="selectButton" style="font-size: clamp(14px, 2.5vw, 18px);" onclick="document.getElementById('video').click();" required>Choose a video file for AI Analysis</button>
+        </div>
+        <input type="file" id="video" name="video" accept="video/*" style="display: none;" onchange="displaySelectedFile()">
+        <div id="selectedFile" style="margin-top: 15px; padding: 10px; background-color: #f0f8ff; border: 1px solid #ccc; border-radius: 4px; display: none;">
+            <strong>Selected file: </strong><span id="fileName"></span>
+            <br><strong>File size: </strong><span id="fileSize"></span> MB
+            <br><strong>Creation date: </strong><span id="fileDate"></span>
+        </div>
+        <br>
+        <div id="uploadButtonContainer" style="margin-top: 20px; display: none;">
+            <button type="submit" id="uploadButton" style="font-size: clamp(14px, 2.5vw, 18px);">Upload your Video for AI Analysis</button>
+        </div>
+        <script>
+            function displaySelectedFile() {
+                const fileInput = document.getElementById('video');
+                const selectedFileDiv = document.getElementById('selectedFile');
+                const fileNameSpan = document.getElementById('fileName');
+                const fileSizeSpan = document.getElementById('fileSize');
+                const fileDateSpan = document.getElementById('fileDate');
+                
+                if (fileInput.files.length > 0) {
+                    const file = fileInput.files[0];
+                    fileNameSpan.textContent = file.name;
+                    fileSizeSpan.textContent = (file.size / (1024 * 1024)).toFixed(2); // Convert bytes to MB
+                    fileDateSpan.textContent = new Date(file.lastModified).toLocaleDateString(); // Format date
+                    selectedFileDiv.style.display = 'block';
+                    document.getElementById('uploadButtonContainer').style.display = 'block';
+                } else {
+                    selectedFileDiv.style.display = 'none';
+                    document.getElementById('uploadButtonContainer').style.display = 'none';
+                }
+            }
+        </script>
+    </form>
+    <footer style="margin-top: 30px; padding: 20px; background-color: #e4dcdc; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+          <div style="text-align: left;">
+            <style>
+                footer h3 {
+                    font-family: 'Times New Roman', serif;
+                }
+                footer p {
+                    font-family: 'Times New Roman', serif;
+                }
+            </style>
+            <div style="display: flex; justify-content: space-between; margin-top: 1px;">
+                <div style="flex: 1; margin-right: 20px;">
+                    <h4 style="color: #041122; margin-bottom: 10px; font-size: clamp(1rem, 2vw, 1.2em);">SHAIRE Membership</h4>
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <li style="margin-bottom: 5px; border-bottom: 1px solid #ccc; padding-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none; font-size: clamp(14px, 1.5vw, 16px); transition: font-weight 0.2s;" onmouseover="this.style.fontWeight='bold'" onmouseout="this.style.fontWeight='normal'">Join Now</a></li>
+                        <li style="margin-bottom: 5px; border-bottom: 1px solid #ccc; padding-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none; font-size: clamp(14px, 1.5vw, 16px); transition: font-weight 0.2s;" onmouseover="this.style.fontWeight='bold'" onmouseout="this.style.fontWeight='normal'">Benefits</a></li>
+                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none; font-size: clamp(14px, 1.5vw, 16px); transition: font-weight 0.2s;" onmouseover="this.style.fontWeight='bold'" onmouseout="this.style.fontWeight='normal'">Pricing</a></li>
+                    </ul>
+                </div>
+                <div style="flex: 1; margin-right: 20px;">
+                    <h4 style="color: #041122; margin-bottom: 10px; font-size: clamp(1rem, 2vw, 1.2em);">Customer Service</h4>
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <li style="margin-bottom: 5px; border-bottom: 1px solid #ccc; padding-bottom: 5px;"><a href="/contact_us?username={{ username }}" style="color: #230303; text-decoration: none;  font-size: clamp(14px, 1.5vw, 16px); transition: font-weight 0.2s;" onmouseover="this.style.fontWeight='bold'" onmouseout="this.style.fontWeight='normal'">Contact Us</a></li>
+                        <li style="margin-bottom: 5px; border-bottom: 1px solid #ccc; padding-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;  font-size: clamp(14px, 1.5vw, 16px); transition: font-weight 0.2s;" onmouseover="this.style.fontWeight='bold'" onmouseout="this.style.fontWeight='normal'">Support</a></li>
+                        <li style="margin-bottom: 5px; border-bottom: 1px solid #ccc; padding-bottom: 5px;"><a href="/faq_and_bot" style="color: #230303; text-decoration: none;  font-size: clamp(14px, 1.5vw, 16px); transition: font-weight 0.2s;" onmouseover="this.style.fontWeight='bold'" onmouseout="this.style.fontWeight='normal'">FAQ</a></li>
+                        <li style="margin-bottom: 5px;"><a href="/specifications" style="color: #230303; text-decoration: none;  font-size: clamp(14px, 1.5vw, 16px); transition: font-weight 0.2s;" onmouseover="this.style.fontWeight='bold'" onmouseout="this.style.fontWeight='normal'">Specifications</a></li>
+                    </ul>
+                </div>
+                <div style="flex: 1;">
+                    <h4 style="color: #041122; margin-bottom: 10px; font-size: clamp(1rem, 2vw, 1.2em);">Tools & Features</h4>
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <li style="margin-bottom: 5px; border-bottom: 1px solid #ccc; padding-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none; font-size: clamp(14px, 1.5vw, 16px); transition: font-weight 0.2s;" onmouseover="this.style.fontWeight='bold'" onmouseout="this.style.fontWeight='normal'">AI Analysis</a></li>
+                        <li style="margin-bottom: 5px; border-bottom: 1px solid #ccc; padding-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none; font-size: clamp(14px, 1.5vw, 16px); transition: font-weight 0.2s;" onmouseover="this.style.fontWeight='bold'" onmouseout="this.style.fontWeight='normal'">Video Upload</a></li>
+                        <li style="margin-bottom: 5px; border-bottom: 1px solid #ccc; padding-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none; font-size: clamp(14px, 1.5vw, 16px); transition: font-weight 0.2s;" onmouseover="this.style.fontWeight='bold'" onmouseout="this.style.fontWeight='normal'">Reports</a></li>
+                    </ul>
+                </div>
+                <div style="flex: 1;">
+                    <h4 style="color: #041122; margin-bottom: 10px; font-size: clamp(1rem, 2vw, 1.2em);">Sitemap</h4>
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <li style="margin-bottom: 5px; border-bottom: 1px solid #ccc; padding-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none; font-size: clamp(14px, 1.5vw, 16px); transition: font-weight 0.2s;" onmouseover="this.style.fontWeight='bold'" onmouseout="this.style.fontWeight='normal'">Select Contribution</a></li>
+                        <li style="margin-bottom: 5px; border-bottom: 1px solid #ccc; padding-bottom: 5px;"><a href="/how_to_earn?username={{ username }}" style="color: #230303; text-decoration: none; font-size: clamp(14px, 1.5vw, 16px); transition: font-weight 0.2s;" onmouseover="this.style.fontWeight='bold'" onmouseout="this.style.fontWeight='normal'">Table of Incomes</a></li>
+                        <li style="margin-bottom: 5px; border-bottom: 1px solid #ccc; padding-bottom: 5px;"><a href="/about_shaire" style="color: #230303; text-decoration: none; font-size: clamp(14px, 1.5vw, 16px); transition: font-weight 0.2s;" onmouseover="this.style.fontWeight='bold'" onmouseout="this.style.fontWeight='normal'">About</a></li>
+                        <li style="margin-bottom: 5px; border-bottom: 1px solid #ccc; padding-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none; font-size: clamp(14px, 1.5vw, 16px); transition: font-weight 0.2s;" onmouseover="this.style.fontWeight='bold'" onmouseout="this.style.fontWeight='normal'">Services</a></li>
+                        <li style="margin-bottom: 5px; border-bottom: 1px solid #ccc; padding-bottom: 5px;"><a href="/private_policy" style="color: #230303; text-decoration: none; font-size: clamp(14px, 1.5vw, 16px); transition: font-weight 0.2s;" onmouseover="this.style.fontWeight='bold'" onmouseout="this.style.fontWeight='normal'">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
