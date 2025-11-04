@@ -296,7 +296,7 @@ def ask_csv_research_bot_draft(query, top_k=3) -> str:
     return completion.choices[0].message.content
 
     
-
+""" Email sending AI Agent used to send emails from the webapp contact brands page """
 def send_email_function(to_email: str, subject: str, body: str) -> str:
     """
     Send an email using SMTP.
