@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ username|title }} History</title>
+    <p style="text-align: center; font-size: 1.2rem; margin: 10px 0; color: #333;">
+        Total Valid Contributions: {{ total_valid_contributions }}
+    </p>
+    <p style="text-align: center; font-size: 1.2rem; margin: 10px 0; color: #333;">
+        Total Credits: {{ total_credits }} {{ currency }}
+    </p>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 10px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            background: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+        
+        h1 {
+            position: sticky;
+            top: 0;
+            background-color: #fff;
+            z-index: 5;
+            margin: 0;
+            padding: 15px 0;
+            text-align: center;
+            color: #444;
+            font-size: clamp(1.2rem, 4vw, 2rem);
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+        
+        table {
+            width: 100%;
+            min-width: 600px;
+            border: 1px solid #ddd;
+            border-collapse: collapse;
+        }
+        
+        thead {
+            background-color: #589de3;
+            position: sticky;
+            top: 0px;
+            z-index: 10;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            word-wrap: break-word;
+        }
+        
+        th {
+            color: white;
+            font-weight: bold;
+        }
+        
+        .back-button-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .back-button {
+            padding: 12px 24px;
+            font-size: 16px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .back-button:hover {
+            background-color: #5a6268;
+        }
+        
+        /* Mobile styles */
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                padding: 10px 0;
+                top: 0;
+            }
+            
+            thead {
+                top: 5px;
+            }
+            
+            table {
+                min-width: 500px;
+                font-size: 14px;
+            }
+            
+            th, td {
+                padding: 6px 4px;
+            }
+            
+            .back-button {
+                padding: 10px 20px;
+                font-size: 14px;
+                width: 100%;
+                max-width: 200px;
+            }
+        }
+        
+        /* Small mobile styles */
+        @media (max-width: 480px) {
+            table {
+                min-width: 450px;
+                font-size: 12px;
+            }
+            
+            th, td {
+                padding: 4px 2px;
+            }
+            
+            h1 {
+                font-size: 1.2rem;
+            }
+            thead {
+                top: 5px;
+            }
+        }
+        
+        /* Large screen styles */
+        @media (min-width: 1200px) {
+            .container {
+                max-width: 1200px;
+                padding: 30px;
+            }
+            
+            table {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div style="text-align: center; margin: 20px 0;"></div>
+        <button style="padding: 12px 24px; font-size: 16px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#218838'" onmouseout="this.style.backgroundColor='#28a745'">
+            Generate a GCRD
+        </button>
+    </div>
+    <div class="container">
+        <h1>{{ username|title }} Contributions History</h1>       
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Video File</th>
+                        <th>Date Time</th>
+                        <th>Credit</th>
+                        <th>Currency</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in contributions %}
+                    <tr>
+                        <td>{{ entry.contribution_type }}</td>
+                        <td>{{ entry.contribution_file }}</td>
+                        <td>{{ entry.timestamp }}</td>
+                        <td>{{ entry.credit }}</td>
+                        <td>{{ entry.currency }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <form action="{{ url_for(request.endpoint) }}" method="get" class="back-button-container">
+            <input type="hidden" name="key" value="value">
+            <input type="hidden" name="username" value="{{ username }}">
+            <button type="button" onclick="history.back()" class="back-button">Go Back</button>
+        </form>
+    </div>
+</body>
+</html>
