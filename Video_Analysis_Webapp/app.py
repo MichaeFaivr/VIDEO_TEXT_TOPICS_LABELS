@@ -40,6 +40,17 @@ def save_video_analysis_to_db_sqlalchemy(username, video_filename, credit=0, cur
             if user:
                 current_date = datetime.now()
                 new_entry = History_ctbs(user_id=user.id, username=username, contribution_file=video_filename, contribution_date=current_date, credit=credit, currency=currency)
+
+                # Compute total credit for the user after this contribution
+                total_credit = db.session.query(db.func.sum(History_ctbs.credit)).filter_by(username=username).scalar() or 0
+                print(f'Total credit for user {username} before this contribution: {total_credit}')
+                total_credit += credit
+                print(f'Total credit for user {username} after this contribution: {total_credit}')
+
+                # Update user's total credits and total valid contributions
+                user.total_credits = total_credit
+                user.total_valid_contributions += 1
+
                 db.session.add(new_entry)
                 db.session.commit()
             else:
@@ -277,7 +288,12 @@ def user_history():
         contributions = History_ctbs.query.filter_by(username=username).filter(History_ctbs.credit > 0).all()
         print(f'contributions in user_history: {contributions}')
 
-    return render_template('user_history.html', username=username, contributions=contributions)
+        # Get total credits, total_valid_contributions and currency
+        total_credits = sum(entry.credit for entry in contributions)
+        total_valid_contributions = sum(1 for entry in contributions if entry.credit > 0)
+        currency = contributions[0].currency if contributions else 'USD'
+
+    return render_template('user_history.html', username=username, contributions=contributions, total_credits=total_credits, total_valid_contributions=total_valid_contributions, currency=currency)
 
 
 """ Route to display the deals by brands for the user - SQLAlchemy version """
@@ -342,6 +358,29 @@ def user_deals():
     return render_template('brands_deals/display_brands_deals.html', username=username, deals=deals)
 
 
+@app.route('/use_credits/', methods=['GET'])
+def use_credits():
+    username = request.args.get('username')
+
+    # Get user credits from database based on username
+    user = User.query.filter_by(username=username).first()
+    if user:
+        total_credits = user.total_credits or 0
+        currency = user.currency_credits or 'USD'
+        total_valid_contributions = user.total_valid_contributions or 0
+
+        # get user contributions with positive credits
+        contributions = History_ctbs.query.filter_by(username=username).filter(History_ctbs.credit > 0).all()
+        total_valid_contributions = len(contributions)
+    else:
+        total_credits = 0
+        total_valid_contributions = 0
+        currency = 'USD'
+
+    print(f'username in use_credits: {username}')
+    return render_template('brands_deals/use_credits.html', username=username, contributions=contributions, total_credits=total_credits, total_valid_contributions=total_valid_contributions, currency=currency)
+
+
 """ FUNCTIONS FOR MESSAGING SYSTEM """
 
 """ Save a message - SQLAlchemy version """
@@ -366,6 +405,7 @@ def get_messages(username, limit=20):
 
 
 """ Route for the messaging system - SQLAlchemy version """
+""" save in User_messages the message submitted to Shaire """
 @app.route('/messages/', methods=['GET', 'POST'])
 def messages():
     if request.method == 'POST':
@@ -394,7 +434,7 @@ def messages():
                 print(f'Fetched messages for user_id {user_id}, username {username}: {messages}')
         return render_template('select_contribution_type.html', username=username)
     
-
+""" Route to handle sending emails from the contact brands page """
 @app.route('/emails/', methods=['POST'])
 def send_email():
     username = request.form.get('username')
@@ -424,8 +464,10 @@ def private_policy():
 @app.route('/contact_us', methods=['GET'])
 def contact_us():
     username = request.form.get('username') or request.args.get('username')
+    # Get the list of messages for the user
+    messages = get_messages(username)
     print(f'username in contact_us: {username}')
-    return render_template('annexes/contact_us.html', username=username)
+    return render_template('annexes/contact_us.html', username=username, messages=messages)
 
 @app.route('/faq_and_bot', methods=['GET', 'POST'])
 def faq_and_bot():
