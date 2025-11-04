@@ -77,6 +77,60 @@
                 </div>
                 <button type="submit">Send</button>
             </form>
+
+        <h2>Your Recent Messages</h2>
+        <div class="messages-section">
+            {% if messages %}
+            <div style="max-height: 300px; overflow-y: auto;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                <tr>
+                    <th style="border: 1px solid #ddd; padding: 10px; background-color: #f5f5f5; text-align: left; width: 20%;">Date</th>
+                    <th style="border: 1px solid #ddd; padding: 10px; background-color: #f5f5f5; text-align: left;">Message</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for message in messages %}
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 10px; vertical-align: top;">{{ message.timestamp }}</td>
+                    <td style="border: 1px solid #ddd; padding: 10px;">{{ message.content }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            </div>
+            {% else %}
+            <p>No messages found.</p>
+            {% endif %}
+        </div>
+
+        <style>
+            .messages-section {
+                margin-top: 30px;
+                padding-top: 20px;
+                border-top: 1px solid #ddd;
+            }
+            .message-item {
+                background-color: #fff;
+                padding: 15px;
+                margin-bottom: 10px;
+                border-radius: 5px;
+                border-left: 4px solid #007bff;
+            }
+            .message-date {
+                font-size: 0.9em;
+                color: #666;
+                margin-bottom: 5px;
+            }
+            .message-content {
+                color: #333;
+            }
+            h2 {
+                color: #333;
+                margin-bottom: 20px;
+            }
+        </style>
+        
     </div>
 </body>
 </html>
