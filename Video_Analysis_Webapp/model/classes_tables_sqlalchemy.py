@@ -29,6 +29,9 @@ class User(db.Model):
     country = db.Column(db.String(100), nullable=True)
     age_group = db.Column(db.String(100), nullable=True)
     gender = db.Column(db.String(50), nullable=True)
+    total_credits = db.Column(db.Integer, default=0)
+    currency_credits = db.Column(db.String(10), default='USD')
+    total_valid_contributions = db.Column(db.Integer, default=0)
 
     def __repr__(self):
         return f'<User {self.username}>'
@@ -109,8 +112,8 @@ class User_deals(db.Model):
         return f'<User_deals {self.deal_name} for User ID {self.user_id}>'
 
 
-""" User messages and notifications information """
-""" Need to managge read/unread status, timestamps, and message content """
+""" User messages and notifications information to/from Shaire - not emails to brands """
+""" Need to manage read/unread status, timestamps, and message content """
 class User_messages(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
@@ -136,3 +139,18 @@ class Brands(db.Model):
 
     def __repr__(self):
         return f'<Brands {self.brand_name}>'
+    
+
+class GiftCards(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    RSA_Key = db.Column(db.String(500), nullable=False)
+    QR_code = db.Column(db.String(500), nullable=False)
+    total_credits = db.Column(db.Integer, nullable=False)
+    currency = db.Column(db.String(10), nullable=False, default='USD')
+    brands = db.Column(db.String(500), nullable=True)  # Comma-separated list of brands
+
+    user = db.relationship('User', backref=db.backref('gift_cards', lazy=True))
+
+    def __repr__(self):
+        return f'<GiftCards for User ID {self.user_id} with {self.total_credits} {self.currency}>'
