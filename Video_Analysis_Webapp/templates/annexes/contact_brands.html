@@ -44,73 +44,58 @@
 </head>
 <body>
     <div class="contact-container">
-        <div>
-            <label for="brand_select">Select a Brand:</label>
-            <input type="text" id="brand_input" name="brand_name" placeholder="Type to search brands..." autocomplete="off" required>
-            <div id="brand_suggestions" style="display: none; border: 1px solid #ccc; max-height: 200px; overflow-y: auto; background: white; position: absolute; z-index: 1000; width: 100%;"></div>
-            <script>
-                const brands = ["Nike", "Adidas", "Apple", "Samsung", "Coca-Cola", "McDonald's", "Google", "Microsoft", "Amazon", "Tesla"];
-                const brandInput = document.getElementById('brand_input');
-                const suggestions = document.getElementById('brand_suggestions');
-                
-                brandInput.addEventListener('input', function() {
-                    const value = this.value.toLowerCase();
-                    suggestions.innerHTML = '';
-                    
-                    if (value.length > 0) {
-                        const filtered = brands.filter(brand => brand.toLowerCase().startsWith(value));
-                        
-                        if (filtered.length > 0) {
-                            suggestions.style.display = 'block';
-                            filtered.forEach(brand => {
-                                const div = document.createElement('div');
-                                div.textContent = brand;
-                                div.style.padding = '10px';
-                                div.style.cursor = 'pointer';
-                                div.addEventListener('click', function() {
-                                    brandInput.value = brand;
-                                    suggestions.style.display = 'none';
-                                });
-                                suggestions.appendChild(div);
-                            });
-                        } else {
-                            suggestions.style.display = 'none';
-                        }
-                    } else {
-                        suggestions.style.display = 'none';
-                    }
-                });
-                
-                document.addEventListener('click', function(e) {
-                    if (!brandInput.contains(e.target) && !suggestions.contains(e.target)) {
-                        suggestions.style.display = 'none';
-                    }
-                });
-            </script>
-            <select id="brand_select" name="brand_name" required>
-                <option value="">Select a brand...</option>
-                {% for brand in brands_list %}
-                    <option value="{{ brand }}">{{ brand }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <h1>Write an email to a brand</h1>
-            <form action="{{ url_for('send_email') }}" method="POST" enctype="multipart/form-data">
+
+        <h1>Write a message to a brand</h1>
+            <form action="{{ url_for('send_message_to_brand') }}" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="username" value="{{ username }}">
                 <div>
-                    <label for="recipient">To:</label>
-                    <input type="email" id="recipient" name="recipient" required>
+                    <label for="brand">Brand:</label>
+                    <select id="brand" name="brand" required>
+                        <option value="">Select a Brand...</option>
+                        {% for brand in brands_list %}
+                            <option value="{{ brand }}">{{ brand }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
                 <div>
-                    <label for="subject">Subject:</label>
-                    <input type="text" id="subject" name="subject" maxlength="100" required>
+                    <label for="topic">Subject:</label>
+                    <select id="topic" name="topic" required>
+                        <option value="">Select a topic...</option>
+                        {% for topic in topics %}
+                            <option value="{{ topic }}">{{ topic }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
                 <div>
-                    <label for="email_content">Message:</label>
-                    <textarea id="email_content" name="email_content" maxlength="500" rows="6" cols="50" required>Hi, I'm {{ username }},</textarea>
+                    <label for="content">Message:</label>
+                    <textarea id="content" name="content" maxlength="500" rows="6" cols="50" required>Hi, I'm {{ username }},</textarea>
                 </div>
-                <button type="submit">Send Email</button>
+                <button type="submit">Send Message</button>
             </form>
+
+            <div style="margin-top: 30px;">
+                <h2 style="color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px;">Latest Messages</h2>
+                <div style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius: 5px; padding: 15px; background-color: white;">
+                    {% if messages %}
+                        {% for message in messages[:5] %}
+                            <div style="border-bottom: 1px solid #eee; padding: 15px 0; {% if loop.last %}border-bottom: none;{% endif %}">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                    <strong style="color: #007bff;">{{ message.recipient }}</strong>
+                                    <small style="color: #666;">{{ message.timestamp.strftime('%Y-%m-%d %H:%M') }}</small>
+                                </div>
+                                <div style="margin-bottom: 5px;">
+                                    <strong>Subject:</strong> {{ message.topic }}
+                                </div>
+                                <div style="color: #555; font-size: 14px;">
+                                    {{ message.content[:100] }}{% if message.content|length > 100 %}...{% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p style="color: #666; text-align: center; font-style: italic;">No messages sent yet.</p>
+                    {% endif %}
+                </div>
+            </div>
 
             <div style="margin-top: 20px; text-align: center;">
                 <a href="/back_to_selection_contribution?username={{ username }}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">Go to Contribution Selection</a>

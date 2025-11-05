@@ -15,7 +15,7 @@ import random
 import string
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from model.classes_tables_sqlalchemy import User, History_ctbs, User_messages, User_deals, Brands  # Import the db instance and User model
+from model.classes_tables_sqlalchemy import User, History_ctbs, User_messages, User_deals, Brands, GiftCards, TOPIC_CHOICES  # Import the db instance and User model
 from model.classes_ai_agents import SpecificAIAgentResponse, create_research_ai_agent_openai, create_research_ai_agent_anthropic, create_csv_ai_agent
 
 
@@ -384,30 +384,36 @@ def use_credits():
 """ FUNCTIONS FOR MESSAGING SYSTEM """
 
 """ Save a message - SQLAlchemy version """
-def save_message(username, content):
+""" Save in User_messages the message submitted to SHAIRE from contact_us page or To a Brand from contact_brands page """
+def save_message(username, content, recipient='SHAIRE', topic='Other'):
     user = User.query.filter_by(username=username).first()
     if not user:
         raise ValueError("User not found")
-    print(f'save_message_sqlalchemy user_id: {user.id}, username: {user.username}, content: {content}')
-    message = User_messages(user_id=user.id, content=content)
+    print(f'save_message_sqlalchemy user_id: {user.id}, username: {user.username}, content: {content}, recipient: {recipient}, topic: {topic}')
+    message = User_messages(user_id=user.id, content=content, recipient=recipient, topic=topic)
     db.session.add(message)
     db.session.commit()
     return message.id
 
 
 """ Fetch messages for a user - SQLAlchemy version """
-def get_messages(username, limit=20):
+def get_messages(username, recipient=None, limit=20):
     user = User.query.filter_by(username=username).first()
     if not user:
         return []
-    messages = User_messages.query.filter_by(user_id=user.id).order_by(User_messages.timestamp.desc()).limit(limit).all()
+    messages = User_messages.query.filter_by(user_id=user.id)
+    if recipient:
+        messages = messages.filter_by(recipient=recipient)
+    else:
+        messages = messages.filter(User_messages.recipient != 'SHAIRE')
+    messages = messages.order_by(User_messages.timestamp.desc()).limit(limit).all()
     return messages
 
 
 """ Route for the messaging system - SQLAlchemy version """
-""" save in User_messages the message submitted to Shaire """
-@app.route('/messages/', methods=['GET', 'POST'])
-def messages():
+""" save in User_messages the message submitted to SHAIRE from contact_us page """
+@app.route('/messages_to_shaire/', methods=['GET', 'POST'])
+def messages_to_shaire():
     if request.method == 'POST':
         username = request.form.get('username') or request.args.get('username')
         content = request.form.get('content')
@@ -419,7 +425,7 @@ def messages():
             except Exception as e:
                 print(f'Error saving message: {e}')
                 return "Error saving message", 500
-        return redirect(url_for('messages', username=username))
+        return redirect(url_for('messages_to_shaire', username=username))
     else:
         username = request.form.get('username') or request.args.get('username')
         print(f'username in messages GET: {username}')
@@ -434,19 +440,22 @@ def messages():
                 print(f'Fetched messages for user_id {user_id}, username {username}: {messages}')
         return render_template('select_contribution_type.html', username=username)
     
-""" Route to handle sending emails from the contact brands page """
-@app.route('/emails/', methods=['POST'])
-def send_email():
+""" Route to handle sending messages from the contact brands page """
+@app.route('/messages/', methods=['POST'])
+def send_message_to_brand():
     username = request.form.get('username')
-    recipient = request.form.get('recipient')
-    subject = request.form.get('subject')
-    email_content = request.form.get('email_content')
-    
-    print(f'Sending email from {username} to {recipient} with subject "{subject}"')
+    recipient = request.form.get('brand') # Brand name
+    topic = request.form.get('topic')
+    content = request.form.get('content')
+    print(f'Sending message to brand {recipient} from {username} with topic "{topic}"')
 
-    # Here you would add the logic to send the email
-    # For now, we'll just print the email content
-    print(f'Email content:\n{email_content}')
+    if username and recipient and content:
+        try:
+            message_id = save_message(username, content, recipient=recipient, topic=topic)
+            print(f'Message to brand saved with ID: {message_id}')
+        except Exception as e:
+            print(f'Error saving message to brand: {e}')
+            return "Error saving message", 500
 
     return redirect(url_for('contact_brands', username=username))
 
@@ -465,7 +474,7 @@ def private_policy():
 def contact_us():
     username = request.form.get('username') or request.args.get('username')
     # Get the list of messages for the user
-    messages = get_messages(username)
+    messages = get_messages(username, recipient='SHAIRE')
     print(f'username in contact_us: {username}')
     return render_template('annexes/contact_us.html', username=username, messages=messages)
 
@@ -505,15 +514,16 @@ def specifications():
 @app.route('/contact_brands', methods=['GET'])
 def contact_brands():
     username = request.args.get('username')
+    messages = get_messages(username)
     # Check if Brands table is empty and create initial records if needed
     try:
         brands_count = Brands.query.count()
         if brands_count == 0:
-            # Create initial brand records
+            # Create initial brand records if table is empty - FOR TESTING PURPOSES ONLY
             initial_brands = INITIAL_BRANDS
             for brand_name in initial_brands:
                 brand_email = f'contact@{brand_name.lower()}.com'
-                new_brand = Brands(name=brand_name, contact_email=brand_email)
+                new_brand = Brands(brand_name=brand_name, contact_email=brand_email)
                 db.session.add(new_brand)
             db.session.commit()
             print(f'Created {len(initial_brands)} initial brand records')
@@ -521,7 +531,7 @@ def contact_brands():
         print(f'Error creating initial brands: {e}')
         db.session.rollback()
     print(f'username in contact_brands: {username}')
-    return render_template('annexes/contact_brands.html', username=username, brands_list=INITIAL_BRANDS)
+    return render_template('annexes/contact_brands.html', username=username, brands_list=INITIAL_BRANDS, topics=TOPIC_CHOICES, messages=messages)
 
 @app.route('/back_to_selection_contribution', methods=['GET'])
 def back_to_selection_contribution():
