@@ -4,6 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 from config import db
 #db = SQLAlchemy()
 
+TOPIC_CHOICES = ['Ask for a deal on a product', 'Question on a product', 'Proposal of contribution', 'Other']
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
@@ -118,15 +120,17 @@ class User_messages(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     content = db.Column(db.Text, nullable=False)
-    sent_at = db.Column(db.DateTime, server_default=db.func.now())
+    recipient = db.Column(db.String(100), default='SHAIRE')
+    topic = db.Column(db.Enum(*TOPIC_CHOICES, name='message_topics'), nullable=False, default='Other')
     is_read = db.Column(db.Boolean, default=False)
     message_type = db.Column(db.String(50), nullable=True)  # e.g., 'notification', 'alert'
     timestamp = db.Column(db.DateTime, server_default=db.func.now())
+    answer = db.Column(db.Text, nullable=True)  # Response to the message, if any
 
     user = db.relationship('User', backref=db.backref('messages', lazy=True))
 
     def __repr__(self):
-        return f'<User_messages to User ID {self.user_id} at {self.sent_at}>'
+        return f'<User_messages to User ID {self.user_id} at {self.timestamp}>'
     
 
 class Brands(db.Model):
