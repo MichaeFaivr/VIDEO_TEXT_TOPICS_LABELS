@@ -54,7 +54,7 @@ class User(db.Model):
         }
 
 """ Store video analysis results including labels, text, topics, sentiment, and additional info """
-class Video_analysis(db.Model):
+class VideoAnalysis(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     video_url = db.Column(db.String(500), nullable=False)
@@ -72,7 +72,7 @@ class Video_analysis(db.Model):
     
 
 """ History of contributions, credits, and actions performed by users """
-class History_ctbs(db.Model):
+class HistoryCtbs(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     username = db.Column(db.String(80), nullable=False)
@@ -91,7 +91,7 @@ class History_ctbs(db.Model):
 
 
 """ User deals and multiple brands deals and promotions information """
-class User_deals(db.Model):
+class UserDeals(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     username = db.Column(db.String(80), nullable=False)
@@ -116,7 +116,7 @@ class User_deals(db.Model):
 
 """ User messages and notifications information to/from Shaire - not emails to brands """
 """ Need to manage read/unread status, timestamps, and message content """
-class User_messages(db.Model):
+class UserMessages(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     content = db.Column(db.Text, nullable=False)
@@ -145,7 +145,7 @@ class Brands(db.Model):
         return f'<Brands {self.brand_name}>'
     
 
-class GiftCards(db.Model):
+class UserGiftCards(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     RSA_Key = db.Column(db.String(500), nullable=False)
@@ -158,3 +158,58 @@ class GiftCards(db.Model):
 
     def __repr__(self):
         return f'<GiftCards for User ID {self.user_id} with {self.total_credits} {self.currency}>'
+
+class UserApiUsageLogs(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    endpoint = db.Column(db.String(200), nullable=False)
+    request_date = db.Column(db.DateTime, server_default=db.func.now())
+    response_status = db.Column(db.Integer, nullable=False)
+    usage_details = db.Column(db.Text, nullable=True)  # Additional details as JSON string
+
+    user = db.relationship('User', backref=db.backref('api_usage_logs', lazy=True))
+
+    def __repr__(self):
+        return f'<ApiUsageLogs {self.endpoint} for User ID {self.user_id}>'
+    
+class UserCreditsInvestmentPlans(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    plan_name = db.Column(db.String(100), unique=True, nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    price = db.Column(db.Float, nullable=False)
+    currency = db.Column(db.String(10), nullable=False, default='USD')
+    duration_days = db.Column(db.Integer, nullable=False)  # Duration of the plan in days
+    features = db.Column(db.Text, nullable=True)  # JSON string of features
+
+    def __repr__(self):
+        return f'<SubscriptionPlans {self.plan_name}>'
+    
+
+class UserCoupons(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    code = db.Column(db.String(50), unique=True, nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    discount_percentage = db.Column(db.Float, nullable=False)
+    valid_from = db.Column(db.DateTime, nullable=False)
+    valid_to = db.Column(db.DateTime, nullable=False)
+    is_active = db.Column(db.Boolean, default=True)
+
+    def __repr__(self):
+        return f'<Coupons {self.code} - {self.discount_percentage}%>'
+    
+
+class ContributionCredits(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    contribution_type = db.Column(db.String(100), nullable=False)  # e.g., 'video_analysis', 'data_upload'
+    country = db.Column(db.String(100), nullable=True)
+    currency = db.Column(db.String(10), nullable=False, default='USD')
+    verbatim_credit_range = db.Column(db.String(50), nullable=True)  # e.g., "1-10"
+    place_credit_range = db.Column(db.String(50), nullable=True)  # e.g., "5-20"
+    wardrobe_credit_range = db.Column(db.String(50), nullable=True)  # e.g., "10-30"
+    dance_credit_range = db.Column(db.String(50), nullable=True)  # e.g., "15-40"
+    credits_earned = db.Column(db.Integer, nullable=False)
+
+    def __repr__(self):
+        return f'<ContributionCredits {self.contribution_type} - {self.credits_earned} {self.currency}>'

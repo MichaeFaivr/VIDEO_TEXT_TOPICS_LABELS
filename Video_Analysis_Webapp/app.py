@@ -15,7 +15,7 @@ import random
 import string
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from model.classes_tables_sqlalchemy import User, History_ctbs, User_messages, User_deals, Brands, GiftCards, TOPIC_CHOICES  # Import the db instance and User model
+from model.classes_tables_sqlalchemy import User, HistoryCtbs, UserMessages, UserDeals, Brands, UserGiftCards, TOPIC_CHOICES  # Import the db instance and User model
 from model.classes_ai_agents import SpecificAIAgentResponse, create_research_ai_agent_openai, create_research_ai_agent_anthropic, create_csv_ai_agent
 
 
@@ -39,10 +39,10 @@ def save_video_analysis_to_db_sqlalchemy(username, video_filename, credit=0, cur
             user = User.query.filter_by(username=username).first()
             if user:
                 current_date = datetime.now()
-                new_entry = History_ctbs(user_id=user.id, username=username, contribution_file=video_filename, contribution_date=current_date, credit=credit, currency=currency)
+                new_entry = HistoryCtbs(user_id=user.id, username=username, contribution_file=video_filename, contribution_date=current_date, credit=credit, currency=currency)
 
                 # Compute total credit for the user after this contribution
-                total_credit = db.session.query(db.func.sum(History_ctbs.credit)).filter_by(username=username).scalar() or 0
+                total_credit = db.session.query(db.func.sum(HistoryCtbs.credit)).filter_by(username=username).scalar() or 0
                 print(f'Total credit for user {username} before this contribution: {total_credit}')
                 total_credit += credit
                 print(f'Total credit for user {username} after this contribution: {total_credit}')
@@ -285,7 +285,7 @@ def user_history():
     contributions = []
 
     if username:
-        contributions = History_ctbs.query.filter_by(username=username).filter(History_ctbs.credit > 0).all()
+        contributions = HistoryCtbs.query.filter_by(username=username).filter(HistoryCtbs.credit > 0).all()
         print(f'contributions in user_history: {contributions}')
 
         # Get total credits, total_valid_contributions and currency
@@ -310,11 +310,11 @@ def user_deals():
         user = User.query.filter_by(username=username).first()
         if not user:
             return render_template('brands_deals/display_brands_deals.html', username=username, deals=deals)
-        deals = User_deals.query.filter_by(username=username).all()
+        deals = UserDeals.query.filter_by(username=username).all()
 
         # Add dummy data if no deals found for the user
         if not deals:
-            deal1 = User_deals(
+            deal1 = UserDeals(
                 user_id=user.id,
                 username=username,
                 deal_name='Deal on TVs CYSUIBSQ0125',
@@ -329,8 +329,8 @@ def user_deals():
                 start_date=datetime(2024, 1, 1),
                 end_date=datetime(2024, 12, 31)
             )
-            
-            deal2 = User_deals(
+
+            deal2 = UserDeals(
                 user_id=user.id,
                 username=username,
                 deal_name='Deal on LG TVs MLSMDSS0312254',
@@ -370,7 +370,7 @@ def use_credits():
         total_valid_contributions = user.total_valid_contributions or 0
 
         # get user contributions with positive credits
-        contributions = History_ctbs.query.filter_by(username=username).filter(History_ctbs.credit > 0).all()
+        contributions = HistoryCtbs.query.filter_by(username=username).filter(HistoryCtbs.credit > 0).all()
         total_valid_contributions = len(contributions)
     else:
         total_credits = 0
@@ -384,13 +384,13 @@ def use_credits():
 """ FUNCTIONS FOR MESSAGING SYSTEM """
 
 """ Save a message - SQLAlchemy version """
-""" Save in User_messages the message submitted to SHAIRE from contact_us page or To a Brand from contact_brands page """
+""" Save in UserMessages the message submitted to SHAIRE from contact_us page or To a Brand from contact_brands page """
 def save_message(username, content, recipient='SHAIRE', topic='Other'):
     user = User.query.filter_by(username=username).first()
     if not user:
         raise ValueError("User not found")
     print(f'save_message_sqlalchemy user_id: {user.id}, username: {user.username}, content: {content}, recipient: {recipient}, topic: {topic}')
-    message = User_messages(user_id=user.id, content=content, recipient=recipient, topic=topic)
+    message = UserMessages(user_id=user.id, content=content, recipient=recipient, topic=topic)
     db.session.add(message)
     db.session.commit()
     return message.id
@@ -401,17 +401,17 @@ def get_messages(username, recipient=None, limit=20):
     user = User.query.filter_by(username=username).first()
     if not user:
         return []
-    messages = User_messages.query.filter_by(user_id=user.id)
+    messages = UserMessages.query.filter_by(user_id=user.id)
     if recipient:
         messages = messages.filter_by(recipient=recipient)
     else:
-        messages = messages.filter(User_messages.recipient != 'SHAIRE')
-    messages = messages.order_by(User_messages.timestamp.desc()).limit(limit).all()
+        messages = messages.filter(UserMessages.recipient != 'SHAIRE')
+    messages = messages.order_by(UserMessages.timestamp.desc()).limit(limit).all()
     return messages
 
 
 """ Route for the messaging system - SQLAlchemy version """
-""" save in User_messages the message submitted to SHAIRE from contact_us page """
+""" save in UserMessages the message submitted to SHAIRE from contact_us page """
 @app.route('/messages_to_shaire/', methods=['GET', 'POST'])
 def messages_to_shaire():
     if request.method == 'POST':
