@@ -90,6 +90,23 @@ class HistoryCtbs(db.Model):
     def __repr__(self):
         return f'<History_ctbs {self.contribution_file} for User ID {self.user_id}>'    
 
+""" Credits by User by Brands for contributions related to specific brands """
+class UserBrandCredits(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    brand_id = db.Column(db.Integer, db.ForeignKey('brands.id'), nullable=False)
+    brand_name = db.Column(db.String(100), nullable=False)
+    contribution_type = db.Column(db.String(100), nullable=True)  # e.g., 'upload', 'edit'
+    credit = db.Column(db.Integer, nullable=False)
+    currency = db.Column(db.String(10), nullable=False, default='USD')
+    timestamp = db.Column(db.DateTime, server_default=db.func.now())
+    details = db.Column(db.Text, nullable=True)  # Additional details as JSON string
+
+    user = db.relationship('User', backref=db.backref('brand_credits', lazy=True))
+    brand = db.relationship('Brands', backref=db.backref('user_credits', lazy=True))
+
+    def __repr__(self):
+        return f'<UserBrandCredits User ID {self.user_id} Brand ID {self.brand_id} - {self.credit} {self.currency}>'
 
 """ User deals and multiple brands deals and promotions information """
 class UserDeals(db.Model):
@@ -202,7 +219,7 @@ class UserCoupons(db.Model):
     def __repr__(self):
         return f'<Coupons {self.code} - {self.discount_percentage}%>'
     
-
+""" Contribution credits configuration for different types of contributions """
 class ContributionCredits(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     contribution_type = db.Column(db.String(100), nullable=False)  # e.g., 'video_analysis', 'data_upload'
