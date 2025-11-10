@@ -34,6 +34,7 @@ class User(db.Model):
     total_credits = db.Column(db.Integer, default=0)
     currency_credits = db.Column(db.String(10), default='USD')
     total_valid_contributions = db.Column(db.Integer, default=0)
+    total_shares = db.Column(db.Integer, default=0)
 
     def __repr__(self):
         return f'<User {self.username}>'
@@ -87,7 +88,7 @@ class HistoryCtbs(db.Model):
     user = db.relationship('User', backref=db.backref('history_ctbs', lazy=True))
 
     def __repr__(self):
-        return f'<History_ctbs {self.contribution_file} for User ID {self.user_id}>'
+        return f'<History_ctbs {self.contribution_file} for User ID {self.user_id}>'    
 
 
 """ User deals and multiple brands deals and promotions information """
@@ -152,7 +153,9 @@ class UserGiftCards(db.Model):
     QR_code = db.Column(db.String(500), nullable=False)
     total_credits = db.Column(db.Integer, nullable=False)
     currency = db.Column(db.String(10), nullable=False, default='USD')
-    brands = db.Column(db.String(500), nullable=True)  # Comma-separated list of brands
+    brand = db.Column(db.String(500), nullable=True) # Associated brand for the gift card
+    issued_date = db.Column(db.DateTime, server_default=db.func.now())
+    expiration_date = db.Column(db.DateTime, nullable=True)
 
     user = db.relationship('User', backref=db.backref('gift_cards', lazy=True))
 
@@ -209,6 +212,7 @@ class ContributionCredits(db.Model):
     place_credit_range = db.Column(db.String(50), nullable=True)  # e.g., "5-20"
     wardrobe_credit_range = db.Column(db.String(50), nullable=True)  # e.g., "10-30"
     dance_credit_range = db.Column(db.String(50), nullable=True)  # e.g., "15-40"
+    comparison_credit_range = db.Column(db.String(50), nullable=True)  # e.g., "20-50"
     credits_earned = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
