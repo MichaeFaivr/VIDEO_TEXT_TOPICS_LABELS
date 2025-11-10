@@ -15,7 +15,7 @@ import random
 import string
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from model.classes_tables_sqlalchemy import User, HistoryCtbs, UserMessages, UserDeals, Brands, UserGiftCards, TOPIC_CHOICES  # Import the db instance and User model
+from model.classes_tables_sqlalchemy import User, HistoryCtbs, UserBrandCredits, UserMessages, UserDeals, Brands, UserGiftCards, TOPIC_CHOICES  # Import the db instance and User model
 from model.classes_ai_agents import SpecificAIAgentResponse, create_research_ai_agent_openai, create_research_ai_agent_anthropic, create_csv_ai_agent
 
 
@@ -30,9 +30,15 @@ TEMP_AUDIO_FILE = "temp_mono_audio.wav"
 # Initialize the database with the app : done in config.py
 # Create the database and tables: displaced to the main section
 
+def get_country_from_ipaddress(ip_address):
+    # Placeholder function to get country from IP address
+    # In a real implementation, use a geolocation service or database
+    # Voir les aspects de sécurité et de vie privée liés à l'utilisation des adresses IP
+    return "France" # For testing purposes
+    
 
 """ save the video analysis in the database - SQLAlchemy version """
-def save_video_analysis_to_db_sqlalchemy(username, video_filename, credit=0, currency='USD'):
+def save_video_analysis_to_db_sqlalchemy(username, video_filename, credit=0, currency='USD', brand_names=[]):
     if video_filename:
         # Save the video analysis result in the database using SQLAlchemy
         if username:
@@ -50,6 +56,16 @@ def save_video_analysis_to_db_sqlalchemy(username, video_filename, credit=0, cur
                 # Update user's total credits and total valid contributions
                 user.total_credits = total_credit
                 user.total_valid_contributions += 1
+                user.currency_credits = currency
+
+                # Update user's brand credits
+                for brand_name in brand_names:
+                    brand_credits = UserBrandCredits.query.filter_by(user_id=user.id, brand_name=brand_name).first()
+                    if brand_credits:
+                        brand_credits.credit += credit
+                    else:
+                        brand_credits = UserBrandCredits(user_id=user.id, brand_id=1, brand_name=brand_name, credit=credit, currency=currency)
+                        db.session.add(brand_credits)
 
                 db.session.add(new_entry)
                 db.session.commit()
@@ -169,7 +185,11 @@ def register_user():
 
     print(f'username: {username}, email: {email}, password: {password}, long_account_recovery_token: {long_account_recovery_token}, interests: {interests}, age_group: {age_group}')
 
-    new_user = User(username=username, email=email, password=password, long_account_recovery_token=long_account_recovery_token, interests=', '.join(interests), age_group=age_group)
+    # Get the country from the request IP address
+    country = get_country_from_ipaddress(request.remote_addr)
+    print(f'Country from IP address: {country}')
+
+    new_user = User(username=username, email=email, password=password, long_account_recovery_token=long_account_recovery_token, interests=', '.join(interests), age_group=age_group, country=country)
     db.session.add(new_user)
     db.session.commit()
 
@@ -569,7 +589,11 @@ def result():
     try:
         # Extract and process speech
         analysis_results = process_video_speech(video_path)
-        
+
+        # Extract Brand Names from video text
+        brand_names = extract_brand_names_from_video_text(analysis_results['text_video'])
+        print(f'Extracted brand names from video text: {brand_names}')
+
         # Perform text analysis if speech extraction was successful
         if analysis_results['text_video']:
             perform_text_analysis(analysis_results, video_file.filename)
@@ -581,7 +605,7 @@ def result():
         compliance_result = analysis_results.get('compliance_dict', {}).get('result', COMPLIANCE_RESULT_DEFAULT)
         payment = analysis_results.get('compliance_dict', {}).get('payment', VALIDATION_PAYMENT_DEFAULT)
         currency = analysis_results.get('compliance_dict', {}).get('currency', VALIDATION_CURRENCY_DEFAULT)
-        save_video_analysis_to_db_sqlalchemy(username, video_file.filename, payment, currency)
+        save_video_analysis_to_db_sqlalchemy(username, video_file.filename, payment, currency, brand_names)
         
         # Render results page
         """
