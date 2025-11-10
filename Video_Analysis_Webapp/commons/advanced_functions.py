@@ -5,6 +5,9 @@ from verifications.check_policy_compliance import *
 from verifications.build_analysis_json import *
 from model.constants import *
 
+#from pyzbar.pyzbar import decode
+#from PIL import Image
+
 
 def process_video_speech(video_path):
     """Extract and process speech from video"""
@@ -95,3 +98,42 @@ def validate_speech(analysis_results, video_path):
     
     # Extract favorite products
     videoPostValidation.fetch_count_favorite_products_from_speech()
+
+
+def qr_code_reading():
+    pass
+
+
+""" function to extract and analyze QR codes in the video """
+def qr_code_extract_from_video(video_path):
+    """Analyze QR codes in the video"""
+    videoToObjects = VideoToObjectsClass(video_path)
+    qr_code_data = videoToObjects.extract_qr_codes_from_video()
+    return qr_code_data
+
+
+""" Get the absolute Brands List """
+def get_absolute_brands_list():
+    """Retrieve the absolute list of brand names from the content analysis reference"""
+    content_analysis_reference = read_json_file(CONTENT_ANALYSIS_REFERENCE_FILENAME)
+
+    # Extract unique brands from items_categories_brands
+    brands_list = []
+    items_categories_brands = content_analysis_reference.get('brand', {})
+    for _, brands in items_categories_brands.items():
+        brands_list.extend(brands)
+    brands_list = list(set(brands_list))
+    print(f"Absolute brands list: {brands_list}")
+    return brands_list
+
+""" Extract brand names from video text """
+def extract_brand_names_from_video_text(video_text):
+    absolute_brands_list = get_absolute_brands_list()
+    brands_list = []
+    for brand in absolute_brands_list:
+        if brand in video_text and brand not in brands_list:
+            brands_list.append(brand)
+            video_text = video_text.replace(brand, '')
+    print(f"Extracted brands from video text: {brands_list}")
+    # Extracted brands from video text: ['Google Cloud', 'Intel', 'Office 365']
+    return brands_list
