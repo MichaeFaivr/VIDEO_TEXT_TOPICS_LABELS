@@ -133,8 +133,82 @@
         <input type="hidden" name="username" value="{{ username }}">
         <!-- <label for="video">Choose a video file:</label> -->
         <div style="margin-top: 20px;">
-            <button type="button" id="selectButton" style="font-size: clamp(14px, 2.5vw, 18px);" onclick="document.getElementById('video').click();" required>Choose a video file for AI Analysis</button>
+            <button type="button" id="selectButton" style="font-size: clamp(14px, 2.5vw, 18px);" onclick="openFileModal();" required>Choose a video file for AI Analysis</button>
         </div>
+
+        <!-- File Upload Modal -->
+        <div id="fileModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 2000;">
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); max-width: 500px; width: 90%;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin: 0; color: #1a73e8;">Upload Video File</h3>
+                <span onclick="closeFileModal()" style="font-size: 24px; cursor: pointer; color: #666;">&times;</span>
+            </div>
+            
+            <div id="dropZone" style="border: 2px dashed #1a73e8; border-radius: 8px; padding: 40px; text-align: center; background-color: #f8f9fa; cursor: pointer; transition: all 0.3s;">
+                <div style="margin-bottom: 15px;">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="#1a73e8">
+                    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                </svg>
+                </div>
+                <p style="margin: 10px 0; font-size: 16px; color: #1a73e8; font-weight: bold;">Drag & Drop your video here</p>
+                <p style="margin: 5px 0; color: #666; font-size: 14px;">or</p>
+                <button type="button" onclick="document.getElementById('video').click();" style="background-color: #1a73e8; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; margin-top: 10px;">Browse Files</button>
+            </div>
+            
+            <p style="margin-top: 15px; font-size: 12px; color: #666; text-align: center;">Supported formats: MP4, AVI, MOV, WMV</p>
+            </div>
+        </div>
+
+        <script>
+            function openFileModal() {
+            document.getElementById('fileModal').style.display = 'block';
+            }
+
+            function closeFileModal() {
+            document.getElementById('fileModal').style.display = 'none';
+            }
+
+            // Drag and drop functionality
+            const dropZone = document.getElementById('dropZone');
+            
+            dropZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.style.backgroundColor = '#e3f2fd';
+            this.style.borderColor = '#0d47a1';
+            });
+
+            dropZone.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.style.backgroundColor = '#f8f9fa';
+            this.style.borderColor = '#1a73e8';
+            });
+
+            dropZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.style.backgroundColor = '#f8f9fa';
+            this.style.borderColor = '#1a73e8';
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                const file = files[0];
+                if (file.type.startsWith('video/')) {
+                const fileInput = document.getElementById('video');
+                fileInput.files = files;
+                displaySelectedFile();
+                closeFileModal();
+                } else {
+                alert('Please select a valid video file.');
+                }
+            }
+            });
+
+            // Close modal when clicking outside
+            document.getElementById('fileModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeFileModal();
+            }
+            });
+        </script>
         <input type="file" id="video" name="video" accept="video/*" style="display: none;" onchange="displaySelectedFile()">
         <div id="selectedFile" style="margin-top: 15px; padding: 10px; background-color: #f0f8ff; border: 1px solid #ccc; border-radius: 4px; display: none;">
             <strong>Selected file: </strong><span id="fileName"></span>
