@@ -397,8 +397,14 @@ def use_credits():
         total_valid_contributions = 0
         currency = 'USD'
 
+    # Get user brand credits
+    brand_credits = UserBrandCredits.query.filter_by(user_id=user.id).all()
+    brand_credits_dict = {}
+    for credit in brand_credits:
+        brand_credits_dict[credit.brand_name] = credit.credit
+
     print(f'username in use_credits: {username}')
-    return render_template('brands_deals/use_credits.html', username=username, contributions=contributions, total_credits=total_credits, total_valid_contributions=total_valid_contributions, currency=currency)
+    return render_template('brands_deals/use_credits.html', username=username, contributions=contributions, total_credits=total_credits, total_valid_contributions=total_valid_contributions, currency=currency, brand_credits_dict=brand_credits_dict)
 
 
 """ FUNCTIONS FOR MESSAGING SYSTEM """

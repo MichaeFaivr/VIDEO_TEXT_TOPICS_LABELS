@@ -194,6 +194,25 @@
             </table>
         </div>
 
+        <div class="table-container">
+            <table>
+            <thead>
+                <tr>
+                <th>Brand</th>
+                <th>Credits</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for brand, credits in brand_credits_dict.items() %}
+                <tr>
+                <td>{{ brand }}</td>
+                <td>{{ credits }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+        </div>
+
         <form action="{{ url_for(request.endpoint) }}" method="get" class="back-button-container">
             <input type="hidden" name="key" value="value">
             <input type="hidden" name="username" value="{{ username }}">
