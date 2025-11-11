@@ -253,6 +253,20 @@
             cursor: pointer; /* Changes cursor to pointer on hover */
             border-radius: 5px; /* Optional: rounded corners */
         }
+        .btn-diy-place { 
+            background-image: url('/static/images/DIY_home_improvt.jpg');
+            background-size: cover; /* Ensures the image covers the entire button */
+            background-position: center; /* Centers the image */
+            background-repeat: no-repeat; /* Prevents the image from repeating */
+            width: 200px; /* Set a width */
+            height: 60px; /* Set a height */
+            color: white; /* Text color */
+            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+            border: 2px solid black; /* Black border */
+            font-size: 18px; /* Text size */
+            cursor: pointer; /* Changes cursor to pointer on hover */
+            border-radius: 5px; /* Optional: rounded corners */
+        }
         .btn-outdoor { 
             background-image: url('/static/images/garden.jpg');
             background-size: cover; /* Ensures the image covers the entire button */
@@ -389,6 +403,11 @@
             <form action="/place_video_upload/" method="post" enctype="multipart/form-data" class="contribution-item">
                 <input type="hidden" name="username" value="{{ username }}">
                 <button type="submit" class="contribution-button btn-place">Video of your place</button>
+            </form>
+
+            <form action="/outdoor_video_upload/" method="post" enctype="multipart/form-data" class="contribution-item">
+                <input type="hidden" name="username" value="{{ username }}">
+                <button type="submit" class="contribution-button btn-diy-place">DIY Home Improvement</button>
             </form>
 
             <form action="/outdoor_video_upload/" method="post" enctype="multipart/form-data" class="contribution-item">
