@@ -110,8 +110,12 @@
     </style>
     <div class="auth-card">
         <h1 class="main-title">Welcome to SHAIRE</h1>
-        <p class="info-text">NO PERSONAL DATA. Email Optional</p>
-        <p class="info-text" style="font-weight: bold; color: green;">First 10K Users get SHARES of SHAIRE!</p>
+        <a href="/no_personal_data" style="text-decoration: none;">
+            <p class="info-text" style="cursor: pointer; transition: color 0.3s ease;" onmouseover="this.style.color='#2c3e50'" onmouseout="this.style.color='#7f8c8d'">NO PERSONAL DATA. Email Optional</p>
+        </a>
+        <a href="/contributors_shareholders" style="text-decoration: none;">
+            <p class="info-text" style="font-weight: bold; color: green; cursor: pointer; transition: color 0.3s ease;" onmouseover="this.style.color='darkgreen'" onmouseout="this.style.color='green'">First 1M Users get SHARES of SHAIRE!</p>
+        </a>
         <!-- Lien vers la page de presentation du Deal -->
 
         <form action="{{ url_for('login_user') }}" method="post">

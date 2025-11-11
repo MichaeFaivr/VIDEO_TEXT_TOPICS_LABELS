@@ -58,6 +58,10 @@ def save_video_analysis_to_db_sqlalchemy(username, video_filename, credit=0, cur
                 user.total_valid_contributions += 1
                 user.currency_credits = currency
 
+                # Normalize credit w/ brand names number
+                if brand_names:
+                    credit = int(credit / len(brand_names))
+
                 # Update user's brand credits
                 for brand_name in brand_names:
                     brand_credits = UserBrandCredits.query.filter_by(user_id=user.id, brand_name=brand_name).first()
@@ -71,6 +75,11 @@ def save_video_analysis_to_db_sqlalchemy(username, video_filename, credit=0, cur
                 db.session.commit()
             else:
                 print(f'User {username} not found in the database.')
+
+""" Route for the login page """
+@app.route('/', methods=['GET'])
+def login_page():
+    return render_template('login_page.html') # check if the user exists in the database
 
 """ Route for handling the upload video page post successful Login
 Prompt to Claude Sonnet 4: Write the route for upload_data. Strong condition: I need the username value from the login page.
@@ -128,9 +137,15 @@ def select_contribution_type():
             return redirect(url_for('login_page')) 
         
 
-@app.route('/', methods=['GET'])
-def login_page():
-    return render_template('login_page.html') # check if the user exists in the database
+""" Route to display information about no personal data collection """
+@app.route('/no_personal_data', methods=['GET'])
+def no_personal_data():
+    return render_template('annexes/no_personal_data.html')
+
+""" Route to display information about contributors becoming shareholders """
+@app.route('/contributors_shareholders', methods=['GET'])
+def contributors_shareholders():
+    return render_template('annexes/contributors_shareholders.html')
 
 
 """ Route to handle form submission for user login - SQLAlchemy version """
