@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHAIRE Gift Card</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .gift-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .title {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+        }
+        .field {
+            margin: 20px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        .label {
+            font-weight: bold;
+            color: #555;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .value {
+            font-size: 1.1em;
+            color: #333;
+        }
+        .key-code {
+            font-family: 'Courier New', monospace;
+            font-size: 1.3em;
+            letter-spacing: 2px;
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            border: 2px dashed #667eea;
+        }
+        .qr-placeholder {
+            width: 150px;
+            height: 150px;
+            background: #f8f9fa;
+            border: 2px dashed #ccc;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 14px;
+        }
+        .credits {
+            font-size: 2em;
+            font-weight: bold;
+            color: #28a745;
+        }
+
+                .back-button-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .back-button {
+            padding: 12px 24px;
+            font-size: 16px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .back-button:hover {
+            background-color: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <div class="gift-card">
+        <h1 class="title">SHAIRE</h1>
+        
+        <div class="field">
+            <span class="label">Username:</span>
+            <span class="value">{{ username or 'user123' }}</span>
+        </div>
+        
+        <div class="field">
+            <span class="label">Brand:</span>
+            <span class="value">{{ brand or 'Premium Brand' }}</span>
+        </div>
+        
+        <div class="field">
+            <span class="label">Gift Card Key:</span>
+            <div class="key-code">{{ random_key or 'Abc123!@#Xyz789' }}</div>
+        </div>
+        
+        <div class="qr-placeholder">
+            {{ qr_code or 'QR Code Here' }}
+        </div>
+        
+        <div class="field">
+            <span class="label">Credits:</span>
+            <span class="value credits">{{ credits or '100' }}</span>
+        </div>
+        
+        <div class="field">
+            <span class="label">Currency:</span>
+            <span class="value">{{ currency or 'USD' }}</span>
+        </div>
+
+        <form action="{{ url_for(request.endpoint) }}" method="get" class="back-button-container">
+            <input type="hidden" name="key" value="value">
+            <input type="hidden" name="username" value="{{ username }}">
+            <button type="button" onclick="history.back()" class="back-button">Go Back</button>
+        </form>
+    </div>
+</body>
+</html>

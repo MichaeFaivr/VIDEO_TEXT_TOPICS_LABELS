@@ -11,6 +11,7 @@ from verifications.check_policy_compliance import *
 from verifications.build_analysis_json import *
 from model.constants import *
 from commons.advanced_functions import *
+from commons.common_functions import *
 import random
 import string
 from flask_sqlalchemy import SQLAlchemy
@@ -35,7 +36,12 @@ def get_country_from_ipaddress(ip_address):
     # In a real implementation, use a geolocation service or database
     # Voir les aspects de sécurité et de vie privée liés à l'utilisation des adresses IP
     return "France" # For testing purposes
-    
+
+
+def generate_random_key(length=15):
+    characters = string.ascii_letters + string.digits + string.punctuation
+    generated_password = ''.join(random.choice(characters) for _ in range(length))
+    return generated_password
 
 """ save the video analysis in the database - SQLAlchemy version """
 def save_video_analysis_to_db_sqlalchemy(username, video_filename, credit=0, currency='USD', brand_names=[]):
@@ -585,6 +591,20 @@ def how_to_earn():
     username = request.args.get('username')
     print(f'username in how_to_earn: {username}')
     return render_template('annexes/table_reference_incomes.html', username=username)
+
+@app.route('/gift_card_brand', methods=['GET'])
+def gift_card_brand():
+    username = request.args.get('username')
+    # get the User records to find the currency
+    user = User.query.filter_by(username=username).first()
+    if user:
+        currency = user.currency_credits or 'USD'
+    else:
+        currency = 'USD'
+    brand = 'Adidas'  # For testing purposes, can be dynamic later
+    random_key = generate_random_key(15)
+    print(f'username in gift_card_brand: {username}')
+    return render_template('brands_deals/gift_card_brand.html', username=username, brand=brand, currency=currency, random_key=random_key)
 
 
 """ VIDEO VERBATIM ANALYSIS ROUTE """

@@ -164,7 +164,7 @@
 <body>
     <div style="text-align: center; margin: 20px 0;"></div>
         <button style="padding: 12px 24px; font-size: 16px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#218838'" onmouseout="this.style.backgroundColor='#28a745'">
-            Generate a GCRD
+            <a href="{{ url_for('gift_card_brand') }}" style="text-decoration: none; color: white;">Generate a GCRD</a>
         </button>
     </div>
     <div class="container">
@@ -195,6 +195,31 @@
         </div>
 
         <div class="table-container">
+            <div style="margin-bottom: 15px;">
+            <table class="brand-table"></table>
+            <label for="brandFilter" style="font-weight: bold; margin-right: 10px;">Filter by Brand:</label>
+            <select id="brandFilter" style="padding: 8px; border: 1px solid #ddd; border-radius: 3px; background-color: white;">
+                <option value="">All Brands</option>
+                {% for brand in brand_credits_dict.keys() %}
+                <option value="{{ brand }}">{{ brand }}</option>
+                {% endfor %}
+            </select>
+            </div>
+            <script>
+            document.getElementById('brandFilter').addEventListener('change', function() {
+                const filter = this.value.toLowerCase();
+                const rows = document.querySelectorAll('.brand-table tbody tr');
+                
+                rows.forEach(function(row) {
+                const brandCell = row.cells[0].textContent.toLowerCase();
+                if (filter === '' || brandCell.includes(filter)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+                });
+            });
+            </script></div>
             <table>
             <thead>
                 <tr>
