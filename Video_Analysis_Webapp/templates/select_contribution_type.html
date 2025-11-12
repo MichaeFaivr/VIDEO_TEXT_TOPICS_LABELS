@@ -71,6 +71,7 @@
         </style>
         <h1 style="margin-top: 6px; margin-bottom: 2px;">Welcome to Shaire</h1>
         <p style="margin: 1px 0;"><em>Choose/Make/Upload a Contribution & Earn Credits</em></p>
+        <p style="margin: 1px 0; color: red;"><em>Only 1% of potential revenues is currently displayed</em></p>
     </header>
     <style>
         body {
@@ -267,6 +268,20 @@
             cursor: pointer; /* Changes cursor to pointer on hover */
             border-radius: 5px; /* Optional: rounded corners */
         }
+        .btn-diy-outdoor { 
+            background-image: url('/static/images/DIY_outdoor_maintenance.jpg');
+            background-size: cover; /* Ensures the image covers the entire button */
+            background-position: center; /* Centers the image */
+            background-repeat: no-repeat; /* Prevents the image from repeating */
+            width: 200px; /* Set a width */
+            height: 60px; /* Set a height */
+            color: white; /* Text color */
+            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+            border: 2px solid black; /* Black border */
+            font-size: 18px; /* Text size */
+            cursor: pointer; /* Changes cursor to pointer on hover */
+            border-radius: 5px; /* Optional: rounded corners */
+        }
         .btn-outdoor { 
             background-image: url('/static/images/garden.jpg');
             background-size: cover; /* Ensures the image covers the entire button */
@@ -405,9 +420,14 @@
                 <button type="submit" class="contribution-button btn-place">Video of your place</button>
             </form>
 
-            <form action="/outdoor_video_upload/" method="post" enctype="multipart/form-data" class="contribution-item">
+            <form action="/diy_indoor_place_upload/" method="post" enctype="multipart/form-data" class="contribution-item">
                 <input type="hidden" name="username" value="{{ username }}">
                 <button type="submit" class="contribution-button btn-diy-place">DIY Home Improvement</button>
+            </form>
+
+            <form action="/diy_outdoor_maintenance_upload/" method="post" enctype="multipart/form-data" class="contribution-item">
+                <input type="hidden" name="username" value="{{ username }}">
+                <button type="submit" class="contribution-button btn-diy-outdoor">DIY Outdoor Maintenance</button>
             </form>
 
             <form action="/outdoor_video_upload/" method="post" enctype="multipart/form-data" class="contribution-item">
