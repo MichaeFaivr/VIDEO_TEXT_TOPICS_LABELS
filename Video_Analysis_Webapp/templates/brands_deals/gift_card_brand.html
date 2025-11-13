@@ -109,8 +109,9 @@
             <div class="key-code">{{ random_key or 'Abc123!@#Xyz789' }}</div>
         </div>
         
-        <div class="qr-placeholder">
-            {{ qr_code or 'QR Code Here' }}
+        <div class="field">
+            <span class="label">QR Code:</span>
+            <img src="{{ qr_code }}" alt="QR Code" style="max-width: 150px; height: auto; border-radius: 5px;">
         </div>
         
         <div class="field">

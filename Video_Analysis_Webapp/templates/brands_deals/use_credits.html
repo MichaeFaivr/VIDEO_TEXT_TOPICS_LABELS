@@ -162,11 +162,15 @@
     </style>
 </head>
 <body>
-    <div style="text-align: center; margin: 20px 0;"></div>
-        <button style="padding: 12px 24px; font-size: 16px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#218838'" onmouseout="this.style.backgroundColor='#28a745'">
-            <a href="{{ url_for('gift_card_brand') }}" style="text-decoration: none; color: white;">Generate a GCRD</a>
-        </button>
+    <div class="button-container">
+        <form action="{{ url_for('gift_card_brand') }}" method="get">
+            <input type="hidden" name="username" value="{{ username }}">
+            <button style="padding: 12px 24px; font-size: 16px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#218838'" onmouseout="this.style.backgroundColor='#28a745'">
+                <a href="{{ url_for('gift_card_brand', username=username) }}" style="text-decoration: none; color: white;">Generate a GCRD</a>
+            </button>
+        </form>
     </div>
+
     <div class="container">
         <h1>{{ username|title }} Contributions History</h1>       
         <div class="table-container">

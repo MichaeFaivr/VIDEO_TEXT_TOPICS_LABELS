@@ -595,16 +595,32 @@ def how_to_earn():
 @app.route('/gift_card_brand', methods=['GET'])
 def gift_card_brand():
     username = request.args.get('username')
+    print(f'username in gift_card_brand: {username}')
     # get the User records to find the currency
     user = User.query.filter_by(username=username).first()
     if user:
         currency = user.currency_credits or 'USD'
     else:
         currency = 'USD'
-    brand = 'Adidas'  # For testing purposes, can be dynamic later
+
+    # In Generate a Gift Card for a Brand, the brand can be selected from the user's Brands having credits
+    brand = 'Intel'  # For testing purposes, can be dynamic later
+    # Get the credits for the brand
+    brand_credits = UserBrandCredits.query.filter_by(user_id=user.id, brand_name=brand).first()
+    if brand_credits:
+        print(f'Brand credits for {brand}: {brand_credits.credit} {brand_credits.currency}')
+        credits = brand_credits.credit
+    else:
+        print(f'No brand credits found for {brand}')
+        credits = 0
+
     random_key = generate_random_key(15)
+    # Generate QR code for the gift card
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    data = f'Gift Card for {username}\nBrand: {brand}\nValue: 50 {currency}\nCode: {random_key}\nIssued on: {current_time}'
+    qr_code_path = generate_qr_code(data, f'static/qr_codes/{username}_{brand}_{current_time}_gift_card_qr.png')
     print(f'username in gift_card_brand: {username}')
-    return render_template('brands_deals/gift_card_brand.html', username=username, brand=brand, currency=currency, random_key=random_key)
+    return render_template('brands_deals/gift_card_brand.html', username=username, brand=brand, credits=credits, currency=currency, random_key=random_key, qr_code=qr_code_path)
 
 
 """ VIDEO VERBATIM ANALYSIS ROUTE """

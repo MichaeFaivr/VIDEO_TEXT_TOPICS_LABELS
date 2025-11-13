@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import qrcode
 
 def compare_strings(s1, s2, seuil):
     s1 = s1.replace(" ", "")
@@ -15,7 +16,6 @@ def compare_strings(s1, s2, seuil):
     else:
         return False
     
-
 
 def convert_list_to_dataframe(my_list:list, expected_columns:list)-> pd.DataFrame:
     """
@@ -45,4 +45,25 @@ def convert_list_to_dataframe(my_list:list, expected_columns:list)-> pd.DataFram
     my_df = my_df.reset_index(drop=True)
 
     return my_df
-    
+
+
+""" Generate a QR code image """
+def generate_qr_code(data: str, qr_code_path: str):
+    # Create QR code instance
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    # Add data to the QR code
+    qr.add_data(data)
+    qr.make(fit=True)
+
+    # Generate the QR code image
+    img = qr.make_image(fill_color="black", back_color="white")
+
+    # Save the image
+    img.save(qr_code_path)
+
+    return qr_code_path
