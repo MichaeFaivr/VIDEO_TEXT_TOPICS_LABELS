@@ -619,6 +619,11 @@ def gift_card_brand():
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     data = f'Gift Card for {username}\nBrand: {brand}\nValue: 50 {currency}\nCode: {random_key}\nIssued on: {current_time}'
     qr_code_path = generate_qr_code(data, f'static/qr_codes/{username}_{brand}_{current_time}_gift_card_qr.png')
+
+    # Save the gift card as a PDF
+    pdf_path = f'static/pdfs/{username}_{brand}_{current_time}_gift_card.pdf'
+    _ = save_gift_card_pdf(username, brand, credits, currency, random_key, qr_code_path, pdf_path)
+
     print(f'username in gift_card_brand: {username}')
     return render_template('brands_deals/gift_card_brand.html', username=username, brand=brand, credits=credits, currency=currency, random_key=random_key, qr_code=qr_code_path)
 
