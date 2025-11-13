@@ -172,58 +172,11 @@
     </div>
 
     <div class="container">
-        <h1>{{ username|title }} Contributions History</h1>       
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Type</th>
-                        <th>Video File</th>
-                        <th>Date Time</th>
-                        <th>Credit</th>
-                        <th>Currency</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for entry in contributions %}
-                    <tr>
-                        <td>{{ entry.contribution_type }}</td>
-                        <td>{{ entry.contribution_file }}</td>
-                        <td>{{ entry.timestamp }}</td>
-                        <td>{{ entry.credit }}</td>
-                        <td>{{ entry.currency }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-
+        <h1>{{ username|title }} Brand Credits History</h1>
         <div class="table-container">
             <div style="margin-bottom: 15px;">
             <table class="brand-table"></table>
-            <label for="brandFilter" style="font-weight: bold; margin-right: 10px;">Filter by Brand:</label>
-            <select id="brandFilter" style="padding: 8px; border: 1px solid #ddd; border-radius: 3px; background-color: white;">
-                <option value="">All Brands</option>
-                {% for brand in brand_credits_dict.keys() %}
-                <option value="{{ brand }}">{{ brand }}</option>
-                {% endfor %}
-            </select>
-            </div>
-            <script>
-            document.getElementById('brandFilter').addEventListener('change', function() {
-                const filter = this.value.toLowerCase();
-                const rows = document.querySelectorAll('.brand-table tbody tr');
-                
-                rows.forEach(function(row) {
-                const brandCell = row.cells[0].textContent.toLowerCase();
-                if (filter === '' || brandCell.includes(filter)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-                });
-            });
-            </script></div>
+            
             <table>
             <thead>
                 <tr>
@@ -233,7 +186,7 @@
             </thead>
             <tbody>
                 {% for brand, credits in brand_credits_dict.items() %}
-                <tr>
+                <tr onclick="window.location.href='/gift_card_brand?username={{ username }}&brand={{ brand }}'" style="cursor: pointer;">
                 <td>{{ brand }}</td>
                 <td>{{ credits }}</td>
                 </tr>
@@ -242,10 +195,9 @@
             </table>
         </div>
 
-        <form action="{{ url_for(request.endpoint) }}" method="get" class="back-button-container">
-            <input type="hidden" name="key" value="value">
+        <form action="{{ url_for('back_to_selection_contribution') }}" method="get" class="back-button-container">
             <input type="hidden" name="username" value="{{ username }}">
-            <button type="button" onclick="history.back()" class="back-button">Go Back</button>
+            <button type="submit" class="back-button">Back to Contribution Selection</button>
         </form>
     </div>
 </body>

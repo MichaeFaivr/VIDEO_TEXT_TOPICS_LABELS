@@ -419,7 +419,7 @@ def use_credits():
         currency = 'USD'
 
     # Get user brand credits
-    brand_credits = UserBrandCredits.query.filter_by(user_id=user.id).all()
+    brand_credits = UserBrandCredits.query.filter_by(user_id=user.id).filter(UserBrandCredits.credit > 0).all()
     brand_credits_dict = {}
     for credit in brand_credits:
         brand_credits_dict[credit.brand_name] = credit.credit
@@ -604,7 +604,7 @@ def gift_card_brand():
         currency = 'USD'
 
     # In Generate a Gift Card for a Brand, the brand can be selected from the user's Brands having credits
-    brand = 'Intel'  # For testing purposes, can be dynamic later
+    brand = request.args.get('brand') # Brand name selected by the user
     # Get the credits for the brand
     brand_credits = UserBrandCredits.query.filter_by(user_id=user.id, brand_name=brand).first()
     if brand_credits:
@@ -624,7 +624,16 @@ def gift_card_brand():
     pdf_path = f'static/pdfs/{username}_{brand}_{current_time}_gift_card.pdf'
     _ = save_gift_card_pdf(username, brand, credits, currency, random_key, qr_code_path, pdf_path)
 
-    print(f'username in gift_card_brand: {username}')
+    # Subtract the gift card value from the user's brand credits
+    gift_card_value = credits
+    if brand_credits and brand_credits.credit >= gift_card_value:
+        brand_credits.credit -= gift_card_value
+        db.session.commit()
+        print(f'Subtracted {gift_card_value} {currency} from {username} brand credits for {brand}. New balance: {brand_credits.credit} {brand_credits.currency}')
+    else:
+        print(f'Insufficient brand credits for {username} to generate gift card for {brand}')
+
+    # Display the gift card page
     return render_template('brands_deals/gift_card_brand.html', username=username, brand=brand, credits=credits, currency=currency, random_key=random_key, qr_code=qr_code_path)
 
 
