@@ -60,8 +60,10 @@ def save_video_analysis_to_db_sqlalchemy(username, video_filename, credit=0, cur
                 print(f'Total credit for user {username} after this contribution: {total_credit}')
 
                 # Update user's total credits and total valid contributions
-                user.total_credits = total_credit
+                user.overall_earned_credits = total_credit
+                user.current_credits += credit
                 user.total_valid_contributions += 1
+                user.nb_valid_contributions_this_month += 1
                 user.currency_credits = currency
 
                 # Normalize credit w/ brand names number
@@ -330,12 +332,11 @@ def user_history():
         print(f'contributions in user_history: {contributions}')
 
         # Get total credits, total_valid_contributions and currency
-        total_credits = sum(entry.credit for entry in contributions)
+        overall_earned_credits = sum(entry.credit for entry in contributions)
         total_valid_contributions = sum(1 for entry in contributions if entry.credit > 0)
         currency = contributions[0].currency if contributions else 'USD'
 
-    return render_template('user_history.html', username=username, contributions=contributions, total_credits=total_credits, total_valid_contributions=total_valid_contributions, currency=currency)
-
+    return render_template('user_history.html', username=username, contributions=contributions, total_credits=overall_earned_credits, total_valid_contributions=total_valid_contributions, currency=currency)
 
 """ Route to display the deals by brands for the user - SQLAlchemy version """
 @app.route('/user_deals/', methods=['GET'])
@@ -406,15 +407,14 @@ def use_credits():
     # Get user credits from database based on username
     user = User.query.filter_by(username=username).first()
     if user:
-        total_credits = user.total_credits or 0
+        current_credits = user.current_credits or 0
         currency = user.currency_credits or 'USD'
-        total_valid_contributions = user.total_valid_contributions or 0
-
+        total_valid_contributions = user.nb_valid_contributions_this_month or 0
         # get user contributions with positive credits
         contributions = HistoryCtbs.query.filter_by(username=username).filter(HistoryCtbs.credit > 0).all()
         total_valid_contributions = len(contributions)
     else:
-        total_credits = 0
+        current_credits = 0
         total_valid_contributions = 0
         currency = 'USD'
 
@@ -425,7 +425,7 @@ def use_credits():
         brand_credits_dict[credit.brand_name] = credit.credit
 
     print(f'username in use_credits: {username}')
-    return render_template('brands_deals/use_credits.html', username=username, contributions=contributions, total_credits=total_credits, total_valid_contributions=total_valid_contributions, currency=currency, brand_credits_dict=brand_credits_dict)
+    return render_template('brands_deals/use_credits.html', username=username, contributions=contributions, total_credits=current_credits, total_valid_contributions=total_valid_contributions, currency=currency, brand_credits_dict=brand_credits_dict)
 
 
 """ FUNCTIONS FOR MESSAGING SYSTEM """
@@ -623,6 +623,20 @@ def gift_card_brand():
     # Save the gift card as a PDF
     pdf_path = f'static/pdfs/{username}_{brand}_{current_time}_gift_card.pdf'
     _ = save_gift_card_pdf(username, brand, credits, currency, random_key, qr_code_path, pdf_path)
+
+    # Save the gift card record in the database
+    gift_card = UserGiftCards(user_id=user.id, brand_name=brand, total_credits=credits, currency=currency, gift_card_code=random_key, qr_code_path=qr_code_path, pdf_path=pdf_path)
+    db.session.add(gift_card)
+    db.session.commit()
+    print(f'Gift card record saved in database for {username}, brand: {brand}, credits: {credits} {currency}')
+
+    # Subtract the gift card value from the user's total credits
+    if user.current_credits >= credits:
+        user.current_credits -= credits
+        db.session.commit()
+        print(f'Subtracted {credits} {currency} from {username} total credits. New balance: {user.current_credits} {user.currency_credits}')
+    else:
+        print(f'Insufficient total credits for {username} to generate gift card for {brand}')
 
     # Subtract the gift card value from the user's brand credits
     gift_card_value = credits
