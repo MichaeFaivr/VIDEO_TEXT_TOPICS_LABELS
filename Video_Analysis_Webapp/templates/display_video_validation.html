@@ -51,7 +51,10 @@
 
         <div class="compliance-section">
             {% if compliance_metrics >= 0.5 %}
-                <p style="color: #28a745; font-weight: bold; font-size: clamp(1rem, 3vw, 1.5rem); margin-bottom: 15px; text-align: center;">✓ Video accepted</p>
+                <p style="color: #28a745; font-weight: bold; font-size: clamp(1rem, 3vw, 1.5rem); margin-bottom: 15px; text-align: center;">
+                    <span style="display: inline-block; width: 50px; height: 50px; background-color: #28a745; border: 3px solid #1e7e34; border-radius: 50%; text-align: center; line-height: 44px; font-size: 24px; font-weight: bold; color: white; margin-right: 10px;">✓</span>
+                    Video accepted
+                </p>
             {% else %}
                 <p style="color: #dc3545; font-weight: bold; font-size: clamp(1rem, 3vw, 1.5rem); margin-bottom: 15px; text-align: center;">✗ Video rejected</p>
             {% endif %}
