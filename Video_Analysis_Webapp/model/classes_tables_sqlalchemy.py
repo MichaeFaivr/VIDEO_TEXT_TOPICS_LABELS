@@ -31,9 +31,11 @@ class User(db.Model):
     country = db.Column(db.String(100), nullable=True)
     age_group = db.Column(db.String(100), nullable=True)
     gender = db.Column(db.String(50), nullable=True)
-    total_credits = db.Column(db.Integer, default=0)
+    current_credits = db.Column(db.Integer, default=0)
     currency_credits = db.Column(db.String(10), default='USD')
+    overall_earned_credits = db.Column(db.Integer, default=0)
     total_valid_contributions = db.Column(db.Integer, default=0)
+    nb_valid_contributions_this_month = db.Column(db.Integer, default=0)
     total_shares = db.Column(db.Integer, default=0)
 
     def __repr__(self):
@@ -166,13 +168,24 @@ class Brands(db.Model):
 class UserGiftCards(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    RSA_Key = db.Column(db.String(500), nullable=False)
-    QR_code = db.Column(db.String(500), nullable=False)
-    total_credits = db.Column(db.Integer, nullable=False)
+    gift_card_code = db.Column(db.String(500), nullable=False)
+    total_credits = db.Column(db.Integer, nullable=False, default=0)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        if self.total_credits > 100:
+            self.total_credits = 100
+    
+    @db.validates('total_credits')
+    def validate_total_credits(self, key, value):
+        if value > 100:
+            return 100
+        return value
     currency = db.Column(db.String(10), nullable=False, default='USD')
-    brand = db.Column(db.String(500), nullable=True) # Associated brand for the gift card
-    issued_date = db.Column(db.DateTime, server_default=db.func.now())
-    expiration_date = db.Column(db.DateTime, nullable=True)
+    brand_name = db.Column(db.String(500), nullable=True) # Associated brand for the gift card
+    issue_date = db.Column(db.DateTime, server_default=db.func.now())
+    #expiration_date = db.Column(db.DateTime, nullable=False, default=lambda: db.func.now() + db.text("INTERVAL 1 YEAR"))
+    qr_code_path = db.Column(db.String(500), nullable=True)  # Path to stored QR code image
+    pdf_path = db.Column(db.String(500), nullable=True)  # Path to stored PDF file
 
     user = db.relationship('User', backref=db.backref('gift_cards', lazy=True))
 
