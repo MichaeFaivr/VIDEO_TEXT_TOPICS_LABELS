@@ -223,11 +223,38 @@
         </div>
         <br>
         <div id="uploadButtonContainer" style="margin-top: 20px; display: none;">
-            <button type="submit" id="uploadButton" style="font-size: clamp(14px, 2.5vw, 18px);">Upload your Video for AI Analysis</button>
+            <button type="submit" id="uploadButton" style="font-size: clamp(14px, 2.5vw, 18px);">Upload your Video for AI Analysis</button>    
         </div>
+
+        <!-- Progress Modal -->
+        <div id="progressModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); z-index: 3000;">
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); text-align: center; min-width: 300px;">
+            <div style="margin-bottom: 20px;">
+                <div style="width: 80px; height: 80px; border: 8px solid #f3f3f3; border-top: 8px solid #1a73e8; border-radius: 50%; margin: 0 auto; animation: spin 1s linear infinite;"></div>
+            </div>
+            <h3 style="color: #1a73e8; margin-bottom: 10px;">Processing Video...</h3>
+            <p style="color: #666; margin: 0;">Please wait while we analyze your video</p>
+            </div>
+        </div>
+
+        <style>
+            @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+            }
+        </style>
+
         <script>
+            // Show progress modal on form submit
+            document.querySelector('form').addEventListener('submit', function(e) {
+            const fileInput = document.getElementById('video');
+            if (fileInput.files.length > 0) {
+                document.getElementById('progressModal').style.display = 'block';
+            }
+            });
+
             function displaySelectedFile() {
-                const fileInput = document.getElementById('video');
+            const fileInput = document.getElementById('video');
                 const selectedFileDiv = document.getElementById('selectedFile');
                 const fileNameSpan = document.getElementById('fileName');
                 const fileSizeSpan = document.getElementById('fileSize');
