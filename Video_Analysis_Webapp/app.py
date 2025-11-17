@@ -665,7 +665,8 @@ def gift_cards_history():
 
 @app.route('/light_contributions_tuto', methods=['GET'])
 def light_contributions_tuto():
-    return render_template('annexes/light_contributions_tuto.html')
+    username = request.args.get('username')
+    return render_template('annexes/light_contributions_tuto.html', username=username)
 
 
 """ VIDEO VERBATIM ANALYSIS ROUTE """
