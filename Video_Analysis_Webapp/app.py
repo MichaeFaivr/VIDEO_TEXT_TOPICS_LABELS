@@ -650,6 +650,23 @@ def gift_card_brand():
     # Display the gift card page
     return render_template('brands_deals/gift_card_brand.html', username=username, brand=brand, credits=credits, currency=currency, random_key=random_key, qr_code=qr_code_path)
 
+@app.route('/gift_cards_history/', methods=['GET'])
+def gift_cards_history():
+    username = request.args.get('username')
+    print(f'username in gift_cards_history: {username}')
+    # Get user gift cards from database based on username
+    gift_cards = []
+
+    if username:
+        gift_cards = UserGiftCards.query.filter_by(username=username).all()
+        print(f'gift_cards in gift_cards_history: {gift_cards}')
+
+    return render_template('brands_deals/gift_cards_history.html', username=username, gift_cards=gift_cards)
+
+@app.route('/light_contributions_tuto', methods=['GET'])
+def light_contributions_tuto():
+    return render_template('annexes/light_contributions_tuto.html')
+
 
 """ VIDEO VERBATIM ANALYSIS ROUTE """
 """ Keep the video analysis route, but do not display the AI analysis results. Display the result of the validation only. """
