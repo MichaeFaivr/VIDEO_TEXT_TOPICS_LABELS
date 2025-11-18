@@ -23,8 +23,8 @@
                 <button id="useCreditsBtn" onclick="window.location.href='/use_credits?username={{ username }}'" style="background-color: #28a745; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: clamp(15px, 2vw, 18px); white-space: nowrap; width: 160px; height: 36px; display: flex; align-items: center; justify-content: center;">
                     Use your Credits
                 </button>
-                <button id="useCreditsBtn" onclick="window.location.href='/select_expert_contributions?username={{ username }}'" style="background-color: #c65381; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: clamp(15px, 2vw, 18px); white-space: nowrap; width: 160px; height: 36px; display: flex; align-items: center; justify-content: center;">
-                    PRO/EXPERT
+                <button id="useCreditsBtn" onclick="window.location.href='/back_to_selection_contribution?username={{ username }}'" style="background-color: #c65381; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: clamp(15px, 2vw, 18px); white-space: nowrap; width: 160px; height: 36px; display: flex; align-items: center; justify-content: center;">
+                    EASY/MEDIUM
                 </button>
             </div>
         </div>
@@ -408,54 +408,44 @@
 
     <div onclick="window.location.href='/light_contributions_tuto?username={{ username }}'" style="grid-column: 1 / -1; background: linear-gradient(135deg, #90ee90, #32cd32, #228b22); padding: 8px; border-radius: 8px; margin-bottom: 0px; max-height: 60px; border: 3px solid #006400; box-shadow: 0 4px 8px rgba(0,0,0,0.2); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 12px rgba(0,0,0,0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.2)'">
         <h2 style="text-align: center; margin: 0; color: #000000; font-weight: bold; font-size: clamp(1rem, 1.2vw, 1.5rem); display: flex; align-items: center; justify-content: center; height: 100%;">
-            EASY : VIDEOS => CREDITS & DEALS/GIFT CARDS
+            PROS & EXPERTS : PAYMENTS of $/€500+ / mth services : EARN UPTO $/€50K / YEAR!
         </h2>
     </div>
     <div class="contribution-scroll-container">
         <div class="contribution-scroll-track">
-            <form action="/verbatim_video_upload/" method="post" enctype="multipart/form-data" class="contribution-item">
+            <form action="/pro_chef_recipies/" method="post" enctype="multipart/form-data" class="contribution-item">
                 <input type="hidden" name="username" value="{{ username }}">
-                <button type="submit" class="contribution-button btn-verbatim">Verbatim</button>
+                <button type="submit" class="contribution-button btn-verbatim">Pro Chef Recipies Video</button>
             </form>
             
-            <form action="/place_video_upload/" method="post" enctype="multipart/form-data" class="contribution-item">
+            <form action="/pro_musician_plays/" method="post" enctype="multipart/form-data" class="contribution-item">
                 <input type="hidden" name="username" value="{{ username }}">
-                <button type="submit" class="contribution-button btn-place">Video TYPE1</button>
+                <button type="submit" class="contribution-button btn-place">Pro musician play Video</button>
             </form>
 
-            <form action="/diy_indoor_place_upload/" method="post" enctype="multipart/form-data" class="contribution-item">
+            <form action="/pro_ai_usecases/" method="post" enctype="multipart/form-data" class="contribution-item">
                 <input type="hidden" name="username" value="{{ username }}">
-                <button type="submit" class="contribution-button btn-diy-place">Video TYPE2</button>
+                <button type="submit" class="contribution-button btn-diy-place">Pro AI Expert Video</button>
             </form>
 
-            <form action="/diy_outdoor_maintenance_upload/" method="post" enctype="multipart/form-data" class="contribution-item">
+            <form action="/pro_expert_ctb4/" method="post" enctype="multipart/form-data" class="contribution-item">
                 <input type="hidden" name="username" value="{{ username }}">
-                <button type="submit" class="contribution-button btn-diy-outdoor">Video TYPE3</button>
+                <button type="submit" class="contribution-button btn-diy-outdoor">PRO TYPE4</button>
             </form>
 
-            <form action="/outdoor_video_upload/" method="post" enctype="multipart/form-data" class="contribution-item">
+            <form action="/pro_expert_ctb5/" method="post" enctype="multipart/form-data" class="contribution-item">
                 <input type="hidden" name="username" value="{{ username }}">
-                <button type="submit" class="contribution-button btn-outdoor">Video TYPE4</button>
+                <button type="submit" class="contribution-button btn-outdoor">PRO TYPE5</button>
             </form>
             
-            <form action="/wardrobe_video_upload/" method="post" enctype="multipart/form-data" class="contribution-item">
+            <form action="/pro_expert_ctb6/" method="post" enctype="multipart/form-data" class="contribution-item">
                 <input type="hidden" name="username" value="{{ username }}">
-                <button type="submit" class="contribution-button btn-wardrobe">Video TYPE5</button>
+                <button type="submit" class="contribution-button btn-wardrobe">PRO TYPE6</button>
             </form>
             
-            <form action="/games_video_upload/" method="post" enctype="multipart/form-data" class="contribution-item">
+            <form action="/pro_expert_ctb7/" method="post" enctype="multipart/form-data" class="contribution-item">
                 <input type="hidden" name="username" value="{{ username }}">
-                <button type="submit" class="contribution-button btn-games">Video TYPE6</button>
-            </form>
-            
-            <form action="/electronic_video_upload/" method="post" enctype="multipart/form-data" class="contribution-item">
-                <input type="hidden" name="username" value="{{ username }}">
-                <button type="submit" class="contribution-button btn-electronic">Video TYPE7</button>
-            </form>
-            
-            <form action="/kitchen_video_upload/" method="post" enctype="multipart/form-data" class="contribution-item">
-                <input type="hidden" name="username" value="{{ username }}">
-                <button type="submit" class="contribution-button btn-kitchen">Video TYPE8</button>
+                <button type="submit" class="contribution-button btn-games">PRO TYPE7</button>
             </form>
         </div>
     </div>
@@ -512,30 +502,6 @@
         }
     </style>
 
-        <div style="grid-column: 1 / -1; background: linear-gradient(135deg, #90ee90, #32cd32, #228b22); padding: 8px; border-radius: 8px; margin-bottom: 0px; max-height: 60px; border: 3px solid #006400; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
-        <h2 style="text-align: center; margin: 0; color: #000000; font-weight: bold; font-size: clamp(1rem, 1vw, 1.2rem); display: flex; align-items: center; justify-content: center; height: 100%;">
-            MEDIUM : AI AGENTS Services => CREDITS of $/€100-500 / Mth
-        </h2>
-    </div>
-    <div class="contribution-scroll-container">
-        <div class="contribution-scroll-track">
-            <form action="/AAI A/" method="post" enctype="multipart/form-data" class="contribution-item">
-                <input type="hidden" name="username" value="{{ username }}">
-                <button type="submit" class="contribution-button btn-device-usage">AAI A</button>
-            </form>
-
-            <form action="/AAI B/" method="post" enctype="multipart/form-data" class="contribution-item">
-                <input type="hidden" name="username" value="{{ username }}">
-                <button type="submit" class="contribution-button btn-design-agent-sales">AAI B</button>
-            </form>
-
-            <form action="/AAI C/" method="post" enctype="multipart/form-data" class="contribution-item">
-                <input type="hidden" name="username" value="{{ username }}">
-                <button type="submit" class="contribution-button btn-design-agent-network">AAI C</button>
-            </form>
-        </div>
-    </div>
-
     <footer style="margin-top: 30px; padding: 20px; background-color: #e4dcdc; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
         <div style="text-align: left;">
             <style>
@@ -588,3 +554,4 @@
     </footer>
 </body>
 </html>
+<!DOCTYPE html>

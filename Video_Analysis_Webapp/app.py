@@ -428,6 +428,14 @@ def use_credits():
     return render_template('brands_deals/use_credits.html', username=username, contributions=contributions, total_credits=current_credits, total_valid_contributions=total_valid_contributions, currency=currency, brand_credits_dict=brand_credits_dict)
 
 
+""" Route for accessing Pro/Expert contributions page """
+@app.route('/select_expert_contributions/', methods=['GET'])
+def select_expert_contributions():
+    username = request.args.get('username')
+    print(f'username in select_expert_contributions: {username}')
+    return render_template('pro_expert/select_expert_contributions.html', username=username)
+
+
 """ FUNCTIONS FOR MESSAGING SYSTEM """
 
 """ Save a message - SQLAlchemy version """
