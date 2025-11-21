@@ -33,6 +33,8 @@ class User(db.Model):
     gender = db.Column(db.String(50), nullable=True)
     current_credits = db.Column(db.Integer, default=0)
     currency_credits = db.Column(db.String(10), default='USD')
+    current_month_earned_credits = db.Column(db.Integer, default=0)
+    current_month = db.Column(db.String(20), nullable=True) # e.g., '2024-06'
     overall_earned_credits = db.Column(db.Integer, default=0)
     total_valid_contributions = db.Column(db.Integer, default=0)
     nb_valid_contributions_this_month = db.Column(db.Integer, default=0)
