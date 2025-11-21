@@ -63,8 +63,18 @@ def save_video_analysis_to_db_sqlalchemy(username, video_filename, credit=0, cur
                 user.overall_earned_credits = total_credit
                 user.current_credits += credit
                 user.total_valid_contributions += 1
-                user.nb_valid_contributions_this_month += 1
                 user.currency_credits = currency
+                # get current month in format 'YYYY-MM'
+                # ATTENTION: this logic assumes that the function is called only once per contribution
+                current_month_str = current_date.strftime('%Y-%m')
+                if user.current_month == current_month_str:
+                    user.current_month_earned_credits += credit
+                    user.nb_valid_contributions_this_month += 1
+                else:
+                    user.current_month = current_month_str
+                    user.current_month_earned_credits = credit
+                    user.nb_valid_contributions_this_month = 1
+                print(f'User {username} current month: {user.current_month}, current month earned credits: {user.current_month_earned_credits}, number of valid contributions this month: {user.nb_valid_contributions_this_month}')
 
                 # Normalize credit w/ brand names number
                 if brand_names:
@@ -334,9 +344,10 @@ def user_history():
         # Get total credits, total_valid_contributions and currency
         overall_earned_credits = sum(entry.credit for entry in contributions)
         total_valid_contributions = sum(1 for entry in contributions if entry.credit > 0)
+        nb_valid_contributions_this_month = sum(1 for entry in contributions if entry.contribution_date.strftime('%Y-%m') == datetime.now().strftime('%Y-%m'))
         currency = contributions[0].currency if contributions else 'USD'
 
-    return render_template('user_history.html', username=username, contributions=contributions, total_credits=overall_earned_credits, total_valid_contributions=total_valid_contributions, currency=currency)
+    return render_template('user_history.html', username=username, contributions=contributions, total_credits=overall_earned_credits, total_valid_contributions=total_valid_contributions, currency=currency, nb_valid_contributions_this_month=nb_valid_contributions_this_month)
 
 """ Route to display the deals by brands for the user - SQLAlchemy version """
 @app.route('/user_deals/', methods=['GET'])
