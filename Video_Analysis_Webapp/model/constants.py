@@ -91,3 +91,6 @@ COLS_ROWS_CSV_PATH_FILE = 'static/documents/csv_test_21oct2025.csv'
 
 # INITIAL BRANDS FOR TESTING
 INITIAL_BRANDS = ['Apple', 'Adidas', 'Coca-Cola', 'Google', 'Microsoft', 'Nike', 'Scorer', 'Zenta']
+
+# MAX CONTRIBUTIONS PER USER PER MONTH
+MAX_CONTRIBUTIONS_PER_USER_PER_MONTH = 5

@@ -102,7 +102,8 @@ def login_page():
 """ Route for handling the upload video page post successful Login
 Prompt to Claude Sonnet 4: Write the route for upload_data. Strong condition: I need the username value from the login page.
 Use decorators to route the specific use cases : verbatims, ads, others
-rename upload_data to verbatim_upload_video for clarity """
+rename upload_data to verbatim_upload_video for clarity 
+If the nb of contributions per user per month is exceeded, redirect to a page informing the user about it."""
 @app.route('/verbatim_video_upload/', methods=['GET', 'POST'])
 def verbatim_video_upload():
     # POST method in login_page.html when clicking on Login button
@@ -113,6 +114,15 @@ def verbatim_video_upload():
         username = request.form.get('username') or request.args.get('username')
         print(f'username retrieved from form or args: {username}')
         if username:
+            if MAX_CONTRIBUTIONS_PER_USER_PER_MONTH > 0:
+                # Check the number of contributions for this user in the current month
+                user = User.query.filter_by(username=username).first()
+                if user:
+                    current_month_str = datetime.now().strftime('%Y-%m')
+                    if user.current_month == current_month_str:
+                        if user.nb_valid_contributions_this_month >= MAX_CONTRIBUTIONS_PER_USER_PER_MONTH:
+                            # Redirect to a page informing the user about exceeding the limit
+                            return render_template('annexes/contribution_limit_reached.html', username=username, max_contributions=MAX_CONTRIBUTIONS_PER_USER_PER_MONTH)
             return render_template('verbatims/verbatim_video_upload.html', username=username) # Pass username to the upload page
         else:
             # Redirect back to login if no username provided
