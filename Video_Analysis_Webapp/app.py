@@ -220,10 +220,7 @@ def register_user():
         return render_template('register_page.html', error=error_message)
 
     # Generate a random 20-character password
-    password_length = 20
-    characters = string.ascii_letters + string.digits + string.punctuation
-    generated_password = ''.join(random.choice(characters) for _ in range(password_length))
-    print(f'Generated password: {generated_password}')
+    generated_password = generate_random_key(20)
     long_account_recovery_token = generated_password
 
     print(f'username: {username}, email: {email}, password: {password}, long_account_recovery_token: {long_account_recovery_token}, interests: {interests}, age_group: {age_group}')
@@ -245,6 +242,8 @@ def fill_update_your_profile_sqlalchemy():
     # GET method to display the form with pre-filled values if they exist
     username = request.args.get('username')
     print(f'username in fill_update_your_profile_sqlalchemy: {username}')
+    # Get existing profile data from the database based on username
+    monthly_hours_available = five_favorite_brands = desired_extra_income = why_favorite_brands = five_favorite_product_categories = ''
     if username:
         user = User.query.filter_by(username=username).first()
         if user:
@@ -253,18 +252,7 @@ def fill_update_your_profile_sqlalchemy():
             desired_extra_income = user.desired_extra_income if user.desired_extra_income else ''
             why_favorite_brands = user.why_favorite_brands if user.why_favorite_brands else ''
             five_favorite_product_categories = user.five_favorite_product_categories if user.five_favorite_product_categories else ''
-        else:
-            monthly_hours_available = ''
-            five_favorite_brands = ''
-            desired_extra_income = ''
-            why_favorite_brands = ''
-            five_favorite_product_categories = ''
-    else:
-        monthly_hours_available = ''
-        five_favorite_brands = ''
-        desired_extra_income = ''
-        why_favorite_brands = ''
-        five_favorite_product_categories = ''
+
     print(f'five_favorite_brands: {five_favorite_brands}, desired_extra_income: {desired_extra_income}, why_favorite_brands: {why_favorite_brands}, five_favorite_product_categories: {five_favorite_product_categories}')
 
     return render_template('annexes/profiling_page.html', username=username, 
@@ -309,9 +297,7 @@ def account_info_sqlalchemy():
     username = request.args.get('username')
     print(f'username in account_info_sqlalchemy: {username}')
     # Get email from database based on username
-    email = None
-    interests = None
-    age_group = None
+    email = interests = age_group = None
 
     # Display the first record of users in the database for debugging purposes
     first_user = User.query.first()
@@ -351,11 +337,11 @@ def user_history():
         contributions = HistoryCtbs.query.filter_by(username=username).filter(HistoryCtbs.credit > 0).all()
         print(f'contributions in user_history: {contributions}')
 
-        # Get total credits, total_valid_contributions and currency
-        overall_earned_credits = sum(entry.credit for entry in contributions)
-        total_valid_contributions = sum(1 for entry in contributions if entry.credit > 0)
-        nb_valid_contributions_this_month = sum(1 for entry in contributions if entry.contribution_date.strftime('%Y-%m') == datetime.now().strftime('%Y-%m'))
-        currency = contributions[0].currency if contributions else 'USD'
+        # Get total credits, total_valid_contributions and currency for the current user
+        overall_earned_credits = contributions[0].compute_total_credits() if contributions else 0
+        total_valid_contributions = contributions[0].compute_total_valid_contributions() if contributions else 0
+        nb_valid_contributions_this_month = contributions[0].compte_nb_valid_contributions_this_month() if contributions else 0
+        currency = contributions[0].get_currency() if contributions else 'USD'
 
     return render_template('user_history.html', username=username, contributions=contributions, total_credits=overall_earned_credits, total_valid_contributions=total_valid_contributions, currency=currency, nb_valid_contributions_this_month=nb_valid_contributions_this_month)
 
@@ -472,20 +458,6 @@ def save_message(username, content, recipient='SHAIRE', topic='Other'):
     return message.id
 
 
-""" Fetch messages for a user - SQLAlchemy version """
-def get_messages(username, recipient=None, limit=20):
-    user = User.query.filter_by(username=username).first()
-    if not user:
-        return []
-    messages = UserMessages.query.filter_by(user_id=user.id)
-    if recipient:
-        messages = messages.filter_by(recipient=recipient)
-    else:
-        messages = messages.filter(UserMessages.recipient != 'SHAIRE')
-    messages = messages.order_by(UserMessages.timestamp.desc()).limit(limit).all()
-    return messages
-
-
 """ Route for the messaging system - SQLAlchemy version """
 """ save in UserMessages the message submitted to SHAIRE from contact_us page """
 @app.route('/messages_to_shaire/', methods=['GET', 'POST'])
@@ -496,8 +468,8 @@ def messages_to_shaire():
         print(f'username in messages POST: username {username}, content: {content}')
         if username and content:
             try:
-                message_id = save_message(username, content)
-                print(f'Message saved with ID: {message_id}')
+                message = UserMessages.save_message(username, content)
+                message.__repr__()
             except Exception as e:
                 print(f'Error saving message: {e}')
                 return "Error saving message", 500
@@ -512,7 +484,7 @@ def messages_to_shaire():
             if user:
                 user_id = user.id
                 username = user.username
-                messages = get_messages(username)
+                messages = UserMessages.get_user_inbox(username=username, limit=20)
                 print(f'Fetched messages for user_id {user_id}, username {username}: {messages}')
         return render_template('select_contribution_type.html', username=username)
     
@@ -527,8 +499,8 @@ def send_message_to_brand():
 
     if username and recipient and content:
         try:
-            message_id = save_message(username, content, recipient=recipient, topic=topic)
-            print(f'Message to brand saved with ID: {message_id}')
+            message = UserMessages.save_message(username, content, recipient=recipient, topic=topic)
+            message.__repr__()
         except Exception as e:
             print(f'Error saving message to brand: {e}')
             return "Error saving message", 500
@@ -550,7 +522,7 @@ def private_policy():
 def contact_us():
     username = request.form.get('username') or request.args.get('username')
     # Get the list of messages for the user
-    messages = get_messages(username, recipient='SHAIRE')
+    messages = UserMessages.get_user_inbox(username=username, limit=20, recipient='SHAIRE')
     print(f'username in contact_us: {username}')
     return render_template('annexes/contact_us.html', username=username, messages=messages)
 
@@ -590,18 +562,14 @@ def specifications():
 @app.route('/contact_brands', methods=['GET'])
 def contact_brands():
     username = request.args.get('username')
-    messages = get_messages(username)
+    messages = UserMessages.get_user_inbox(username=username, limit=100)
     # Check if Brands table is empty and create initial records if needed
     try:
         brands_count = Brands.query.count()
         if brands_count == 0:
             # Create initial brand records if table is empty - FOR TESTING PURPOSES ONLY
-            initial_brands = INITIAL_BRANDS
-            for brand_name in initial_brands:
-                brand_email = f'contact@{brand_name.lower()}.com'
-                new_brand = Brands(brand_name=brand_name, contact_email=brand_email)
-                db.session.add(new_brand)
-            db.session.commit()
+            Brands.create_initial_brands()
+            initial_brands = Brands.query.all()
             print(f'Created {len(initial_brands)} initial brand records')
     except Exception as e:
         print(f'Error creating initial brands: {e}')
@@ -626,14 +594,16 @@ def gift_card_brand():
     username = request.args.get('username')
     print(f'username in gift_card_brand: {username}')
     # get the User records to find the currency
+    currency = User.get_user_currency(username)
+
+    # get user record
     user = User.query.filter_by(username=username).first()
-    if user:
-        currency = user.currency_credits or 'USD'
-    else:
-        currency = 'USD'
+    if not user:
+        return "User not found", 404
 
     # In Generate a Gift Card for a Brand, the brand can be selected from the user's Brands having credits
     brand = request.args.get('brand') # Brand name selected by the user
+
     # Get the credits for the brand
     brand_credits = UserBrandCredits.query.filter_by(user_id=user.id, brand_name=brand).first()
     if brand_credits:
@@ -643,29 +613,24 @@ def gift_card_brand():
         print(f'No brand credits found for {brand}')
         credits = 0
 
-    random_key = generate_random_key(15)
     # Generate QR code for the gift card
+    random_key = generate_random_key(15)
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     data = f'Gift Card for {username}\nBrand: {brand}\nValue: 50 {currency}\nCode: {random_key}\nIssued on: {current_time}'
-    qr_code_path = generate_qr_code(data, f'static/qr_codes/{username}_{brand}_{current_time}_gift_card_qr.png')
+    qr_code_image_path = f'static/qr_codes/{username}_{brand}_{current_time}_gift_card_qr.png'
+    qr_code_path = UserGiftCards.generate_qr_code(data, qr_code_image_path)
 
     # Save the gift card as a PDF
-    pdf_path = f'static/pdfs/{username}_{brand}_{current_time}_gift_card.pdf'
-    _ = save_gift_card_pdf(username, brand, credits, currency, random_key, qr_code_path, pdf_path)
+    gift_card_pdf_path = UserGiftCards.save_gift_card_pdf(username, brand, credits, currency, random_key, qr_code_path)
 
-    # Save the gift card record in the database
-    gift_card = UserGiftCards(user_id=user.id, brand_name=brand, total_credits=credits, currency=currency, gift_card_code=random_key, qr_code_path=qr_code_path, pdf_path=pdf_path)
+    # Save the gift card record in the database (instantiate UserGiftCards)
+    gift_card = UserGiftCards(user_id=user.id, brand_name=brand, total_credits=credits, currency=currency, gift_card_code=random_key, qr_code_path=qr_code_path, pdf_path=gift_card_pdf_path)
     db.session.add(gift_card)
     db.session.commit()
     print(f'Gift card record saved in database for {username}, brand: {brand}, credits: {credits} {currency}')
 
     # Subtract the gift card value from the user's total credits
-    if user.current_credits >= credits:
-        user.current_credits -= credits
-        db.session.commit()
-        print(f'Subtracted {credits} {currency} from {username} total credits. New balance: {user.current_credits} {user.currency_credits}')
-    else:
-        print(f'Insufficient total credits for {username} to generate gift card for {brand}')
+    User.subtract_credits_for_gift_card(username, credits, brand)
 
     # Subtract the gift card value from the user's brand credits
     gift_card_value = credits

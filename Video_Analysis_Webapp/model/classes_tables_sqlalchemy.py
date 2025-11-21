@@ -1,4 +1,9 @@
+from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
+import qrcode
+from io import BytesIO
+from sqlalchemy.orm import validates
+from model.constants import INITIAL_BRANDS
 
 # Initialize SQLAlchemy without binding it to the app yet
 from config import db
@@ -39,9 +44,13 @@ class User(db.Model):
     total_valid_contributions = db.Column(db.Integer, default=0)
     nb_valid_contributions_this_month = db.Column(db.Integer, default=0)
     total_shares = db.Column(db.Integer, default=0)
+    equity_share = db.Column(db.Float, default=0.0)  # Equity share as percentage
 
     def __repr__(self):
         return f'<User {self.username}>'
+    
+    def print_equity_share(self):
+        return f'User {self.username} has an equity share of {self.equity_share:.2f}%'
     
     def to_json(self):
         return {
@@ -57,6 +66,41 @@ class User(db.Model):
             'country': self.country,
             'age_group': self.age_group
         }
+    
+    @classmethod
+    def get_user_id(cls, username):
+        user = cls.query.filter_by(username=username).first()
+        if user:
+            return user.id
+        return None
+    
+    @classmethod
+    def get_user_current_credits(cls, username):
+        user = cls.query.filter_by(username=username).first()
+        if user:
+            return user.current_credits
+        return None
+    
+    @classmethod
+    def get_user_currency(cls, username):
+        user = cls.query.filter_by(username=username).first()
+        if user:
+            return user.currency_credits or 'USD'
+        return 'USD'
+    
+    @classmethod
+    def subtract_credits_for_gift_card(cls, username, credits, brand):
+        user = cls.query.filter_by(username=username).first()
+        if user:
+            if user.current_credits < credits:
+                print(f'Insufficient total credits for {username} to generate gift card for {brand}')
+                return False
+            user.current_credits -= credits
+            db.session.commit()
+            print(f'Subtracted {credits} {user.currency_credits} from {username} total credits. New balance: {user.current_credits} {user.currency_credits}')
+            return True
+        return False
+    
 
 """ Store video analysis results including labels, text, topics, sentiment, and additional info """
 class VideoAnalysis(db.Model):
@@ -92,7 +136,37 @@ class HistoryCtbs(db.Model):
     user = db.relationship('User', backref=db.backref('history_ctbs', lazy=True))
 
     def __repr__(self):
-        return f'<History_ctbs {self.contribution_file} for User ID {self.user_id}>'    
+        return f'<History_ctbs {self.contribution_file} for User ID {self.user_id}>' 
+
+    def compute_total_credits(self):
+        # Example method to compute total credits from history
+        total_credits = sum(entry.credit for entry in self.user.history_ctbs)
+        return total_credits 
+
+    def get_user_valid_contributions(self):
+        # Example method to get valid contributions
+        valid_contributions = [entry for entry in self.user.history_ctbs if entry.credit > 0]
+        return valid_contributions
+
+    def compute_total_user_credits(self):
+        total_credits = sum(entry.credit for entry in self.user.history_ctbs)
+        return total_credits
+
+    def compute_total_valid_contributions(self):
+        total_valid = sum(1 for entry in self.user.history_ctbs if entry.credit > 0)
+        return total_valid
+
+    def compte_nb_valid_contributions_this_month(self):
+        from datetime import datetime
+        current_month_str = datetime.now().strftime('%Y-%m')
+        nb_valid = sum(1 for entry in self.user.history_ctbs if entry.credit > 0 and entry.contribution_date.strftime('%Y-%m') == current_month_str)
+        return nb_valid
+
+    def get_currency(self):
+        if self.user.history_ctbs:
+            return self.user.history_ctbs[0].currency
+        return 'USD' 
+    
 
 """ Credits by User by Brands for contributions related to specific brands """
 class UserBrandCredits(db.Model):
@@ -111,6 +185,14 @@ class UserBrandCredits(db.Model):
 
     def __repr__(self):
         return f'<UserBrandCredits User ID {self.user_id} Brand ID {self.brand_id} - {self.credit} {self.currency}>'
+    
+
+    def get_user_brand_credits(self, user_id, brand_name):
+        user = User.query.filter_by(id=user_id).first()
+        if not user:
+            return 0
+        user_brand_credits = db.session.query(db.func.sum(self.credit)).filter_by(user_id=user.id, brand_name=brand_name).scalar()
+        return user_brand_credits or 0
 
 """ User deals and multiple brands deals and promotions information """
 class UserDeals(db.Model):
@@ -134,6 +216,30 @@ class UserDeals(db.Model):
 
     def __repr__(self):
         return f'<User_deals {self.deal_name} for User ID {self.user_id}>'
+    
+    def is_currently_active(self):
+        from datetime import datetime
+        now = datetime.utcnow()
+        return self.is_active and self.start_date <= now <= self.end_date
+    
+    def duration_days(self):
+        return (self.end_date - self.start_date).days
+    
+    def discount_value(self):
+        if self.discount and '%' in self.discount:
+            try:
+                return float(self.discount.replace('% off', '').strip())
+            except ValueError:
+                return None
+        return None
+    
+    def final_price(self):
+        discount_val = self.discount_value()
+        if discount_val is not None and self.price is not None:
+            return self.price * (1 - discount_val / 100)
+        return self.price
+    
+
 
 
 """ User messages and notifications information to/from Shaire - not emails to brands """
@@ -154,6 +260,44 @@ class UserMessages(db.Model):
     def __repr__(self):
         return f'<User_messages to User ID {self.user_id} at {self.timestamp}>'
     
+    @classmethod
+    def get_user_inbox(cls, username, limit, recipient=None):
+        user = User.query.filter_by(username=username).first()
+        if not user:
+            return []
+        user_id = user.id
+        query = cls.query.filter_by(user_id=user_id)
+        if query is None:
+            return []
+        if recipient:
+            query = query.filter_by(recipient=recipient)
+        return query.order_by(cls.timestamp.desc()).limit(limit).all()
+    
+    @classmethod
+    def save_message(cls, username, content, recipient='SHAIRE', topic='Other', message_type=None):
+        user = User.query.filter_by(username=username).first()
+        if not user:
+            return None
+        new_message = cls(
+            user_id=user.id,
+            content=content,
+            topic=topic,
+            recipient=recipient,
+            message_type=message_type
+        )
+        db.session.add(new_message)
+        db.session.commit()
+        return new_message
+    
+    @classmethod
+    def mark_as_read(cls, message_id):
+        message = cls.query.get(message_id)
+        if message:
+            message.is_read = True
+            db.session.commit()
+            return True
+        return False
+    
 
 class Brands(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -165,6 +309,21 @@ class Brands(db.Model):
 
     def __repr__(self):
         return f'<Brands {self.brand_name}>'
+    
+    @classmethod
+    def create_initial_brands(cls):
+        initial_brands = INITIAL_BRANDS
+        for brand_data in initial_brands:
+            existing_brand = cls.query.filter_by(brand_name=brand_data['brand_name']).first()
+            if not existing_brand:
+                new_brand = cls(
+                    brand_name=brand_data['brand_name'],
+                    description=brand_data.get('description'),
+                    website=brand_data.get('website'),
+                    contact_email=brand_data.get('contact_email')
+                )
+                db.session.add(new_brand)
+        db.session.commit()
     
 
 class UserGiftCards(db.Model):
@@ -193,6 +352,114 @@ class UserGiftCards(db.Model):
 
     def __repr__(self):
         return f'<GiftCards for User ID {self.user_id} with {self.total_credits} {self.currency}>'
+    
+    @classmethod
+    def get_user_gift_cards(cls, username):
+        user = User.query.filter_by(username=username).first()
+        if not user:
+            return []
+        return cls.query.filter_by(user_id=user.id).all()
+    
+    @classmethod
+    def get_gift_card_by_code(cls, gift_card_code):
+        return cls.query.filter_by(gift_card_code=gift_card_code).first()
+    
+    @classmethod
+    def generate_unique_gift_card_code(cls):
+        import uuid
+        while True:
+            code = str(uuid.uuid4()).replace('-', '').upper()[:12]  # 12-character unique code
+            existing_code = cls.query.filter_by(gift_card_code=code).first()
+            if not existing_code:
+                return code
+            
+
+    @classmethod
+    def generate_qr_code(cls, data: str, qr_code_image_path: None):
+        """
+        Inputs:
+        - data: str, the data to encode in the QR code
+        - qr_code_path: str, the path to save the generated QR code image
+        Outputs:
+        - qr_code_path: str, the path to the generated QR code image
+        """
+        if qr_code_image_path is not None:
+            qr_code_path = qr_code_image_path
+        else:
+            current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+            qr_code_path = f'static/qr_codes/{data}_{current_time}_gift_card_qr_code.png'
+
+        # Create QR code instance
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4,
+        )
+        # Add data to the QR code
+        qr.add_data(data)
+        qr.make(fit=True)
+
+        # Generate the QR code image
+        img = qr.make_image(fill_color="black", back_color="white")
+
+        # Save the image
+        img.save(qr_code_path)
+        return qr_code_path
+    
+    @classmethod
+    def generate_qr_code_in_memory(cls, gift_card_code: str):
+        """ Generate a QR code image in memory for the given gift card code """
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4,
+        )
+        qr.add_data(gift_card_code)
+        qr.make(fit=True)
+        img = qr.make_image(fill_color="black", back_color="white")
+        byte_io = BytesIO()
+        img.save(byte_io, format='PNG')
+        byte_io.seek(0)
+        return byte_io  # Return BytesIO object containing the QR code image
+    
+    @classmethod
+    def save_gift_card_pdf(cls, username: str, brand: str, credits: int, currency: str, gift_card_code: str, qr_code_path: str, pdf_path: str = None):
+        """
+        Inputs:
+        - username: str, the username of the user
+        - brand: str, the brand of the gift card
+        - credits: int, the value of the gift card
+        - currency: str, the currency of the gift card
+        - gift_card_code: str, the unique code of the gift card
+        - qr_code_path: str, the path to the QR code image
+        - pdf_path: str, the path to save the generated PDF file
+        Outputs:
+        - pdf_path: str, the path to the generated PDF file
+        """
+        from fpdf import FPDF
+
+        if pdf_path is None:
+            current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+            pdf_path = f'static/pdfs/{username}_{brand}_{current_time}_gift_card.pdf'
+
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", size=12)
+
+        pdf.cell(200, 10, txt="Gift Card", ln=True, align='C')
+        pdf.cell(200, 10, txt=f"Username: {username}", ln=True)
+        pdf.cell(200, 10, txt=f"Brand: {brand}", ln=True)
+        pdf.cell(200, 10, txt=f"Credits: {credits} {currency}", ln=True)
+        pdf.cell(200, 10, txt=f"Gift Card Code: {gift_card_code}", ln=True)
+
+        # Add QR code image
+        pdf.image(qr_code_path, x=80, y=60, w=50, h=50)
+
+        pdf.output(pdf_path)
+        return pdf_path
+    
 
 class UserApiUsageLogs(db.Model):
     id = db.Column(db.Integer, primary_key=True)
