@@ -178,13 +178,39 @@
             <tbody>
                 {% for brand, credits in brand_credits_dict.items() %}
                 <tr onclick="window.location.href='/gift_card_brand?username={{ username }}&brand={{ brand }}'" style="cursor: pointer;">
-                <td><button onclick="window.location.href='/gift_card_brand?username={{ username }}&brand={{ brand }}'" style="cursor: pointer; padding: 8px 12px; background-color: #589de3; color: white; border: none; border-radius: 3px; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#4a7bb8'" onmouseout="this.style.backgroundColor='#589de3'">{{ brand }}</button></td>
+                <td><button onclick="confirmUseCredits('{{ brand }}', '{{ username }}')" style="cursor: pointer; padding: 8px 12px; background-color: #589de3; color: white; border: none; border-radius: 3px; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#4a7bb8'" onmouseout="this.style.backgroundColor='#589de3'">{{ brand }}</button></td>
                 <td>{{ credits }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
             </table>
         </div>
+
+        <script>
+        function confirmUseCredits(brand, username) {
+            if (confirm(`Are you sure you want to create a gift card for ${brand}?`)) {
+                // Create a form and submit it
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/use_credits';
+                
+                const brandInput = document.createElement('input');
+                brandInput.type = 'hidden';
+                brandInput.name = 'brand';
+                brandInput.value = brand;
+                
+                const usernameInput = document.createElement('input');
+                usernameInput.type = 'hidden';
+                usernameInput.name = 'username';
+                usernameInput.value = username;
+                
+                form.appendChild(brandInput);
+                form.appendChild(usernameInput);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+        </script>
 
         <form action="{{ url_for('back_to_selection_contribution') }}" method="get" class="back-button-container">
             <input type="hidden" name="username" value="{{ username }}">
