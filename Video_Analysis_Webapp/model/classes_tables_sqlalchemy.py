@@ -101,6 +101,35 @@ class User(db.Model):
             return True
         return False
     
+    @classmethod
+    def add_credits(cls, username, credits):
+        user = cls.query.filter_by(username=username).first()
+        if user:
+            user.current_credits += credits
+            db.session.commit()
+            print(f'Added {credits} {user.currency_credits} to {username} total credits. New balance: {user.current_credits} {user.currency_credits}')
+            return True
+        return False
+    
+    # Compute equity share based on total shares and overall company shares
+    # as the ratio of user's total_credits to overall total users' total_credits
+    # multiplied by 10% 
+    # e.g., if user has 1000 credits and total credits of all users is 1,000,000
+    # then equity share = (1000 / 1000000) * 10% = 0.01%
+    # ATTENTION: Anytime a user's current_credits change, this method should be called to update equity_share !
+    @classmethod
+    def compute_equity_share(cls, username):
+        user = cls.query.filter_by(username=username).first()
+        if not user:
+            return 0.0
+        total_credits_all_users = db.session.query(db.func.sum(cls.current_credits)).scalar() or 0
+        print(f'Total credits of all users: {total_credits_all_users} and user {username} has {user.current_credits} credits.')
+        if total_credits_all_users == 0:
+            return 0.0
+        user.equity_share = (user.current_credits / total_credits_all_users) * 10.0  # 10% of total equity
+        db.session.commit()
+        return user.equity_share
+    
 
 """ Store video analysis results including labels, text, topics, sentiment, and additional info """
 class VideoAnalysis(db.Model):
@@ -516,3 +545,37 @@ class ContributionCredits(db.Model):
 
     def __repr__(self):
         return f'<ContributionCredits {self.contribution_type} - {self.credits_earned} {self.currency}>'
+    
+""" 
+Appointments scheduled between SHAIRE and companies
+Need to manage appointment details, status, timestamps, and messages
+The table will be connected to SHAIRE Dashboard for managing appointments and other actions
+"""
+class AppointmentsWithCompanies(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    appointment_date = db.Column(db.DateTime, nullable=False)
+    company_name = db.Column(db.String(200), nullable=True)
+    company_email = db.Column(db.String(120), nullable=True)
+    company_contact = db.Column(db.String(200), nullable=True)
+    message = db.Column(db.Text, nullable=True)
+    purpose = db.Column(db.String(200), nullable=True)
+    status = db.Column(db.String(50), nullable=False, default='scheduled') # e.g., scheduled, completed, canceled
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+
+    def __repr__(self):
+        return f'<Appointments for User ID {self.user_id} on {self.appointment_date}>'
+    
+    @classmethod
+    def get_shaire_appointments_per_period(cls, start_date, end_date):
+        return cls.query.filter(cls.appointment_date >= start_date, cls.appointment_date <= end_date).all()
+    
+
+class SystemSettings(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    setting_name = db.Column(db.String(100), unique=True, nullable=False)
+    setting_value = db.Column(db.Text, nullable=False)
+    description = db.Column(db.Text, nullable=True)
+
+    def __repr__(self):
+        return f'<SystemSettings {self.setting_name}>'
