@@ -44,6 +44,7 @@ def generate_random_key(length=15):
     return generated_password
 
 """ save the video analysis in the database - SQLAlchemy version """
+# Check if feasible to move this function to the User model as a static method
 def save_video_analysis_to_db_sqlalchemy(username, video_filename, credit=0, currency='USD', brand_names=[]):
     if video_filename:
         # Save the video analysis result in the database using SQLAlchemy
@@ -662,6 +663,14 @@ def light_contributions_tuto():
     username = request.args.get('username')
     return render_template('annexes/light_contributions_tuto.html', username=username)
 
+@app.route('/company_contact', methods=['GET'])
+def company_contact():
+    return render_template('annexes/company_contact.html')
+
+@app.route('/company_meeting_schedule', methods=['GET'])
+def company_meeting_schedule():
+    return render_template('annexes/company_meeting_schedule.html')
+
 
 """ VIDEO VERBATIM ANALYSIS ROUTE """
 """ Keep the video analysis route, but do not display the AI analysis results. Display the result of the validation only. """
@@ -703,6 +712,9 @@ def result():
         payment = analysis_results.get('compliance_dict', {}).get('payment', VALIDATION_PAYMENT_DEFAULT)
         currency = analysis_results.get('compliance_dict', {}).get('currency', VALIDATION_CURRENCY_DEFAULT)
         save_video_analysis_to_db_sqlalchemy(username, video_file.filename, payment, currency, brand_names)
+
+        # Calculate equity share based on payment
+        equity_share = User.compute_equity_share(username)
         
         # Render results page
         """
@@ -722,7 +734,7 @@ def result():
                             compliance_metrics=compliance_metrics,
                             compliance_result=compliance_result,
                             payment=payment,
-                            currency=currency,
+                            equity_share=equity_share,
                             compliance_dict=analysis_results.get('compliance_dict', {}))
     
     except Exception as e:
