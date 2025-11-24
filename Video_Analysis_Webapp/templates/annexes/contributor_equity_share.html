@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contributor Equity Share</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .contributor-info {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        .equity-details {
+            margin-top: 30px;
+        }
+        .equity-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            margin: 10px 0;
+            background-color: #e9ecef;
+            border-radius: 5px;
+        }
+        .equity-item label {
+            font-weight: bold;
+            color: #495057;
+        }
+        .equity-item .value {
+            font-size: 1.2em;
+            color: #007bff;
+        }
+        .total-share {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 1.5em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Contributor Equity Share</h1>
+        
+        <div class="contributor-info">
+            <h2>Contributor: <span id="username">{{ username }}</span></h2>
+        </div>
+
+        <div class="equity-details">
+            <h3>Equity Distribution</h3>
+            
+            <div class="equity-item">
+                <label>Total Contributions:</label>
+                <span class="value">{{ total_contributions }}</span>
+            </div>
+            
+            <div class="equity-item">
+                <label>Contribution Weight:</label>
+                <span class="value">{{ contribution_weight }}%</span>
+            </div>
+
+            <div class="total-share">
+                <strong>Total Equity Share: {{ equity_share }}%</strong>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
