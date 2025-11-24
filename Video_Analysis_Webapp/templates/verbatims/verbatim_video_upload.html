@@ -267,6 +267,7 @@
                     fileDateSpan.textContent = new Date(file.lastModified).toLocaleDateString(); // Format date
                     selectedFileDiv.style.display = 'block';
                     document.getElementById('uploadButtonContainer').style.display = 'block';
+                    closeFileModal();
                 } else {
                     selectedFileDiv.style.display = 'none';
                     document.getElementById('uploadButtonContainer').style.display = 'none';
