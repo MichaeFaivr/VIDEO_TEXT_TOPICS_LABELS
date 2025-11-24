@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Analysis Platform - Home</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 50px 20px;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            margin-bottom: 20px;
+        }
+        
+        .hero p {
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            margin-bottom: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .user-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin: 20px 0;
+        }
+        
+        .user-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .user-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .user-card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        
+        .user-card ul {
+            list-style: none;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .user-card li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .user-card li:before {
+            content: "✓ ";
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: #764ba2;
+        }
+        
+        .features {
+            background: #f4f4f4;
+            padding: 60px 20px;
+        }
+        
+        .features h2 {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <h1>SHAIRE</h1>
+        <h1>Income Generator Platform</h1>
+        <p>Strengthen Your Finances With Your Inputs</p>
+    </div>
+
+    <div class="container">
+        <div class="user-types">
+            <div class="user-card" style="background-color: #8cb6000d;">
+                <h2>For Individual Users</h2>
+                <p style="font-size: 1.2rem; font-weight: bold; font-style: italic;">From Inputs to Incomes</p>
+                <ul style="padding-left: 60px;">
+                    <li>Upload and analyze videos</li>
+                    <li>Verbatims / Creative / Proposal</li>
+                    <li>Partner with Brands</li>
+                    <li>Broad Range of Opportunities</li>
+                    <li>Many Services & Assistance</li>
+                    <li>Training Program to Boost Incomes</li>
+                </ul>
+                <a href="/user_login" class="btn">Get Started</a>
+            </div>
+
+            <div class="user-card" style="background-color: #5c57610d;">
+                <h2>For Brands</h2>
+                <p style="font-size: 1.2rem; font-weight: bold; font-style: italic;">Strengthen The Consumer Engagement</p>
+                <ul style="padding-left: 60px;">
+                    <li>A</A></li>
+                    <li>B</li>
+                    <li>C</li>
+                    <li>D</li>
+                    <li>E</li>
+                    <li>F</li>
+                    <li>G</li>
+                    <li>H</li>
+                    <li>I</li>
+                </ul>
+                <a href="/company_contact" class="btn">Learn More</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="features">
+        <div class="container">
+            <h2>Powered by Advanced AI</h2>
+            <p style="text-align: center; max-width: 800px; margin: 0 auto;">
+                Our platform uses cutting-edge machine learning algorithms to extract meaningful 
+                insights from your video content, helping you make data-driven decisions.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

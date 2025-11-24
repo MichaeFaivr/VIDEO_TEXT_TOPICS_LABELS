@@ -47,7 +47,7 @@ def generate_random_key(length=15):
 # Check if feasible to move this function to the User model as a static method
 def save_video_analysis_to_db_sqlalchemy(username, video_filename, credit=0, currency='USD', brand_names=[]):
     if video_filename:
-        # Save the video analysis result in the database using SQLAlchemy
+        # Save the video analysis result in the database using SQLAlchemy: HistoryCtbs and update User credits
         if username:
             user = User.query.filter_by(username=username).first()
             if user:
@@ -96,9 +96,16 @@ def save_video_analysis_to_db_sqlalchemy(username, video_filename, credit=0, cur
                 print(f'User {username} not found in the database.')
 
 """ Route for the login page """
-@app.route('/', methods=['GET'])
+@app.route('/user_login', methods=['GET'])
 def login_page():
     return render_template('login_page.html') # check if the user exists in the database
+
+
+""" main url: Home page """
+@app.route('/', methods=['GET'])
+def home_page():
+    return render_template('home_page.html')
+
 
 """ Route for handling the upload video page post successful Login
 Prompt to Claude Sonnet 4: Write the route for upload_data. Strong condition: I need the username value from the login page.
