@@ -87,6 +87,13 @@
                 <button type="submit" style="background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
                     Save Email
                 </button>
+                <div id="current-info" style="margin-top: 20px; padding: 15px; background-color: #e9f5ff; border-left: 4px solid #007bff; border-radius: 4px;">
+                    {% if company_name or contact_email %}
+                    <h4 style="margin-top: 0; color: #333;">Current Information:</h4>
+                    <p style="margin: 5px 0;"><strong>Company Name:</strong> {{ company_name if company_name else 'Not set' }}</p>
+                    <p style="margin: 5px 0;"><strong>Contact Email:</strong> {{ contact_email if contact_email else 'Not set' }}</p>
+                    {% endif %}
+                </div>
             </form>
         </div>
 
@@ -127,6 +134,12 @@
             {% else %}
             <p>No messages found.</p>
             {% endif %}
+        </div>
+
+        <div style="margin-top: 30px; text-align: center;"></div>
+            <a href="{{ url_for('company_contact') }}" style="display: inline-block; background-color: #6c757d; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;">
+                ← Back to Contact
+            </a>
         </div>
 
         <style>

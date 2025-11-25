@@ -238,7 +238,8 @@ def register_user():
     country = get_country_from_ipaddress(request.remote_addr)
     print(f'Country from IP address: {country}')
 
-    new_user = User(username=username, email=email, password=password, long_account_recovery_token=long_account_recovery_token, interests=', '.join(interests), age_group=age_group, country=country)
+    # Create and save the new user to the database: use the class method register from User model
+    new_user = User.register(username=username, email=email, password=password, long_account_recovery_token=long_account_recovery_token, interests=', '.join(interests), age_group=age_group, country=country)
     db.session.add(new_user)
     db.session.commit()
 
@@ -674,6 +675,64 @@ def light_contributions_tuto():
 @app.route('/company_contact', methods=['GET'])
 def company_contact():
     return render_template('annexes/company_contact.html')
+
+@app.route('/company_signup', methods=['GET'])
+def company_signup():
+    return render_template('annexes/company_signup.html')
+
+@app.route('/company_signup_register_infos', methods=['POST'])
+def company_signup_register_infos():
+    company_name = request.form.get('company_name')
+    contact_email = request.form.get('contact_email')
+    country = request.form.get('country')
+    password = request.form.get('password')
+    confirm_password = request.form.get('confirm_password')
+
+    # Add logic to handle the registration information, such as validation and saving to the database
+    if password != confirm_password:
+        error_message = "Passwords do not match. Please try again."
+        return render_template('annexes/company_signup.html', error_message=error_message)
+    
+    # Check if company already exists
+    existing_company = Company.query.filter_by(company_name=company_name).first()
+    if existing_company:
+        error_message = "Company name already exists. Please choose a different company name."
+        return render_template('annexes/company_signup.html', error_message=error_message)
+
+    # Assuming you have a Company model to save the data
+    Company.register(company_name, contact_email, country, password)
+
+    # Display a success message in the current page : TODO -> redirect to a success page
+    success_message = "Company registered successfully!"
+    success = True
+    return render_template('annexes/company_signup_successful.html', company_name=company_name, success_message=success_message, success=success)
+
+@app.route('/company_login', methods=['GET'])
+def company_login():
+    return render_template('annexes/company_login.html')
+
+@app.route('/company_login_checking', methods=['POST'])
+def company_login_checking():
+    company_name = request.form['company_name']
+    password = request.form['password']
+
+    company = Company.query.filter_by(company_name=company_name, password_hash=password).first()
+
+    if company:
+        # Login successful, redirect to company signed-in page
+        return redirect(url_for('company_signedin_page', company_name=company_name))
+    else:
+        error_message = "Invalid credentials. Please try again."
+        return render_template('annexes/company_login.html', error=error_message)
+
+@app.route('/company_signedin_page', methods=['GET'])
+def company_signedin_page():
+    company_name = request.args.get('company_name')
+    return render_template('annexes/company_signedin_page.html', company_name=company_name)
+
+@app.route('/company_terms_conditions', methods=['GET'])
+def company_terms_conditions():
+    return render_template('annexes/company_terms_conditions.html')
 
 @app.route('/company_meeting_schedule', methods=['GET'])
 def company_meeting_schedule():
