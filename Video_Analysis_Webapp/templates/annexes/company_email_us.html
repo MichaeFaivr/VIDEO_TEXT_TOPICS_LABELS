@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .contact-container {
+            background-color: #f9f9f9;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .contact-item i {
+            width: 20px;
+            color: #007bff;
+        }
+        .contact-item strong {
+            min-width: 80px;
+        }
+    </style>
+</head>
+<body>
+    <div class="contact-container">
+    <!--
+        <script>
+            const username = document.getElementById('username').value;
+        </script>
+    -->
+        <h1>Contact Us</h1>
+        <div class="contact-info">
+            <div class="contact-item">
+                <i>📍</i>
+                <strong>Address:</strong>
+                <span>25 Highfly Lane, 45678 Honolulu</span>
+            </div>
+            <div class="contact-item">
+                <i>📞</i>
+                <strong>Phone:</strong>
+                <span>+11 508 547 565</span>
+            </div>
+            <div class="contact-item">
+                <i>✉️</i>
+                <strong>Email:</strong>
+                <span>shairehono0122@emailtest</span>
+            </div>
+        </div>
+
+        <div style="margin-top: 30px; padding: 20px; background-color: #fff; border-radius: 5px; border: 1px solid #ddd;">
+            <h3 style="color: #333; margin-top: 0;">Update Contact Email</h3>
+            <form action="{{ url_for('update_company_contact_email') }}" method="POST">
+                <input type="hidden" name="username" value="{{ username }}">
+                <div style="margin-bottom: 15px;">
+                    <label for="company_name" style="display: block; margin-bottom: 5px; font-weight: bold;">Company Name:</label>
+                    <input type="text" id="company_name" name="company_name" 
+                           style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;"
+                           placeholder="Enter your company name">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label for="contact_email" style="display: block; margin-bottom: 5px; font-weight: bold;">Your Contact Email:</label>
+                    <input type="email" id="contact_email" name="contact_email" 
+                           style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;"
+                           placeholder="Enter your email address" required>
+                </div>
+                <button type="submit" style="background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+                    Save Email
+                </button>
+            </form>
+        </div>
+
+        <h1>Write a message for us</h1>
+            <form action="{{ url_for('company_messages_to_shaire') }}" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="username" value="{{ username }}">
+                <div>
+                    <label for="content">Message:</label>
+                    <textarea id="content" name="content" maxlength="500" rows="5" cols="50" required>Hi, I'm {{ username }},</textarea>
+                    <small style="color: #666; font-size: 0.9em;">Maximum 500 characters</small>
+                </div>
+                <button type="submit">Send</button>
+            </form>
+
+        <h2>Your Recent Messages</h2>
+        <div class="messages-section">
+            {% if messages %}
+            <div style="max-height: 300px; overflow-y: auto;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                <tr>
+                    <th style="border: 1px solid #ddd; padding: 10px; background-color: #f5f5f5; text-align: left; width: 20%;">Date</th>
+                    <th style="border: 1px solid #ddd; padding: 10px; background-color: #f5f5f5; text-align: left;">Message</th>
+                    <th style="border: 1px solid #ddd; padding: 10px; background-color: #f5f5f5; text-align: left;">Response</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for message in messages %}
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 10px; vertical-align: top;">{{ message.timestamp }}</td>
+                    <td style="border: 1px solid #ddd; padding: 10px;">{{ message.content }}</td>
+                    <td style="border: 1px solid #ddd; padding: 10px;">{{ message.answer if message.answer else 'No response yet.' }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            </div>
+            {% else %}
+            <p>No messages found.</p>
+            {% endif %}
+        </div>
+
+        <style>
+            .messages-section {
+                margin-top: 30px;
+                padding-top: 20px;
+                border-top: 1px solid #ddd;
+            }
+            .message-item {
+                background-color: #fff;
+                padding: 15px;
+                margin-bottom: 10px;
+                border-radius: 5px;
+                border-left: 4px solid #007bff;
+            }
+            .message-date {
+                font-size: 0.9em;
+                color: #666;
+                margin-bottom: 5px;
+            }
+            .message-content {
+                color: #333;
+            }
+            h2 {
+                color: #333;
+                margin-bottom: 20px;
+            }
+        </style>
+        
+    </div>
+</body>
+</html>

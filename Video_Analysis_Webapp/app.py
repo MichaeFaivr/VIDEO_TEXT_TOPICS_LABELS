@@ -1,3 +1,4 @@
+import email
 from locale import currency
 import pickle
 import os
@@ -16,7 +17,7 @@ import random
 import string
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from model.classes_tables_sqlalchemy import User, HistoryCtbs, UserBrandCredits, UserMessages, UserDeals, Brands, UserGiftCards, TOPIC_CHOICES  # Import the db instance and User model
+from model.classes_tables_sqlalchemy import Company, CompanyMessages, User, HistoryCtbs, UserBrandCredits, UserMessages, UserDeals, Brands, UserGiftCards, TOPIC_CHOICES  # Import the db instance and User model
 from model.classes_ai_agents import SpecificAIAgentResponse, create_research_ai_agent_openai, create_research_ai_agent_anthropic, create_csv_ai_agent
 
 
@@ -677,6 +678,30 @@ def company_contact():
 @app.route('/company_meeting_schedule', methods=['GET'])
 def company_meeting_schedule():
     return render_template('annexes/company_meeting_schedule.html')
+
+@app.route('/company_email_us', methods=['GET'])
+def company_email_us():
+    return render_template('annexes/company_email_us.html')
+
+@app.route('/update_company_contact_email', methods=['POST'])
+def update_company_contact_email():
+    company_name = request.form.get('company_name')
+    contact_email = request.form.get('contact_email')
+    print(f'New company contact email submitted for {company_name}: {contact_email}')
+    # Update the AppointmentsWithCompanies table with the new contact email
+    Company.update_company_contact_email(company_name, contact_email)
+
+    # Here you would add the logic to update the company contact email
+    return render_template('annexes/company_email_us.html', success_message="Contact email updated successfully.")
+
+@app.route('/company_messages_to_shaire', methods=['POST'])
+def company_messages_to_shaire():
+    company_name = request.form.get('company_name')
+    content = request.form.get('content')
+    print(f'New message submitted from {company_name}: {content}')
+    # Save the message to the database or perform other actions
+    CompanyMessages.save_company_message(company_name, content)
+    return render_template('annexes/company_email_us.html', success_message="Message sent successfully.")
 
 
 """ VIDEO VERBATIM ANALYSIS ROUTE """
