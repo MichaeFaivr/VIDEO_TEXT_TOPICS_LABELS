@@ -545,16 +545,94 @@ class ContributionCredits(db.Model):
 
     def __repr__(self):
         return f'<ContributionCredits {self.contribution_type} - {self.credits_earned} {self.currency}>'
+
+
+
+class Company(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    company_name = db.Column(db.String(200), unique=True, nullable=False)
+    contact_email = db.Column(db.String(120), nullable=True)
+    contact_phone = db.Column(db.String(50), nullable=True)
+    website = db.Column(db.String(200), nullable=True)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+
+    def __repr__(self):
+        return f'<Company {self.company_name}>'
     
+    @classmethod
+    def update_company_contact_email(cls, company_name, new_email):
+        company = cls.query.filter_by(company_name=company_name).first()
+        if company:
+            company.contact_email = new_email
+            db.session.commit()
+            return True
+        return False
+    
+
+class CompanyMessages(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    company_name = db.Column(db.String(200), db.ForeignKey('company.company_name'), nullable=False)
+    subject = db.Column(db.String(200), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    sender = db.Column(db.String(100), nullable=False, default='SHAIRE')  # e.g., SHAIRE or company name
+    recipient = db.Column(db.String(100), nullable=False)  # e.g., company email or SHAIRE
+    message_type = db.Column(db.String(50), nullable=True)  # e.g., 'notification', 'inquiry', 'follow-up'
+    is_read = db.Column(db.Boolean, default=False)
+    timestamp = db.Column(db.DateTime, server_default=db.func.now())
+    reply_to_message_id = db.Column(db.Integer, db.ForeignKey('company_messages.id'), nullable=True)
+
+    company = db.relationship('Company', backref=db.backref('messages', lazy=True))
+
+    def __repr__(self):
+        return f'<CompanyMessages to/from Company ID {self.company_id} at {self.timestamp}>'
+    
+    @classmethod
+    def get_company_messages(cls, company_name, limit=50):
+        company = Company.query.filter_by(company_name=company_name).first()
+        if not company:
+            return []
+        return cls.query.filter_by(company_id=company.id).order_by(cls.timestamp.desc()).limit(limit).all()
+    
+    @classmethod
+    def mark_as_read(cls, message_id):
+        message = cls.query.get(message_id)
+        if message:
+            message.is_read = True
+            db.session.commit()
+            return True
+        return False
+    
+    @classmethod
+    def save_company_message(cls, company_name, content, subject=None, sender='SHAIRE', recipient=None, message_type=None, reply_to_message_id=None):
+        if not company_name or not content:
+            return None
+        company = Company.query.filter_by(company_name=company_name).first()
+        if not company:
+            return None
+        new_message = cls(
+            company_name=company_name,
+            subject=subject,
+            content=content,
+            sender=sender,
+            recipient=recipient,
+            message_type=message_type,
+            reply_to_message_id=reply_to_message_id
+        )
+        db.session.add(new_message)
+        db.session.commit()
+        return new_message
+    
+
 """ 
 Appointments scheduled between SHAIRE and companies
 Need to manage appointment details, status, timestamps, and messages
 The table will be connected to SHAIRE Dashboard for managing appointments and other actions
+What is the foreign key company_name and company_id
 """
 class AppointmentsWithCompanies(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     appointment_date = db.Column(db.DateTime, nullable=False)
+    company_id = db.Column(db.Integer, db.ForeignKey('company.id'), nullable=True)
     company_name = db.Column(db.String(200), nullable=True)
     company_email = db.Column(db.String(120), nullable=True)
     company_contact = db.Column(db.String(200), nullable=True)
