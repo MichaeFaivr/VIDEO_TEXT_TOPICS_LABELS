@@ -683,7 +683,7 @@ def company_signup():
 @app.route('/company_signup_register_infos', methods=['POST'])
 def company_signup_register_infos():
     company_name = request.form.get('company_name')
-    contact_email = request.form.get('contact_email')
+    company_email = request.form.get('company_email')
     country = request.form.get('country')
     password = request.form.get('password')
     confirm_password = request.form.get('confirm_password')
@@ -700,7 +700,8 @@ def company_signup_register_infos():
         return render_template('annexes/company_signup.html', error_message=error_message)
 
     # Assuming you have a Company model to save the data
-    Company.register(company_name, contact_email, country, password)
+    print(f'company_signup_register_infos company_email: {company_email}')
+    Company.register(company_name, company_email, country, password)
 
     # Display a success message in the current page : TODO -> redirect to a success page
     success_message = "Company registered successfully!"
@@ -728,7 +729,8 @@ def company_login_checking():
 @app.route('/company_signedin_page', methods=['GET'])
 def company_signedin_page():
     company_name = request.args.get('company_name')
-    return render_template('annexes/company_signedin_page.html', company_name=company_name)
+    company_email = request.args.get('company_email')
+    return render_template('annexes/company_signedin_page.html', company_name=company_name, company_email=company_email)
 
 @app.route('/company_terms_conditions', methods=['GET'])
 def company_terms_conditions():
@@ -745,11 +747,10 @@ def company_email_us():
 @app.route('/update_company_contact_email', methods=['POST'])
 def update_company_contact_email():
     company_name = request.form.get('company_name')
-    contact_email = request.form.get('contact_email')
-    print(f'New company contact email submitted for {company_name}: {contact_email}')
+    company_email = request.form.get('company_email')
+    print(f'New company contact email submitted for {company_name}: {company_email}')
     # Update the AppointmentsWithCompanies table with the new contact email
-    Company.update_company_contact_email(company_name, contact_email)
-
+    Company.update_company_contact_email(company_name, company_email)
     # Here you would add the logic to update the company contact email
     return render_template('annexes/company_contact.html', success_message="Contact email updated successfully.")
 

@@ -76,11 +76,11 @@
                     <label for="company_name" style="display: block; margin-bottom: 5px; font-weight: bold;">Company Name:</label>
                     <input type="text" id="company_name" name="company_name" 
                            style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;"
-                           placeholder="Enter your company name">
+                           placeholder="Enter your company name" required>
                 </div>
                 <div style="margin-bottom: 15px;">
-                    <label for="contact_email" style="display: block; margin-bottom: 5px; font-weight: bold;">Your Contact Email:</label>
-                    <input type="email" id="contact_email" name="contact_email" 
+                    <label for="company_email" style="display: block; margin-bottom: 5px; font-weight: bold;">Your Contact Email:</label>
+                    <input type="email" id="company_email" name="company_email" 
                            style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;"
                            placeholder="Enter your email address" required>
                 </div>
@@ -88,29 +88,36 @@
                     <label for="message" style="display: block; margin-bottom: 5px; font-weight: bold;">Message:</label>
                     <textarea id="message" name="message" rows="4"
                            style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; resize: vertical;"
-                           placeholder="Enter your message (optional)"></textarea>
+                           placeholder="Enter your message" required></textarea>
                 </div>
-                <button a href="{{ url_for('company_contact') }}" type="submit" id="submitBtn" style="background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; opacity: 0.5;" disabled;">
+                <button a href="{{ url_for('company_contact') }}" type="submit" id="submitBtn" style="background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; opacity: 0.5;" disabled="">
                     Submit
                 </button>
                 <script>
                     const companyName = document.getElementById('company_name');
-                    const contactEmail = document.getElementById('contact_email');
+                    const companyEmail = document.getElementById('company_email');
                     const message = document.getElementById('message');
                     const submitBtn = document.getElementById('submitBtn');
 
                     function checkForm() {
-                        if (companyName.value.trim() && contactEmail.value.trim() && message.value.trim()) {
+                        const nameValid = companyName.value.trim().length > 0;
+                        const emailValid = companyEmail.value.trim().length > 0 && 
+                                          companyEmail.checkValidity();
+                        const messageValid = message.value.trim().length > 0;
+
+                        if (nameValid && emailValid && messageValid) {
                             submitBtn.disabled = false;
                             submitBtn.style.opacity = '1';
+                            submitBtn.style.cursor = 'pointer';
                         } else {
                             submitBtn.disabled = true;
                             submitBtn.style.opacity = '0.5';
+                            submitBtn.style.cursor = 'not-allowed';
                         }
                     }
 
                     companyName.addEventListener('input', checkForm);
-                    contactEmail.addEventListener('input', checkForm);
+                    companyEmail.addEventListener('input', checkForm);
                     message.addEventListener('input', checkForm);
                 </script>
             </form>
