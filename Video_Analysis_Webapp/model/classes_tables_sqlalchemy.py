@@ -566,8 +566,8 @@ class ContributionCredits(db.Model):
 class Company(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     company_name = db.Column(db.String(200), unique=True, nullable=False)
-    contact_email = db.Column(db.String(120), nullable=True)
-    contact_phone = db.Column(db.String(50), nullable=True)
+    company_email = db.Column(db.String(120), nullable=True)
+    company_phone = db.Column(db.String(50), nullable=True)
     country = db.Column(db.String(100), nullable=True)
     website = db.Column(db.String(200), nullable=True)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
@@ -577,9 +577,9 @@ class Company(db.Model):
         return f'<Company {self.company_name}>'
     
     @classmethod
-    def register(cls, company_name, contact_email, country, password):
+    def register(cls, company_name, company_email, country, password):
         # Add logic to register a new company, e.g., hashing the password, saving to the database
-        new_company = cls(company_name=company_name, contact_email=contact_email, country=country, password_hash=password)
+        new_company = cls(company_name=company_name, company_email=company_email, country=country, password_hash=password)
         db.session.add(new_company)
         db.session.commit()
         return new_company
@@ -588,7 +588,7 @@ class Company(db.Model):
     def update_company_contact_email(cls, company_name, new_email):
         company = cls.query.filter_by(company_name=company_name).first()
         if company:
-            company.contact_email = new_email
+            company.company_email = new_email
             db.session.commit()
             return True
         return False
