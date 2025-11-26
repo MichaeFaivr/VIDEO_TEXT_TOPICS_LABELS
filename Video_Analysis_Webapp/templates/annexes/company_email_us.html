@@ -84,60 +84,40 @@
                            style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;"
                            placeholder="Enter your email address" required>
                 </div>
-                <button type="submit" style="background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
-                    Save Email
+                <div style="margin-bottom: 15px;">
+                    <label for="message" style="display: block; margin-bottom: 5px; font-weight: bold;">Message:</label>
+                    <textarea id="message" name="message" rows="4"
+                           style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; resize: vertical;"
+                           placeholder="Enter your message (optional)"></textarea>
+                </div>
+                <button a href="{{ url_for('company_contact') }}" type="submit" id="submitBtn" style="background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; opacity: 0.5;" disabled;">
+                    Submit
                 </button>
-                <div id="current-info" style="margin-top: 20px; padding: 15px; background-color: #e9f5ff; border-left: 4px solid #007bff; border-radius: 4px;">
-                    {% if company_name or contact_email %}
-                    <h4 style="margin-top: 0; color: #333;">Current Information:</h4>
-                    <p style="margin: 5px 0;"><strong>Company Name:</strong> {{ company_name if company_name else 'Not set' }}</p>
-                    <p style="margin: 5px 0;"><strong>Contact Email:</strong> {{ contact_email if contact_email else 'Not set' }}</p>
-                    {% endif %}
-                </div>
-            </form>
-        </div>
+                <script>
+                    const companyName = document.getElementById('company_name');
+                    const contactEmail = document.getElementById('contact_email');
+                    const message = document.getElementById('message');
+                    const submitBtn = document.getElementById('submitBtn');
 
-        <h1>Write a message for us</h1>
-            <form action="{{ url_for('company_messages_to_shaire') }}" method="POST" enctype="multipart/form-data">
-                <input type="hidden" name="username" value="{{ username }}">
-                <div>
-                    <label for="content">Message:</label>
-                    <textarea id="content" name="content" maxlength="500" rows="5" cols="50" required>Hi, I'm {{ username }},</textarea>
-                    <small style="color: #666; font-size: 0.9em;">Maximum 500 characters</small>
-                </div>
-                <button type="submit">Send</button>
-            </form>
+                    function checkForm() {
+                        if (companyName.value.trim() && contactEmail.value.trim() && message.value.trim()) {
+                            submitBtn.disabled = false;
+                            submitBtn.style.opacity = '1';
+                        } else {
+                            submitBtn.disabled = true;
+                            submitBtn.style.opacity = '0.5';
+                        }
+                    }
 
-        <h2>Your Recent Messages</h2>
-        <div class="messages-section">
-            {% if messages %}
-            <div style="max-height: 300px; overflow-y: auto;">
-            <table style="width: 100%; border-collapse: collapse;">
-                <thead>
-                <tr>
-                    <th style="border: 1px solid #ddd; padding: 10px; background-color: #f5f5f5; text-align: left; width: 20%;">Date</th>
-                    <th style="border: 1px solid #ddd; padding: 10px; background-color: #f5f5f5; text-align: left;">Message</th>
-                    <th style="border: 1px solid #ddd; padding: 10px; background-color: #f5f5f5; text-align: left;">Response</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for message in messages %}
-                <tr>
-                    <td style="border: 1px solid #ddd; padding: 10px; vertical-align: top;">{{ message.timestamp }}</td>
-                    <td style="border: 1px solid #ddd; padding: 10px;">{{ message.content }}</td>
-                    <td style="border: 1px solid #ddd; padding: 10px;">{{ message.answer if message.answer else 'No response yet.' }}</td>
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-            </div>
-            {% else %}
-            <p>No messages found.</p>
-            {% endif %}
+                    companyName.addEventListener('input', checkForm);
+                    contactEmail.addEventListener('input', checkForm);
+                    message.addEventListener('input', checkForm);
+                </script>
+            </form>
         </div>
 
         <div style="margin-top: 30px; text-align: center;"></div>
-            <a href="{{ url_for('company_contact') }}" style="display: inline-block; background-color: #6c757d; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;">
+            <a href="{{ url_for('company_contact') }}" style="background-color: #6c757d; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;">
                 ← Back to Contact
             </a>
         </div>
@@ -167,8 +147,7 @@
                 color: #333;
                 margin-bottom: 20px;
             }
-        </style>
-        
+        </style> 
     </div>
 </body>
 </html>

@@ -751,7 +751,7 @@ def update_company_contact_email():
     Company.update_company_contact_email(company_name, contact_email)
 
     # Here you would add the logic to update the company contact email
-    return render_template('annexes/company_email_us.html', success_message="Contact email updated successfully.")
+    return render_template('annexes/company_contact.html', success_message="Contact email updated successfully.")
 
 @app.route('/company_messages_to_shaire', methods=['POST'])
 def company_messages_to_shaire():
