@@ -126,7 +126,12 @@
             <button type="submit">Login</button>
         </form>
         <button type="button" class="forgot-password" onclick="window.location.href='/forgot_password'">Forgot Password?</button>
-        <div style="margin-top: 30px; text-align: center;">
+        {% if error %}
+        <div style="margin-top: 15px; padding: 10px; background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 5px; color: #721c24; text-align: center;">
+            {{ error }}
+        </div>
+        {% endif %}
+        <div style="margin-top: 30px; text-align: center;"></div>
             <a href="{{ url_for('company_contact') }}" style="background-color: #6c757d; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;">
                 ← Back to Companies Home Page
             </a>
