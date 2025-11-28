@@ -16,6 +16,7 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), nullable=True)
     password = db.Column(db.String(200), nullable=False)
+    temporary_password = db.Column(db.String(200), nullable=True)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     long_account_recovery_token = db.Column(db.String(200), nullable=True)
     long_account_recovery_token_expiration = db.Column(db.DateTime, nullable=True)
