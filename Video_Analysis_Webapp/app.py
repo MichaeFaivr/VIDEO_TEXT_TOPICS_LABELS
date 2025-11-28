@@ -518,6 +518,63 @@ def send_message_to_brand():
     return redirect(url_for('contact_brands', username=username))
 
 
+@app.route('/reset_password_check_account', methods=['POST'])
+def reset_password_check_account():
+    username = request.form.get('username')
+    print(f'Checking account for username: {username}')
+    user = User.query.filter_by(username=username).first()
+    if user:
+        # In a real application, send an email with the password reset link or code
+        print(f'User {username} found. Sending password reset instructions to email: {user.email}')
+        flash('Password reset instructions have been sent to your email.', 'info')
+        return render_template('annexes/reset_password.html', credentials_ok=True, username=username)
+    else:
+        print(f'User {username} not found.')
+        flash('Username not found. Please try again.', 'error')
+        credentials_error = "Invalid credentials. Please try again."
+        return render_template('annexes/reset_password.html', error=credentials_error)
+
+
+@app.route('/reset_password_check_pwd_received', methods=['GET','POST'])
+def reset_password_check_pwd_received():
+    username = request.form.get('username')
+    temporary_password = request.form.get('temporary_password')
+    print(f'Checking received password for username: {username} temporary_password: {temporary_password}')
+    user = User.query.filter_by(username=username).first()
+    # FOR TESTING PURPOSES ONLY: compare with temporary_password field in User table
+    # if user and temporary_password == user.temporary_password:
+    if temporary_password == "M_87654321":
+        # In a real application, verify the received password or code
+        print(f'Password received for user {username}. Allowing password reset.')
+        flash('Password verified. You can now reset your password.', 'info')
+        return render_template('annexes/reset_password.html', password_match="Ok", username=username)
+    else:
+        print(f'Password received for user {username} does not match.')
+        flash('Password does not match. Please try again.', 'error')
+        return render_template('annexes/reset_password.html', password_match="Nok", username=username)
+
+@app.route('/reset_password_new_pwd', methods=['GET','POST'])
+def reset_password_new_pwd():
+    username = request.form.get('username')
+    new_password = request.form.get('new_password')
+    print(f'Setting new password for username: {username}')
+    user = User.query.filter_by(username=username).first()
+    if user:
+        user.password = new_password
+        db.session.commit()
+        print(f'Password updated successfully for user {username}.')
+        flash('Your password has been updated successfully.', 'success')
+        return redirect(url_for('login_page'))
+    else:
+        print(f'User {username} not found. Cannot update password.')
+        flash('User not found. Please try again.', 'error')
+        return render_template('annexes/reset_password.html', password_match="Nok", username=username)
+
+@app.route('/reset_password/', methods=['GET'])
+def reset_password():
+    return render_template('annexes/reset_password.html', password_match="No Value")
+
+
 """ ANNEXE PAGES RELATED ROUTES """
 @app.route('/about_shaire', methods=['GET'])
 def about_shaire():
@@ -716,9 +773,7 @@ def company_login():
 def company_login_checking():
     company_name = request.form['company_name']
     password = request.form['password']
-
     company = Company.query.filter_by(company_name=company_name, password_hash=password).first()
-
     if company:
         # Login successful, redirect to company signed-in page
         return redirect(url_for('company_signedin_page', company_name=company_name))
