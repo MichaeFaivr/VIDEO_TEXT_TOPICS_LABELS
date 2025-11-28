@@ -58,18 +58,22 @@
     <style>
         .cta-buttons {
             display: flex;
+            flex-wrap: wrap;
             gap: 15px;
             margin-top: 20px;
         }
         .cta-buttons .contact-cta {
             flex: 1;
+            min-width: 100px;
             text-align: center;
             margin: 0;
         }
     </style>
-    <div class="cta-buttons"></div>
+    <div class="cta-buttons">
         <a href="/company_login" class="contact-cta" style="background-color: #95a5a6;">Company Login</a>
         <a href="/company_signup" class="contact-cta" style="background-color: #27ae60;">Create a Company Account</a>
+    </div>
+    <div class="cta-buttons">
         <a href="/company_email_us" class="contact-cta" style="background-color: #ac9f83db;">Contact Us for a Demo</a>
         <a href="/company_meeting_schedule" class="contact-cta">Schedule a Meeting</a>
     </div>
@@ -123,4 +127,11 @@
         <a href="/" class="contact-cta" style="background-color: #34495e;">Back to Home</a>
     </div>
 </body>
+<footer style="position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255, 255, 255, 0.1); padding: 15px; text-align: center; margin-top: 30px;"></footer>
+    <p style="color: white; font-size: 12px; margin: 0;">
+        <a href="/terms-of-use" style="color: white; text-decoration: none; margin: 0 10px; transition: opacity 0.3s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">Terms of Use</a>
+        |
+        <a href="/privacy-policy" style="color: white; text-decoration: none; margin: 0 10px; transition: opacity 0.3s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">Privacy Policy</a>
+    </p>
+</footer>
 </html>
