@@ -169,6 +169,11 @@
             <div class="card-header">
                 <h2 class="card-title">Join Our Platform</h2>
             </div>
+            {% if error_existing_user %}
+                <div style="color: red; font-size: 14px; margin-bottom: 10px;">
+                    {{ error_existing_user }}
+                </div>
+            {% endif %}
             
             <form method="POST" action="/register">
                 <div class="input-group">
@@ -258,10 +263,9 @@
                 <!-- TODO: Here the system needs to register the new user in the users database -->
                 <!-- create in the folder: databases/user_accounts the account as a Json file with the following informations: 
                  username, email, password, list of topics of interest -->
-                 
-
+                                
                 <script>
-                    document.getElementById('password').addEventListener('blur', function() {
+                        document.getElementById('password').addEventListener('blur', function() {
                         const password = this.value;
                         const errorDiv = document.getElementById('password-error');
                         

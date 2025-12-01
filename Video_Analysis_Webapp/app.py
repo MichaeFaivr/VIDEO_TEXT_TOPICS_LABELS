@@ -225,8 +225,9 @@ def register_user():
     existing_user = User.query.filter_by(username=username).first()
 
     if existing_user:
-        error_message = "Username already exists. Please choose a different username."
-        return render_template('register_page.html', error=error_message)
+        error_existing_user = f"Username: {username} already exists. Please choose a different username."
+        print(f'register POST : {error_existing_user}')
+        return render_template('register_page.html', username=username, error_existing_user=error_existing_user)
 
     # Generate a random 20-character password
     generated_password = generate_random_key(20)
@@ -298,6 +299,7 @@ def submit_profile_sqlalchemy():
 @app.route('/success')
 def success():
     ##flash('Profile updated successfully!', 'success') # requires a secret key in config.py
+    print('User Registration successful! Go to Login page.')
     return render_template('login_page.html')
 
     
@@ -811,7 +813,7 @@ def update_company_contact_email():
     # Update the AppointmentsWithCompanies table with the new contact email
     Company.update_company_contact_email(company_name, company_email)
     # Here you would add the logic to update the company contact email
-    return render_template('annexes/company_contact.html', success_message="Contact email updated successfully.")
+    return render_template('annexes/company_contact.html', company_name=company_name, success_message="Contact email updated successfully.")
 
 @app.route('/company_messages_to_shaire', methods=['POST'])
 def company_messages_to_shaire():
