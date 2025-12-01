@@ -783,10 +783,15 @@ def company_login_checking():
         error_message = "Invalid credentials. Please try again."
         return render_template('annexes/company_login.html', error=error_message)
 
-@app.route('/company_signedin_page', methods=['GET'])
+@app.route('/company_signedin_page', methods=['GET', 'POST'])
 def company_signedin_page():
-    company_name = request.args.get('company_name')
-    company_email = request.args.get('company_email')
+    if request.method == 'POST':
+        company_name = request.form.get('company_name')
+        company_email = request.form.get('company_email')
+    else:
+        company_name = request.args.get('company_name')
+        company_email = request.args.get('company_email')
+    print(f'company_signedin_page company_name: {company_name}, company_email: {company_email}')
     if not company_email:
         company = Company.query.filter_by(company_name=company_name).first()
         if company:
@@ -809,14 +814,16 @@ def company_email_us():
 def update_company_contact_email():
     company_name = request.form.get('company_name')
     company_email = request.form.get('company_email')
+    company_message = request.form.get('message')
     print(f'New company contact email submitted for {company_name}: {company_email}')
-    # Update the AppointmentsWithCompanies table with the new contact email
+    # Create a Company instance if no Company record exists for the given company_name? Not from here since no password provided
+    # Update the AppointmentsWithCompanies table with the new contact email? Not from here since the company is not registered yet
     Company.update_company_contact_email(company_name, company_email)
     # Here you would add the logic to update the company contact email
     return render_template('annexes/company_contact.html', company_name=company_name, success_message="Contact email updated successfully.")
 
-@app.route('/company_messages_to_shaire', methods=['POST'])
-def company_messages_to_shaire():
+@app.route('/company_message_to_shaire', methods=['POST'])
+def company_message_to_shaire():
     company_name = request.form.get('company_name')
     content = request.form.get('content')
     print(f'New message submitted from {company_name}: {content}')

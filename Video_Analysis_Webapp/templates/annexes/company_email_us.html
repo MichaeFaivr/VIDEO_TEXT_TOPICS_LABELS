@@ -69,9 +69,9 @@
         </div>
 
         <div style="margin-top: 30px; padding: 20px; background-color: #fff; border-radius: 5px; border: 1px solid #ddd;">
-            <h3 style="color: #333; margin-top: 0;">Update Contact Email</h3>
-            <form action="{{ url_for('update_company_contact_email') }}" method="POST">
-                <input type="hidden" name="username" value="{{ username }}">
+            <h3 style="color: #333; margin-top: 0;">Enter Contact Email</h3>
+            <!-- Update email here only if the company has not already provided one -->
+            <form action="{{ url_for('company_signedin_page') }}" method="POST">
                 <div style="margin-bottom: 15px;">
                     <label for="company_name" style="display: block; margin-bottom: 5px; font-weight: bold;">Company Name:</label>
                     <input type="text" id="company_name" name="company_name" 
@@ -90,7 +90,7 @@
                            style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; resize: vertical;"
                            placeholder="Enter your message" required></textarea>
                 </div>
-                <button a href="{{ url_for('company_contact') }}" type="submit" id="submitBtn" style="background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; opacity: 0.5;" disabled="">
+                <button a href="{{ url_for('company_signedin_page') }}" type="submit" id="submitBtn" style="background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; opacity: 0.5;" disabled="">
                     Submit
                 </button>
                 <script>
