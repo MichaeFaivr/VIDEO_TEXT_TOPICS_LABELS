@@ -792,10 +792,12 @@ def company_signedin_page():
         company_name = request.args.get('company_name')
         company_email = request.args.get('company_email')
     print(f'company_signedin_page company_name: {company_name}, company_email: {company_email}')
+    # Check if the company exists, if not, then routing to the generic page: company_contact.html
+    company = Company.query.filter_by(company_name=company_name).first()
+    if not company:
+        return redirect(url_for('company_contact'))
     if not company_email:
-        company = Company.query.filter_by(company_name=company_name).first()
-        if company:
-            company_email = company.company_email
+        company_email = company.company_email
     return render_template('annexes/company_signedin_page.html', company_name=company_name, company_email=company_email)
 
 @app.route('/company_terms_conditions', methods=['GET'])
