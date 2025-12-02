@@ -597,7 +597,11 @@ def contact_us():
 
 @app.route('/faq_and_bot', methods=['GET', 'POST'])
 def faq_and_bot():
-    if request.method == 'POST':
+    if request.method == 'GET':
+        username = request.args.get('username')
+        print(f'username in faq_and_bot GET: {username}')
+        return render_template('annexes/faq_and_bot.html', username=username)
+    elif request.method == 'POST':
         question = request.form.get('question')
         print(f'Question submitted: {question}')
         # Here you would add the logic to process the question
@@ -622,7 +626,7 @@ def faq_and_bot():
         SOLUTION: CREDIT OPENAI ACCOUNT WITH 6 USD AT LEAST
         """
         print(f'Answer generated: {answer}')
-    return render_template('annexes/faq_and_bot.html', answer=answer if request.method == 'POST' else None)
+    return render_template('annexes/faq_and_bot.html', username=username, answer=answer if request.method == 'POST' else None)
 
 @app.route('/specifications', methods=['GET'])
 def specifications():
