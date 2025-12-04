@@ -69,21 +69,34 @@
         </div>
 
         <div style="margin-top: 30px; padding: 20px; background-color: #fff; border-radius: 5px; border: 1px solid #ddd;">
-            <h3 style="color: #333; margin-top: 0;">Enter Contact Email</h3>
+            <h3 style="color: #333; margin-top: 0;">Enter your Contact information and Message</h3>
             <!-- Update email here only if the company has not already provided one -->
             <form action="{{ url_for('company_signedin_page') }}" method="POST">
-                <div style="margin-bottom: 15px;">
-                    <label for="company_name" style="display: block; margin-bottom: 5px; font-weight: bold;">Company Name:</label>
-                    <input type="text" id="company_name" name="company_name" 
-                           style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;"
-                           placeholder="Enter your company name" required>
-                </div>
-                <div style="margin-bottom: 15px;">
-                    <label for="company_email" style="display: block; margin-bottom: 5px; font-weight: bold;">Your Contact Email:</label>
-                    <input type="email" id="company_email" name="company_email" 
-                           style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;"
-                           placeholder="Enter your email address" required>
-                </div>
+                {% if pre_filled %}
+                    <div style="margin-bottom: 15px;">
+                        <label for="company_name" style="display: block; margin-bottom: 5px; font-weight: bold;">Company Name Filled:</label>
+                        <input type="hidden" id="company_name" name="company_name" value="{{ company_name }}">
+                        <span style="display: block; padding: 15px 20px; background-color: #f0f0f0; border-radius: 4px; font-size: 1.1em;">{{ company_name }}</span>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label for="company_email" style="display: block; margin-bottom: 5px; font-weight: bold;">Company Email Filled:</label>
+                        <input type="hidden" id="company_email" name="company_email" value="{{ company_email }}">
+                        <span style="display: block; padding: 15px 20px; background-color: #f0f0f0; border-radius: 4px; font-size: 1.1em;">{{ company_email }}</span>
+                    </div>
+                {% else %}
+                    <div style="margin-bottom: 15px;">
+                        <label for="company_name" style="display: block; margin-bottom: 5px; font-weight: bold;">Company Name:</label>
+                        <input type="text" id="company_name" name="company_name"
+                               style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;"
+                               placeholder="Enter your company name" required>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label for="company_email" style="display: block; margin-bottom: 5px; font-weight: bold;">Your Contact Email:</label>
+                        <input type="email" id="company_email" name="company_email"
+                               style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;"
+                               placeholder="Enter your email address" required>
+                    </div>
+                {% endif %}
                 <div style="margin-bottom: 15px;">
                     <label for="message" style="display: block; margin-bottom: 5px; font-weight: bold;">Message:</label>
                     <textarea id="message" name="message" rows="4"
@@ -100,25 +113,46 @@
                     const submitBtn = document.getElementById('submitBtn');
 
                     function checkForm() {
-                        const nameValid = companyName.value.trim().length > 0;
-                        const emailValid = companyEmail.value.trim().length > 0 && 
-                                          companyEmail.checkValidity();
-                        const messageValid = message.value.trim().length > 0;
-
-                        if (nameValid && emailValid && messageValid) {
-                            submitBtn.disabled = false;
-                            submitBtn.style.opacity = '1';
-                            submitBtn.style.cursor = 'pointer';
+                        // If company info is pre-filled (hidden inputs), only check message
+                        const isPreFilled = companyName.type === 'hidden';
+                        
+                        if (isPreFilled) {
+                            const messageValid = message.value.trim().length > 0;
+                            if (messageValid) {
+                                submitBtn.disabled = false;
+                                submitBtn.style.opacity = '1';
+                                submitBtn.style.cursor = 'pointer';
+                            } else {
+                                submitBtn.disabled = true;
+                                submitBtn.style.opacity = '0.5';
+                                submitBtn.style.cursor = 'not-allowed';
+                            }
                         } else {
-                            submitBtn.disabled = true;
-                            submitBtn.style.opacity = '0.5';
-                            submitBtn.style.cursor = 'not-allowed';
+                            const nameValid = companyName.value.trim().length > 0;
+                            const emailValid = companyEmail.value.trim().length > 0 && 
+                                              companyEmail.checkValidity();
+                            const messageValid = message.value.trim().length > 0;
+
+                            if (nameValid && emailValid && messageValid) {
+                                submitBtn.disabled = false;
+                                submitBtn.style.opacity = '1';
+                                submitBtn.style.cursor = 'pointer';
+                            } else {
+                                submitBtn.disabled = true;
+                                submitBtn.style.opacity = '0.5';
+                                submitBtn.style.cursor = 'not-allowed';
+                            }
                         }
                     }
 
-                    companyName.addEventListener('input', checkForm);
-                    companyEmail.addEventListener('input', checkForm);
+                    if (companyName.type !== 'hidden') {
+                        companyName.addEventListener('input', checkForm);
+                        companyEmail.addEventListener('input', checkForm);
+                    }
                     message.addEventListener('input', checkForm);
+                    
+                    // Initial check when page loads
+                    checkForm();
                 </script>
             </form>
         </div>

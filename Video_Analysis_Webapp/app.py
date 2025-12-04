@@ -814,7 +814,12 @@ def company_meeting_schedule():
 
 @app.route('/company_email_us', methods=['GET'])
 def company_email_us():
-    return render_template('annexes/company_email_us.html')
+    company_name = request.args.get('company_name')
+    company_email = request.args.get('company_email')
+    print(f'company_email_us company_name: {company_name}', f'company_email: {company_email}')
+    pre_filled = bool(company_name and company_email)
+    print(f'company_email_us pre_filled: {pre_filled}')
+    return render_template('annexes/company_email_us.html', company_name=company_name, company_email=company_email, pre_filled=pre_filled)
 
 @app.route('/update_company_contact_email', methods=['POST'])
 def update_company_contact_email():
