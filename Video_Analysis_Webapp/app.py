@@ -842,6 +842,19 @@ def company_message_to_shaire():
     CompanyMessages.save_company_message(company_name, content)
     return render_template('annexes/company_email_us.html', success_message="Message sent successfully.")
 
+""" LEGAL AND POLICIES PAGES ROUTES """
+@app.route('/terms_and_conditions', methods=['GET'])
+def terms_and_conditions():
+    return render_template('legal_policies/terms_and_conditions.html')
+
+@app.route('/cookies_policy', methods=['GET'])
+def cookies_policy():
+    return render_template('legal_policies/cookies_policy.html')
+
+@app.route('/rgpd_compliance', methods=['GET'])
+def rgpd_compliance():
+    return render_template('legal_policies/rgdp_compliance.html')
+
 
 """ VIDEO VERBATIM ANALYSIS ROUTE """
 """ Keep the video analysis route, but do not display the AI analysis results. Display the result of the validation only. """

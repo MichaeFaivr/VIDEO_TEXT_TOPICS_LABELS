@@ -544,14 +544,31 @@
                 footer p {
                     font-family: 'Times New Roman', serif;
                 }
+                @media (max-width: 768px) {
+                    footer .footer-columns {
+                        flex-direction: column !important;
+                    }
+                    footer .footer-columns > div {
+                        margin-right: 0 !important;
+                        margin-bottom: 20px;
+                    }
+                }
             </style>
-            <div style="display: flex; justify-content: space-between; margin-top: 1px;">
+            <div class="footer-columns" style="display: flex; justify-content: space-between; margin-top: 1px;">
                 <div style="flex: 1; margin-right: 20px;">
                     <h4 style="color: #041122; margin-bottom: 10px; font-size: clamp(1rem, 2vw, 1.2em);">Membership</h4>
                     <ul style="list-style: none; padding: 0; margin: 0;">
                         <li style="margin-bottom: 5px; border-bottom: 1px solid #ccc; padding-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none; font-size: clamp(14px, 1.5vw, 16px); transition: font-weight 0.2s;" onmouseover="this.style.fontWeight='bold'" onmouseout="this.style.fontWeight='normal'">Join Now</a></li>
                         <li style="margin-bottom: 5px; border-bottom: 1px solid #ccc; padding-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none; font-size: clamp(14px, 1.5vw, 16px); transition: font-weight 0.2s;" onmouseover="this.style.fontWeight='bold'" onmouseout="this.style.fontWeight='normal'">Benefits</a></li>
-                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none; font-size: clamp(14px, 1.5vw, 16px); transition: font-weight 0.2s;" onmouseover="this.style.fontWeight='bold'" onmouseout="this.style.fontWeight='normal'">Pricing</a></li>
+                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none; font-size: clamp(14px, 1.5vw, 16px); transition: font-weight 0.2s;" onmouseover="this.style.fontWeight='bold'" onmouseout="this.style.fontWeight='normal'">Solutions</a></li>
+                    </ul>
+                </div>
+                <div style="flex: 1; margin-right: 20px;">
+                    <h4 style="color: #041122; margin-bottom: 10px; font-size: clamp(1rem, 2vw, 1.2em);">Policies</h4>
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <li style="margin-bottom: 5px; border-bottom: 1px solid #ccc; padding-bottom: 5px;"><a href="/terms_and_conditions" style="color: #230303; text-decoration: none; font-size: clamp(14px, 1.5vw, 16px); transition: font-weight 0.2s;" onmouseover="this.style.fontWeight='bold'" onmouseout="this.style.fontWeight='normal'">Terms of use</a></li>
+                        <li style="margin-bottom: 5px; border-bottom: 1px solid #ccc; padding-bottom: 5px;"><a href="/rgpd_compliance" style="color: #230303; text-decoration: none; font-size: clamp(14px, 1.5vw, 16px); transition: font-weight 0.2s;" onmouseover="this.style.fontWeight='bold'" onmouseout="this.style.fontWeight='normal'">RGPD</a></li>
+                        <li style="margin-bottom: 5px; border-bottom: 1px solid #ccc; padding-bottom: 5px;"><a href="/cookies_policy" style="color: #230303; text-decoration: none; font-size: clamp(14px, 1.5vw, 16px); transition: font-weight 0.2s;" onmouseover="this.style.fontWeight='bold'" onmouseout="this.style.fontWeight='normal'">Cookies</a></li>
                     </ul>
                 </div>
                 <div style="flex: 1; margin-right: 20px;">
