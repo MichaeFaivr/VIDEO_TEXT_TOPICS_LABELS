@@ -69,7 +69,7 @@
         </div>
 
         <div style="margin-top: 30px; padding: 20px; background-color: #fff; border-radius: 5px; border: 1px solid #ddd;">
-            <h3 style="color: #333; margin-top: 0;">Enter your Contact information and Message</h3>
+            <h3 style="color: #333; margin-top: 0;">{{ instruction }}</h3>
             <!-- Update email here only if the company has not already provided one -->
             <form action="{{ url_for('company_signedin_page') }}" method="POST">
                 {% if pre_filled %}
