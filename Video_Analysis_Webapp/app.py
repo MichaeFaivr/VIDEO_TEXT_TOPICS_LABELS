@@ -779,10 +779,15 @@ def company_login():
 def company_login_checking():
     company_name = request.form['company_name']
     password = request.form['password']
+    company_email = request.form.get('company_email', '')
     company = Company.query.filter_by(company_name=company_name, password_hash=password).first()
+    if company_email=='':
+        # get the company email from the database
+        if company:
+            company_email = company.company_email
     if company:
         # Login successful, redirect to company signed-in page
-        return redirect(url_for('company_signedin_page', company_name=company_name))
+        return redirect(url_for('company_signedin_page', company_name=company_name, company_email=company_email))
     else:
         error_message = "Invalid credentials. Please try again."
         return render_template('annexes/company_login.html', error=error_message)
@@ -819,7 +824,8 @@ def company_email_us():
     print(f'company_email_us company_name: {company_name}', f'company_email: {company_email}')
     pre_filled = bool(company_name and company_email)
     print(f'company_email_us pre_filled: {pre_filled}')
-    return render_template('annexes/company_email_us.html', company_name=company_name, company_email=company_email, pre_filled=pre_filled)
+    instruction = "Enter your Contact information and Message" if not pre_filled else "Send us a Message"
+    return render_template('annexes/company_email_us.html', company_name=company_name, company_email=company_email, pre_filled=pre_filled, instruction=instruction)
 
 @app.route('/update_company_contact_email', methods=['POST'])
 def update_company_contact_email():
@@ -842,7 +848,7 @@ def company_message_to_shaire():
     CompanyMessages.save_company_message(company_name, content)
     return render_template('annexes/company_email_us.html', success_message="Message sent successfully.")
 
-""" LEGAL AND POLICIES PAGES ROUTES """
+""" USERS LEGAL AND POLICIES PAGES ROUTES """
 @app.route('/terms_and_conditions', methods=['GET'])
 def terms_and_conditions():
     return render_template('legal_policies/terms_and_conditions.html')
@@ -854,6 +860,15 @@ def cookies_policy():
 @app.route('/rgpd_compliance', methods=['GET'])
 def rgpd_compliance():
     return render_template('legal_policies/rgdp_compliance.html')
+
+""" COMPANY LEGAL AND POLICIES PAGES ROUTES """
+@app.route('/company-privacy-policy', methods=['GET'])
+def company_privacy_policy():
+    return render_template('legal_policies/company_privacy_policy.html')
+
+@app.route('/company-terms-of-service', methods=['GET'])
+def company_terms_of_service():
+    return render_template('legal_policies/company_terms_of_service.html')
 
 
 """ VIDEO VERBATIM ANALYSIS ROUTE """
