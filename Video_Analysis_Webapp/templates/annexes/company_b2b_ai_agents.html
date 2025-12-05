@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B2B AI Agents</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            font-size: 2.5rem;
+        }
+
+        .agents-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .agent-button {
+            background: white;
+            border: none;
+            border-radius: 15px;
+            padding: 40px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .agent-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .agent-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .agent-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .agent-description {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .agents-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .agents-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>B2B AI Agents</h1>
+        <div class="agents-grid">
+            <button class="agent-button">
+                <div class="agent-icon">🤖</div>
+                <div class="agent-name">Sales Agent</div>
+                <div class="agent-description">Automate lead generation</div>
+            </button>
+
+            <button class="agent-button">
+                <div class="agent-icon">💬</div>
+                <div class="agent-name">Support Agent</div>
+                <div class="agent-description">24/7 customer support</div>
+            </button>
+
+            <button class="agent-button">
+                <div class="agent-icon">📊</div>
+                <div class="agent-name">Analytics Agent</div>
+                <div class="agent-description">Data-driven insights</div>
+            </button>
+
+            <button class="agent-button">
+                <div class="agent-icon">📧</div>
+                <div class="agent-name">Marketing Agent</div>
+                <div class="agent-description">Email campaigns</div>
+            </button>
+
+            <button class="agent-button">
+                <div class="agent-icon">🎯</div>
+                <div class="agent-name">Strategy Agent</div>
+                <div class="agent-description">Business planning</div>
+            </button>
+
+            <button class="agent-button">
+                <div class="agent-icon">🔍</div>
+                <div class="agent-name">Research Agent</div>
+                <div class="agent-description">Market research</div>
+            </button>
+
+            <button class="agent-button">
+                <div class="agent-icon">💼</div>
+                <div class="agent-name">HR Agent</div>
+                <div class="agent-description">Recruitment automation</div>
+            </button>
+
+            <button class="agent-button">
+                <div class="agent-icon">📝</div>
+                <div class="agent-name">Content Agent</div>
+                <div class="agent-description">Content creation</div>
+            </button>
+
+            <button class="agent-button">
+                <div class="agent-icon">⚙️</div>
+                <div class="agent-name">Operations Agent</div>
+                <div class="agent-description">Process optimization</div>
+            </button>
+        </div>
+    </div>
+</body>
+</html>

@@ -848,6 +848,44 @@ def company_message_to_shaire():
     CompanyMessages.save_company_message(company_name, content)
     return render_template('annexes/company_email_us.html', success_message="Message sent successfully.")
 
+@app.route('/company_faq_and_bot', methods=['GET', 'POST'])
+def company_faq_and_bot():
+    if request.method == 'GET':
+        company_name = request.args.get('company_name')
+        print(f'company_name in company_faq_and_bot GET: {company_name}')
+        return render_template('annexes/company_faq_and_bot.html', company_name=company_name)
+    elif request.method == 'POST':
+        question = request.form.get('question')
+        print(f'Question submitted by company: {question}')
+        # Here you would add the logic to process the question
+        company_name = request.form.get('company_name')
+        # Use a generic AI agent for company FAQ
+        generic_ai_agent = SpecificAIAgentResponse(
+            specificity="general",
+            ai_model="chatgpt-4o-mini",
+            question=question,
+            topic="Company related inquiries",
+            summary="General information about company policies and procedures.",
+            sources=["https://example.com/company_source1", "https://example.com/company_source2"],
+            tools_used=["web_search"]
+            )
+        answer = generic_ai_agent.ask_generic_research_bot()
+        print(f'Answer generated for company: {answer}')
+    return render_template('annexes/company_faq_and_bot.html', company_name=company_name, answer=answer if request.method == 'POST' else None)
+
+@app.route('/company_how_to_collaborate', methods=['GET'])
+def company_how_to_collaborate():
+    company_name = request.args.get('company_name')
+    print(f'company_name in company_how_to_collaborate: {company_name}')
+    return render_template('annexes/company_how_to_collaborate.html', company_name=company_name)
+
+@app.route('/b2b-ai-agents', methods=['GET'])
+def company_b2b_ai_agents():
+    company_name = request.args.get('company_name')
+    print(f'company_name in b2b_ai_agents: {company_name}')
+    return render_template('annexes/company_b2b_ai_agents.html', company_name=company_name)
+
+
 """ USERS LEGAL AND POLICIES PAGES ROUTES """
 @app.route('/terms_and_conditions', methods=['GET'])
 def terms_and_conditions():
