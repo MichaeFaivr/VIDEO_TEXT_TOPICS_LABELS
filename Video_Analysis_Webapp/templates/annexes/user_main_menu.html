@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Menu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        .menu-container {
+            max-width: 400px;
+            margin: 50px auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .menu-header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .menu-items {
+            list-style: none;
+        }
+
+        .menu-item {
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .menu-item a {
+            display: block;
+            padding: 20px;
+            color: #333;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .menu-item a:hover {
+            background-color: #f0f0f0;
+        }
+
+        .menu-item i {
+            margin-right: 10px;
+            width: 20px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="menu-container">
+        <div class="menu-header">
+            <h1>User Menu</h1>
+        </div>
+        <ul class="menu-items">
+            <li class="menu-item">
+                <a href="/tutorial">
+                    <i>📚</i>
+                    <span>Tutorial</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="/how_to_earn">
+                    <i>💰</i>
+                    <span>What You Can Earn</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="/contact_us">
+                    <i>✉️</i>
+                    <span>Contact Us</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</body>
+</html>
