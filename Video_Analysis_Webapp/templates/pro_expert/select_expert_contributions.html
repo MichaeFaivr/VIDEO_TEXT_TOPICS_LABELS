@@ -1,34 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
-    <nav style="background-color: #fff; padding: 10px 15px; border-bottom: 2px solid #1a73e8; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-        <div style="display: flex; justify-content: space-between; align-items: center; max-width: 800px; margin: 0 auto; flex-wrap: wrap; gap: 10px;">
+    <nav style="background-color: #fff; border-bottom: 2px solid #1a73e8; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <!-- Top block: Menu, SHAIRE name, and logo -->
+        <div style="display: flex; justify-content: space-between; align-items: center; max-width: 800px; margin: 0 auto; padding: 10px 15px;">
+            <div style="font-size: 24px; cursor: pointer;">☰</div>
             <div style="font-size: clamp(1.2rem, 3vw, 1.3em); font-family: 'Quicksand', sans-serif; font-weight: bold; color: #1a73e8; cursor: pointer;" onclick="window.location.href='/about_shaire'">SHAIRE</div>
-            <div style="display: flex; justify-content: center; align-items: center; flex: 1;">
-                <img src="/static/logo/SHAIRE_Logo.png" alt="SHAIRE Logo" style="height: 120px; width: auto;">
+            <img src="/static/logo/SHAIRE_Logo.png" alt="SHAIRE Logo" style="height: 80px; width: auto;">
+        </div>
+        
+        <!-- Bottom block: Four buttons horizontally -->
+        <div style="display: flex; justify-content: center; align-items: center; gap: 10px; max-width: 800px; margin: 0 auto; padding: 10px 15px; flex-wrap: wrap;">
+            <div style="position: relative;">
+                <button id="accountMenuBtn" style="background-color: #1a73e8; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: clamp(14px, 2vw, 16px); white-space: nowrap;">
+                    Hi {{ username|title }} ▼
+                </button>
+                <div id="accountDropdown" style="display: none; position: absolute; right: 0; top: 100%; background-color: white; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); min-width: 150px; max-width: 250px; z-index: 1000;">
+                    <a href="/account_info?username={{ username }}" style="display: block; padding: 10px 15px; color: #333; text-decoration: none; border-bottom: 1px solid #eee; font-size: clamp(12px, 2vw, 14px);">{{ username }} Account</a>
+                    <a href="/user_history?username={{ username }}" style="display: block; padding: 10px 15px; color: #333; text-decoration: none; border-bottom: 1px solid #eee; font-size: clamp(12px, 2vw, 14px);">History/Credits</a>
+                    <a href="/user_deals?username={{ username }}" style="display: block; padding: 10px 15px; color: #333; text-decoration: none; border-bottom: 1px solid #eee; font-size: clamp(12px, 2vw, 14px);">My Deals</a>
+                    <a href="/fill_update_your_profile/?username={{ username }}" style="display: block; padding: 10px 15px; color: #333; text-decoration: none; border-bottom: 4px solid #eee; font-size: clamp(12px, 2vw, 14px);">Preferences</a>
+                    <a href="/" style="display: block; padding: 10px 15px; color: #333; text-decoration: none; font-size: clamp(12px, 2vw, 14px);">🚪 Logout</a>
+                </div>
             </div>
 
-            <div style="display: flex; flex-direction: column; gap: 10px; align-items: right;">
-                <div style="position: relative;">
-                    <button id="accountMenuBtn" style="background-color: #1a73e8; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: clamp(15px, 2vw, 18px); white-space: nowrap; width: 160px; height: 36px; display: flex; align-items: center; justify-content: center;">
-                        Hi {{ username|title }} ▼
-                    </button>
-                    <div id="accountDropdown" style="display: none; position: absolute; right: 0; top: 100%; background-color: white; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); min-width: 150px; max-width: 250px; z-index: 1000;">
-                        <a href="/account_info?username={{ username }}" style="display: block; padding: 10px 15px; color: #333; text-decoration: none; border-bottom: 1px solid #eee; font-size: clamp(12px, 2vw, 14px);">{{ username }} Account</a>
-                        <a href="/user_history?username={{ username }}" style="display: block; padding: 10px 15px; color: #333; text-decoration: none; border-bottom: 1px solid #eee; font-size: clamp(12px, 2vw, 14px);">History/Credits</a>
-                        <a href="/user_deals?username={{ username }}" style="display: block; padding: 10px 15px; color: #333; text-decoration: none; border-bottom: 1px solid #eee; font-size: clamp(12px, 2vw, 14px);">My Deals</a>
-                        <a href="/fill_update_your_profile/?username={{ username }}" style="display: block; padding: 10px 15px; color: #333; text-decoration: none; border-bottom: 4px solid #eee; font-size: clamp(12px, 2vw, 14px);">Preferences</a>
-                        <a href="/" style="display: block; padding: 10px 15px; color: #333; text-decoration: none; font-size: clamp(12px, 2vw, 14px);">🚪 Logout</a>
-                    </div>
-                </div>
-                <button id="useCreditsBtn" onclick="window.location.href='/use_credits?username={{ username }}'" style="background-color: #28a745; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: clamp(15px, 2vw, 18px); white-space: nowrap; width: 160px; height: 36px; display: flex; align-items: center; justify-content: center;">
-                    Use your Credits
+            <button onclick="window.location.href='/tutorial?username={{ username }}'" style="background-color: #ffa726; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: clamp(14px, 2vw, 16px); white-space: nowrap; min-height: 120px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                Tutorial
+            </button>
+
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <button onclick="window.location.href='/b2c-ai-agents?username={{ username }}'" style="background-color: #ff6b35; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: clamp(14px, 2vw, 16px); white-space: nowrap; transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.2);" onmouseover="this.style.backgroundColor='#ff8555'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.3)'" onmouseout="this.style.backgroundColor='#ff6b35'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.2)'">
+                    AI Agents
                 </button>
+
+                <button onclick="window.location.href='/use_credits?username={{ username }}'" style="background-color: #28a745; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: clamp(14px, 2vw, 16px); white-space: nowrap;">
+                    Use Credits
+                </button>
+
                 <button id="useCreditsBtn" onclick="window.location.href='/back_to_selection_contribution?username={{ username }}'" style="background-color: #c65381; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: clamp(15px, 2vw, 18px); white-space: nowrap; width: 160px; height: 36px; display: flex; align-items: center; justify-content: center;">
                     EASY/MEDIUM
                 </button>
             </div>
+            </button>
         </div>
-                
     </nav>
     <script>
         document.getElementById('accountMenuBtn').addEventListener('click', function(e) {
@@ -229,8 +242,8 @@
             box-shadow: 0 6px 12px rgba(0,0,0,0.3);
         }
         
-        .btn-verbatim { 
-            background-image: url('/static/images/verbatim.jpg');
+        .btn-recipies { 
+            background-image: url('/static/images/Chef_cooking.jpg');
             background-size: cover; /* Ensures the image covers the entire button */
             background-position: center; /* Centers the image */
             background-repeat: no-repeat; /* Prevents the image from repeating */
@@ -243,8 +256,8 @@
             cursor: pointer; /* Changes cursor to pointer on hover */
             border-radius: 5px; /* Optional: rounded corners */
         }
-        .btn-place { 
-            background-image: url('/static/images/mega_mansion.jpg');
+        .btn-musician { 
+            background-image: url('/static/images/Pro_musician.jpg');
             background-size: cover; /* Ensures the image covers the entire button */
             background-position: center; /* Centers the image */
             background-repeat: no-repeat; /* Prevents the image from repeating */
@@ -257,147 +270,14 @@
             cursor: pointer; /* Changes cursor to pointer on hover */
             border-radius: 5px; /* Optional: rounded corners */
         }
-        .btn-diy-place { 
-            background-image: url('/static/images/DIY_home_improvt.jpg');
+        .btn-ai-usecases { 
+            background-image: url('/static/images/Expert_ai.jpg');
             background-size: cover; /* Ensures the image covers the entire button */
             background-position: center; /* Centers the image */
             background-repeat: no-repeat; /* Prevents the image from repeating */
             width: 200px; /* Set a width */
             height: 60px; /* Set a height */
             color: white; /* Text color */
-            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
-            border: 2px solid black; /* Black border */
-            font-size: 18px; /* Text size */
-            cursor: pointer; /* Changes cursor to pointer on hover */
-            border-radius: 5px; /* Optional: rounded corners */
-        }
-        .btn-diy-outdoor { 
-            background-image: url('/static/images/DIY_outdoor_maintenance.jpg');
-            background-size: cover; /* Ensures the image covers the entire button */
-            background-position: center; /* Centers the image */
-            background-repeat: no-repeat; /* Prevents the image from repeating */
-            width: 200px; /* Set a width */
-            height: 60px; /* Set a height */
-            color: white; /* Text color */
-            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
-            border: 2px solid black; /* Black border */
-            font-size: 18px; /* Text size */
-            cursor: pointer; /* Changes cursor to pointer on hover */
-            border-radius: 5px; /* Optional: rounded corners */
-        }
-        .btn-outdoor { 
-            background-image: url('/static/images/garden.jpg');
-            background-size: cover; /* Ensures the image covers the entire button */
-            background-position: center; /* Centers the image */
-            background-repeat: no-repeat; /* Prevents the image from repeating */
-            width: 200px; /* Set a width */
-            height: 60px; /* Set a height */
-            color: white; /* Text color */
-            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
-            border: 2px solid black; /* Black border */
-            font-size: 18px; /* Text size */
-            cursor: pointer; /* Changes cursor to pointer on hover */
-            border-radius: 5px; /* Optional: rounded corners */
-        }
-        .btn-wardrobe {
-            background-image: url('/static/images/wardrobe.jpg');
-            background-size: cover; /* Ensures the image covers the entire button */
-            background-position: center; /* Centers the image */
-            background-repeat: no-repeat; /* Prevents the image from repeating */
-            width: 200px; /* Set a width */
-            height: 60px; /* Set a height */
-            border: none; /* Removes the default border */
-            color: white; /* Text color */
-            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
-            border: 2px solid black; /* Black border */
-            font-size: 18px; /* Text size */
-            cursor: pointer; /* Changes cursor to pointer on hover */
-            border-radius: 5px; /* Optional: rounded corners */
-        }
-        .btn-games { 
-            background-image: url('/static/images/games.jpg');
-            background-size: cover; /* Ensures the image covers the entire button */
-            background-position: center; /* Centers the image */
-            background-repeat: no-repeat; /* Prevents the image from repeating */
-            width: 200px; /* Set a width */
-            height: 60px; /* Set a height */
-            border: none; /* Removes the default border */
-            color: white; /* Text color */
-            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
-            border: 2px solid black; /* Black border */
-            font-size: 18px; /* Text size */
-            cursor: pointer; /* Changes cursor to pointer on hover */
-            border-radius: 5px; /* Optional: rounded corners */
-        }
-        .btn-electronic { 
-            background-image: url('/static/images/consumer_electronics.jpg');
-            background-size: cover; /* Ensures the image covers the entire button */
-            background-position: center; /* Centers the image */
-            background-repeat: no-repeat; /* Prevents the image from repeating */
-            width: 200px; /* Set a width */
-            height: 60px; /* Set a height */
-            border: none; /* Removes the default border */
-            color: white; /* Text color */
-            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
-            border: 2px solid black; /* Black border */
-            font-size: 18px; /* Text size */
-            cursor: pointer; /* Changes cursor to pointer on hover */
-            border-radius: 5px; /* Optional: rounded corners */
-        }
-        .btn-kitchen { 
-            background-image: url('/static/images/kitchen.jpg');
-            background-size: cover; /* Ensures the image covers the entire button */
-            background-position: center; /* Centers the image */
-            background-repeat: no-repeat; /* Prevents the image from repeating */
-            width: 200px; /* Set a width */
-            height: 60px; /* Set a height */
-            color: white; /* Text color */
-            border: none; /* Removes the default border */
-            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
-            border: 2px solid black; /* Black border */
-            font-size: 18px; /* Text size */
-            cursor: pointer; /* Changes cursor to pointer on hover */
-            border-radius: 5px; /* Optional: rounded corners */
-        }
-        .btn-device-usage { 
-            background-image: url('/static/images/agent_IA1.jpg');
-            background-size: cover; /* Ensures the image covers the entire button */
-            background-position: center; /* Centers the image */
-            background-repeat: no-repeat; /* Prevents the image from repeating */
-            width: 200px; /* Set a width */
-            height: 60px; /* Set a height */
-            color: white; /* Text color */
-            border: none; /* Removes the default border */
-            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
-            border: 2px solid black; /* Black border */
-            font-size: 18px; /* Text size */
-            cursor: pointer; /* Changes cursor to pointer on hover */
-            border-radius: 5px; /* Optional: rounded corners */
-        }
-        .btn-design-agent-sales {
-            background-image: url('/static/images/agent_IA2.jpg');
-            background-size: cover; /* Ensures the image covers the entire button */
-            background-position: center; /* Centers the image */
-            background-repeat: no-repeat; /* Prevents the image from repeating */
-            width: 200px; /* Set a width */
-            height: 60px; /* Set a height */
-            color: white; /* Text color */
-            border: none; /* Removes the default border */
-            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
-            border: 2px solid black; /* Black border */
-            font-size: 18px; /* Text size */
-            cursor: pointer; /* Changes cursor to pointer on hover */
-            border-radius: 5px; /* Optional: rounded corners */
-        }
-        .btn-design-agent-network {
-            background-image: url('/static/images/agent_IA3.jpg');
-            background-size: cover; /* Ensures the image covers the entire button */
-            background-position: center; /* Centers the image */
-            background-repeat: no-repeat; /* Prevents the image from repeating */
-            width: 200px; /* Set a width */
-            height: 60px; /* Set a height */
-            color: white; /* Text color */
-            border: none; /* Removes the default border */
             text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
             border: 2px solid black; /* Black border */
             font-size: 18px; /* Text size */
@@ -415,17 +295,17 @@
         <div class="contribution-scroll-track">
             <form action="/pro_chef_recipies/" method="post" enctype="multipart/form-data" class="contribution-item">
                 <input type="hidden" name="username" value="{{ username }}">
-                <button type="submit" class="contribution-button btn-verbatim">Pro Chef Recipies Video</button>
+                <button type="submit" class="contribution-button btn-recipies">Pro Chef Recipies Video</button>
             </form>
             
             <form action="/pro_musician_plays/" method="post" enctype="multipart/form-data" class="contribution-item">
                 <input type="hidden" name="username" value="{{ username }}">
-                <button type="submit" class="contribution-button btn-place">Pro musician play Video</button>
+                <button type="submit" class="contribution-button btn-musician">Pro musician play Video</button>
             </form>
 
             <form action="/pro_ai_usecases/" method="post" enctype="multipart/form-data" class="contribution-item">
                 <input type="hidden" name="username" value="{{ username }}">
-                <button type="submit" class="contribution-button btn-diy-place">Pro AI Expert Video</button>
+                <button type="submit" class="contribution-button btn-ai-usecases">Pro AI Expert Video</button>
             </form>
 
             <form action="/pro_expert_ctb4/" method="post" enctype="multipart/form-data" class="contribution-item">
