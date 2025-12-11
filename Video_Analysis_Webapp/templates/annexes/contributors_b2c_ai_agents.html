@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Agents - Individual Contributors</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            font-size: 2.5em;
+        }
+
+        .agents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 20px;
+        }
+
+        .agent-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .agent-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .agent-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .agent-card h2 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        .agent-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .agent-card button {
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .agent-card button:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI Agents - Individual Contributors</h1>
+        <div class="agents-grid">
+            <div class="agent-card">
+                <div class="agent-icon">🤖</div>
+                <h2>Code Assistant</h2>
+                <p>Get help with coding tasks, debugging, and code reviews</p>
+                <button onclick="activateAgent('code-assistant')">Activate Agent</button>
+            </div>
+
+            <div class="agent-card">
+                <div class="agent-icon">📊</div>
+                <h2>Data Analyst</h2>
+                <p>Analyze data, create visualizations, and generate insights</p>
+                <button onclick="activateAgent('data-analyst')">Activate Agent</button>
+            </div>
+
+            <div class="agent-card">
+                <div class="agent-icon">✍️</div>
+                <h2>Content Writer</h2>
+                <p>Draft documents, emails, and technical documentation</p>
+                <button onclick="activateAgent('content-writer')">Activate Agent</button>
+            </div>
+
+            <div class="agent-card">
+                <div class="agent-icon">🎨</div>
+                <h2>Design Assistant</h2>
+                <p>Help with UI/UX design decisions and creative solutions</p>
+                <button onclick="activateAgent('design-assistant')">Activate Agent</button>
+            </div>
+
+            <div class="agent-card">
+                <div class="agent-icon">🔍</div>
+                <h2>Research Agent</h2>
+                <p>Conduct research, summarize findings, and explore topics</p>
+                <button onclick="activateAgent('research-agent')">Activate Agent</button>
+            </div>
+
+            <div class="agent-card">
+                <div class="agent-icon">⚙️</div>
+                <h2>Task Optimizer</h2>
+                <p>Streamline workflows and automate repetitive tasks</p>
+                <button onclick="activateAgent('task-optimizer')">Activate Agent</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function activateAgent(agentType) {
+            alert(`Activating ${agentType}...`);
+            // Add your agent activation logic here
+            console.log(`Agent ${agentType} activated`);
+        }
+    </script>
+</body>
+</html>
