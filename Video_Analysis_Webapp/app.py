@@ -576,8 +576,19 @@ def reset_password_new_pwd():
 def reset_password():
     return render_template('annexes/reset_password.html', password_match="No Value")
 
+@app.route('/b2c-ai-agents', methods=['GET'])
+def b2c_ai_agents():
+    username = request.args.get('username')
+    print(f'username in b2c_ai_agents: {username}')
+    return render_template('annexes/contributors_b2c_ai_agents.html', username=username)
+
 
 """ ANNEXE PAGES RELATED ROUTES """
+@app.route('/user_main_menu', methods=['GET'])
+def user_main_menu():
+    username = request.args.get('username')
+    return render_template('annexes/user_main_menu.html', username=username)
+
 @app.route('/about_shaire', methods=['GET'])
 def about_shaire():
     """ Need a presentation video of Shaire on this page """
@@ -734,6 +745,8 @@ def gift_cards_history():
 def light_contributions_tuto():
     username = request.args.get('username')
     return render_template('annexes/light_contributions_tuto.html', username=username)
+
+""" COMPANY PAGES RELATED ROUTES """
 
 @app.route('/company_contact', methods=['GET'])
 def company_contact():
