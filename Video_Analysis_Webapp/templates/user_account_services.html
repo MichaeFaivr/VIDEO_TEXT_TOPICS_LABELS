@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Account</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f3f3;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 30px;
+            color: #0f1111;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .card {
+            background-color: white;
+            border: 1px solid #d5d9d9;
+            border-radius: 8px;
+            padding: 30px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-color: #c7c7c7;
+        }
+
+        .card-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #0f1111;
+        }
+
+        .card-description {
+            font-size: 14px;
+            color: #565959;
+            line-height: 1.4;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Your Account : {{ username }}</h1>
+        <div class="grid">
+            <a href="/user_account_infos?username={{ username }}" class="card">
+                <div class="card-icon">👤</div>
+                <div class="card-title">Account Infos</div>
+                <div class="card-description">Edit login, name, and mobile number</div>
+            </a>
+
+            <a href="/user_history?username={{ username }}" class="card">
+                <div class="card-icon">💳</div>
+                <div class="card-title">Contributions and Credits</div>
+                <div class="card-description">View your contributions and account credits</div>
+            </a>
+
+            <a href="#" class="card">
+                <div class="card-icon">📦</div>
+                <div class="card-title">Purchases</div>
+                <div class="card-description">Track, return, or buy things again</div>
+            </a>
+
+            <a href="#" class="card">
+                <div class="card-icon">🎟️</div>
+                <div class="card-title">Coupons</div>
+                <div class="card-description">View and manage your coupons</div>
+            </a>
+
+            <a href="#" class="card">
+                <div class="card-icon">🎁</div>
+                <div class="card-title">Gift Cards</div>
+                <div class="card-description">View balance or redeem a card</div>
+            </a>
+
+            <a href="#" class="card">
+                <div class="card-icon">📱</div>
+                <div class="card-title">Apps</div>
+                <div class="card-description">Manage your apps and subscriptions</div>
+            </a>
+
+            <a href="/b2c-ai-agents?username={{ username }}" class="card">
+                <div class="card-icon">🤖</div>
+                <div class="card-title">Agents</div>
+                <div class="card-description">Configure and manage your agents</div>
+            </a>
+
+            <a href="/display_user_messages?username={{ username }}" class="card">
+                <div class="card-icon">✉️</div>
+                <div class="card-title">Messages</div>
+                <div class="card-description">View messages and notifications</div>
+            </a>
+
+            <a href="/messages?username={{ username }}" class="card">
+                <div class="card-icon">⭐</div>
+                <div class="card-title">Preferred Brands</div>
+                <div class="card-description">Manage your favorite brands</div>
+            </a>
+
+            <a href="#" class="card">
+                <div class="card-icon">🎀</div>
+                <div class="card-title">Gifts from Brands</div>
+                <div class="card-description">Receive special gifts and offers from brands</div>
+            </a>
+
+            <a href="#" class="card">
+                <div class="card-icon">💡</div>
+                <div class="card-title">Your Proposals</div>
+                <div class="card-description">Submit and manage your proposals</div>
+            </a>
+
+            <a href="#" class="card">
+                <div class="card-icon">🚀</div>
+                <div class="card-title">Boost your profile</div>
+                <div class="card-description">Enhance your profile visibility and features</div>
+            </a>
+
+            <a href="#" class="card">
+                <div class="card-icon">📚</div>
+                <div class="card-title">Tutorials</div>
+                <div class="card-description">Access guides and learning resources</div>
+            </a>
+
+            <a href="#" class="card">
+                <div class="card-icon">🎮</div>
+                <div class="card-title">Games & Leisure</div>
+                <div class="card-description">Explore games and leisure activities</div>
+            </a>
+
+            <a href="#" class="card">
+                <div class="card-icon">⚙️</div>
+                <div class="card-title">Settings</div>
+                <div class="card-description">Manage your account settings</div>
+            </a>
+        </div>
+    </div>
+</body>
+</html>
