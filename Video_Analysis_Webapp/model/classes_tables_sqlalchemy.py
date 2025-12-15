@@ -299,6 +299,7 @@ class UserMessages(db.Model):
     message_type = db.Column(db.String(50), nullable=True)  # e.g., 'notification', 'alert'
     timestamp = db.Column(db.DateTime, server_default=db.func.now())
     answer = db.Column(db.Text, nullable=True)  # Response to the message, if any
+    is_sent_by_user = db.Column(db.Boolean, default=True)  # True if sent by user, False if sent by SHAIRE
 
     user = db.relationship('User', backref=db.backref('messages', lazy=True))
 
@@ -311,12 +312,20 @@ class UserMessages(db.Model):
         if not user:
             return []
         user_id = user.id
-        query = cls.query.filter_by(user_id=user_id)
+        query = cls.query.filter_by(user_id=user_id, is_sent_by_user=False)
         if query is None:
             return []
         if recipient:
             query = query.filter_by(recipient=recipient)
         return query.order_by(cls.timestamp.desc()).limit(limit).all()
+    
+    @classmethod
+    def get_user_sent_messages(cls, username, limit):
+        user = User.query.filter_by(username=username).first()
+        if not user:
+            return []
+        user_id = user.id
+        return cls.query.filter(cls.user_id==user_id, cls.recipient!='SHAIRE').order_by(cls.timestamp.desc()).limit(limit).all()
     
     @classmethod
     def save_message(cls, username, content, recipient='SHAIRE', topic='Other', message_type=None):
