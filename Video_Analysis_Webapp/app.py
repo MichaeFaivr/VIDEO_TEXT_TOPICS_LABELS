@@ -304,7 +304,7 @@ def success():
 
     
 """ Route for the user account information page display - SQLAlchemy version """
-@app.route('/account_info/', methods=['GET'])
+@app.route('/user_account_infos/', methods=['GET'])
 def account_info_sqlalchemy():
     username = request.args.get('username')
     print(f'username in account_info_sqlalchemy: {username}')
@@ -336,6 +336,11 @@ def account_info_sqlalchemy():
     # add a link to user_history page with username as parameter
     return render_template('user_account_infos.html', username=username, email=email, interests=interests, age_group=age_group)
 
+@app.route('/user_account_services/', methods=['GET'])
+def user_account_services():
+    username = request.args.get('username')
+    print(f'username in user_account_services: {username}')
+    return render_template('user_account_services.html', username=username)
 
 """ Route for the history of contributions page display - SQLAlchemy version """
 @app.route('/user_history/', methods=['GET'])
@@ -464,7 +469,7 @@ def save_message(username, content, recipient='SHAIRE', topic='Other'):
     if not user:
         raise ValueError("User not found")
     print(f'save_message_sqlalchemy user_id: {user.id}, username: {user.username}, content: {content}, recipient: {recipient}, topic: {topic}')
-    message = UserMessages(user_id=user.id, content=content, recipient=recipient, topic=topic)
+    message = UserMessages(user_id=user.id, content=content, recipient=recipient, topic=topic, is_sent_by_user=True)
     db.session.add(message)
     db.session.commit()
     return message.id
@@ -519,7 +524,28 @@ def send_message_to_brand():
 
     return redirect(url_for('contact_brands', username=username))
 
+@app.route('/get_user_inbox_messages/', methods=['GET'])
+def get_user_inbox_messages():
+    username = request.args.get('username')
+    print(f'Fetching inbox messages for username: {username}')
+    messages = UserMessages.get_user_inbox(username=username, limit=20)
+    return render_template('annexes/user_inbox_messages.html', username=username, messages=messages)
 
+@app.route('/get_user_sent_messages/', methods=['GET'])
+def get_user_sent_messages():
+    username = request.args.get('username')
+    print(f'Fetching sent messages for username: {username}')
+    messages = UserMessages.get_user_sent_messages(username=username, limit=20)
+    return render_template('annexes/user_sent_messages.html', username=username, messages=messages)
+
+@app.route('/display_user_messages', methods=['GET'])
+def display_user_messages():
+    username = request.args.get('username')
+    inbox_messages = UserMessages.get_user_inbox(username=username, limit=20)
+    sent_messages = UserMessages.get_user_sent_messages(username=username, limit=20)
+    return render_template('messaging/user_messages.html', username=username, inbox_messages=inbox_messages, sent_messages=sent_messages)
+
+""" PASSWORD RESET ROUTES """
 @app.route('/reset_password_check_account', methods=['POST'])
 def reset_password_check_account():
     username = request.form.get('username')
@@ -646,7 +672,7 @@ def specifications():
 @app.route('/contact_brands', methods=['GET'])
 def contact_brands():
     username = request.args.get('username')
-    messages = UserMessages.get_user_inbox(username=username, limit=100)
+    messages = UserMessages.get_user_sent_messages(username=username, limit=100)
     # Check if Brands table is empty and create initial records if needed
     try:
         brands_count = Brands.query.count()
