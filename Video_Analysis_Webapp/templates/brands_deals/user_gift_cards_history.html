@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Gift Cards</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+        }
+        .controls {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .controls label {
+            font-weight: bold;
+        }
+        .controls select {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        .gift-cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .gift-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .gift-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .gift-card-brand {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .gift-card-credit {
+            font-size: 1.5em;
+            color: #27ae60;
+            margin: 10px 0;
+        }
+        .gift-card-expiration {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        .expired {
+            opacity: 0.6;
+            border: 2px solid #e74c3c;
+        }
+        .expired .gift-card-expiration {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>My Gift Cards</h1>
+    
+    <div class="controls">
+        <label for="sortBy">Sort by:</label>
+        <select id="sortBy">
+            <option value="expiration">Expiration Date</option>
+            <option value="credit">Credit Amount</option>
+            <option value="brand">Brand Name</option>
+        </select>
+    </div>
+
+    <div class="gift-cards-container" id="giftCardsContainer">
+        {% for card in gift_cards %}
+            <div class="gift-card {% if card.is_expired %}expired{% endif %}">
+                <div class="gift-card-brand">{{ card.brand_name }}</div>
+                <div class="gift-card-credit">${{ "%.2f"|format(card.total_credits) }}</div>
+                <div class="gift-card-expiration">
+                {% if card.is_expired %}Expired: {% else %}Issued on: {% endif %}{{ card.issue_date }}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        // Sample data - replace with actual data from backend
+        let giftCards = gift_cards;
+
+        function isExpired(date) {
+            return new Date(date) < new Date();
+        }
+
+        function renderGiftCards(cards) {
+            const container = document.getElementById('giftCardsContainer');
+            container.innerHTML = '';
+            
+            cards.forEach(card => {
+                const expired = isExpired(card.expirationDate);
+                const cardDiv = document.createElement('div');
+                cardDiv.className = `gift-card ${expired ? 'expired' : ''}`;
+                cardDiv.innerHTML = `
+                    <div class="gift-card-brand">${card.brand}</div>
+                    <div class="gift-card-credit">$${card.credit.toFixed(2)}</div>
+                    <div class="gift-card-expiration">
+                        ${expired ? 'Expired: ' : 'Expires: '}${card.expirationDate}
+                    </div>
+                `;
+                container.appendChild(cardDiv);
+            });
+        }
+
+        function sortGiftCards(sortBy) {
+            let sorted = [...giftCards];
+            
+            switch(sortBy) {
+                case 'expiration':
+                    sorted.sort((a, b) => new Date(a.expirationDate) - new Date(b.expirationDate));
+                    break;
+                case 'credit':
+                    sorted.sort((a, b) => b.credit - a.credit);
+                    break;
+                case 'brand':
+                    sorted.sort((a, b) => a.brand.localeCompare(b.brand));
+                    break;
+            }
+            
+            renderGiftCards(sorted);
+        }
+
+        document.getElementById('sortBy').addEventListener('change', (e) => {
+            sortGiftCards(e.target.value);
+        });
+
+        // Initial render
+        sortGiftCards('expiration');
+    </script>
+</body>
+</html>
