@@ -734,11 +734,15 @@ def gift_card_brand():
     gift_card_pdf_path = UserGiftCards.save_gift_card_pdf(username, brand, credits, currency, random_key, qr_code_path)
 
     # Save the gift card record in the database (instantiate UserGiftCards)
-    gift_card = UserGiftCards(user_id=user.id, brand_name=brand, total_credits=credits, currency=currency, gift_card_code=random_key, qr_code_path=qr_code_path, pdf_path=gift_card_pdf_path)
+    gift_card = UserGiftCards(user_id=user.id, brand_name=brand, issue_date=datetime.now(), total_credits=credits, currency=currency, gift_card_code=random_key, qr_code_path=qr_code_path, pdf_path=gift_card_pdf_path)
     db.session.add(gift_card)
     db.session.commit()
     print(f'Gift card record saved in database for {username}, brand: {brand}, credits: {credits} {currency}')
 
+    # Save the gift card as a png image for display on the gift card page
+    gift_card_image_path = UserGiftCards.save_gift_card_image(username, brand, credits, currency, random_key, qr_code_path)
+    print(f'Gift card image saved at: {gift_card_image_path}')
+    
     # Subtract the gift card value from the user's total credits
     User.subtract_credits_for_gift_card(username, credits, brand)
 
@@ -762,10 +766,14 @@ def gift_cards_history():
     gift_cards = []
 
     if username:
-        gift_cards = UserGiftCards.query.filter_by(username=username).all()
+        # Get user_id
+        user = User.query.filter_by(username=username).first()
+        if not user:
+            return "User not found", 404
+        gift_cards = UserGiftCards.query.filter_by(user_id=user.id).all()
         print(f'gift_cards in gift_cards_history: {gift_cards}')
 
-    return render_template('brands_deals/gift_cards_history.html', username=username, gift_cards=gift_cards)
+    return render_template('brands_deals/user_gift_cards_history.html', username=username, gift_cards=gift_cards)
 
 @app.route('/light_contributions_tuto', methods=['GET'])
 def light_contributions_tuto():
