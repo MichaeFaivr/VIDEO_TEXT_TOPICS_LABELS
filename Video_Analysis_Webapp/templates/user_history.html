@@ -193,12 +193,14 @@
             </table>
         </div>
 
-        <div class="back-button-container">
-            <form action="{{ url_for('use_credits') }}" method="post">
-                <input type="hidden" name="username" value="{{ username }}">
-                <button type="submit" class="back-button" style="background-color: #28a745;">Use Your Credits</button>
-            </form>
-        </div>
+        {% if total_credits > 0 %}
+            <div class="back-button-container">
+                <form action="{{ url_for('use_credits', username=username) }}" method="get">
+                    <input type="hidden" name="username" value="{{ username }}">
+                    <button type="submit" class="back-button" style="background-color: #28a745;">Use Your Credits</button>
+                </form>
+            </div>
+        {% endif %}
 
         <form action="{{ url_for(request.endpoint) }}" method="get" class="back-button-container">
             <input type="hidden" name="key" value="value">
