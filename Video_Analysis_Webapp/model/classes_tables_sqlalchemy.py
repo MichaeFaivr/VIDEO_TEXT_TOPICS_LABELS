@@ -398,7 +398,8 @@ class UserGiftCards(db.Model):
     currency = db.Column(db.String(10), nullable=False, default='USD')
     brand_name = db.Column(db.String(500), nullable=True) # Associated brand for the gift card
     issue_date = db.Column(db.DateTime, server_default=db.func.now())
-    #expiration_date = db.Column(db.DateTime, nullable=False, default=lambda: db.func.now() + db.text("INTERVAL 1 YEAR"))
+    expiration_date = db.Column(db.DateTime, server_default=db.func.now())
+    is_expired = db.Column(db.Boolean, default=False)
     qr_code_path = db.Column(db.String(500), nullable=True)  # Path to stored QR code image
     pdf_path = db.Column(db.String(500), nullable=True)  # Path to stored PDF file
 
@@ -513,6 +514,52 @@ class UserGiftCards(db.Model):
 
         pdf.output(pdf_path)
         return pdf_path
+    
+    @classmethod
+    def save_gift_card_image(cls, username: str, brand: str, credits:  int, currency: str, gift_card_code: str, qr_code_path: str):
+        """
+        Save a simple gift card image with the gift card details and QR code.
+        Inputs:
+        - username: str, the username of the user
+        - brand: str, the brand of the gift card
+        - credits: int, the value of the gift card
+        - currency: str, the currency of the gift card
+        - gift_card_code: str, the unique code of the gift card
+        - qr_code_path: str, the path to the QR code image
+        Outputs:
+        - gift_card_image_path: str, the path to the generated gift card image
+        """
+        from PIL import Image, ImageDraw, ImageFont
+
+        current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        gift_card_image_path = f'static/gift_cards/{username}_{brand}_{current_time}_gift_card.png'
+
+        # Create a blank image
+        img = Image.new('RGB', (400, 250), color=(255, 255, 255))
+        d = ImageDraw.Draw(img)
+
+        # Load a font
+        font = ImageFont.load_default()
+
+        # Set expiration date
+        expiration_date = datetime.now().replace(year=datetime.now().year + 1)
+
+        # Add text to the image
+        d.text((10, 10), f"Gift Card for {username}", font=font, fill=(0, 0, 0))
+        d.text((10, 40), f"Issue Date: {datetime.now().strftime('%Y-%m-%d')}", font=font, fill=(0, 0, 0))
+        d.text((10, 70), f"Expiration Date: {expiration_date.strftime('%Y-%m-%d')}", font=font, fill=(0, 0, 0))
+        d.text((10, 110), f"Brand: {brand}", font=font, fill=(0, 0, 0))
+        d.text((10, 140), f"Credits: {credits} {currency}", font=font, fill=(0, 0, 0))
+        d.text((10, 170), f"Gift Card Code: {gift_card_code}", font=font, fill=(0, 0, 0))
+
+        # Add QR code image
+        qr_img = Image.open(qr_code_path)
+        qr_img = qr_img.resize((100, 100))
+        img.paste(qr_img, (280, 10))
+
+        # Save the image
+        img.save(gift_card_image_path)
+        return gift_card_image_path
     
 
 class UserApiUsageLogs(db.Model):
