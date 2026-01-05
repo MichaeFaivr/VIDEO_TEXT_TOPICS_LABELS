@@ -12,7 +12,7 @@
         Valid Contributions This Month: {{ nb_valid_contributions_this_month }}
     </p>
     <p style="text-align: center; font-size: 1.2rem; margin: 10px 0; color: #333;">
-        Total Credits: {{ total_credits }} {{ currency }}
+        Total Credits: {{ total_credits }}
     </p>
     <style>
         body {
@@ -176,7 +176,6 @@
                         <th>Video File</th>
                         <th>Date Time</th>
                         <th>Credit</th>
-                        <th>Currency</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -186,7 +185,6 @@
                         <td>{{ entry.contribution_file }}</td>
                         <td>{{ entry.timestamp }}</td>
                         <td>{{ entry.credit }}</td>
-                        <td>{{ entry.currency }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
