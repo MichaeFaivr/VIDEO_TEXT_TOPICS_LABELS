@@ -32,6 +32,7 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 20px;
+            text-align: center;
         }
 
         .card {
@@ -54,6 +55,7 @@
         .card-icon {
             font-size: 48px;
             margin-bottom: 15px;
+            text-align: center;
         }
 
         .card-title {
@@ -61,12 +63,14 @@
             font-weight: bold;
             margin-bottom: 8px;
             color: #0f1111;
+            text-align: center;
         }
 
         .card-description {
             font-size: 14px;
             color: #565959;
             line-height: 1.4;
+            text-align: center;
         }
 
         @media (max-width: 768px) {
@@ -84,7 +88,10 @@
 </head>
 <body>
     <div class="container">
-        <h1>Your Account : {{ username }}</h1>
+        <div style="display: flex; justify-content: space-between; align-items: left; max-width: 800px; margin: 0 auto; padding: 10px 15px;">
+            <div style="font-size: 24px; cursor: pointer;" onclick="window.location.href='/user_main_menu?username={{ username }}'">☰</div>
+            <h1>Your Account : {{ username }}</h1>
+        </div>
         <div class="grid">
             <a href="/user_account_infos?username={{ username }}" class="card">
                 <div class="card-icon">👤</div>
