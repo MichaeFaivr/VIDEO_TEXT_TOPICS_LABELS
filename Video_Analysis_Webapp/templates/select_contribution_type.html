@@ -1,100 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Select Contribution Type</title>
-    </head>
-    <body>
-        <nav style="background-color: #fff; border-bottom: 2px solid #1a73e8; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            <!-- Top block: Menu, SHAIRE name, and logo -->
-            <div style="display: flex; justify-content: space-between; align-items: center; max-width: 800px; margin: 0 auto; padding: 10px 15px;">
-                <div style="font-size: 24px; cursor: pointer;" onclick="window.location.href='/user_main_menu?username={{ username }}'">☰</div>
-                <div style="font-size: clamp(1.2rem, 3vw, 1.3em); font-family: 'Quicksand', sans-serif; font-weight: bold; color: #1a73e8; cursor: pointer;" onclick="window.location.href='/about_shaire'">SHAIRE</div>
-                <img src="/static/logo/Logo_SHAIRE3.PNG" alt="SHAIRE Logo" style="height: 80px; width: auto;">
-            </div>
-            
-            <!-- Bottom block: Four buttons horizontally -->
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 800px; margin: 0 auto; padding: 10px 15px;">
-                    <button id="accountMenuBtn" style="background-color: #1a73e8; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: clamp(14px, 2vw, 16px); white-space: nowrap;">
-                        Hi {{ username|title }} ▼
-
-                    <div id="accountDropdown" style="display: none; position: absolute; right: 0; top: 100%; background-color: white; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); min-width: 150px; max-width: 250px; z-index: 1000;">
-                        <a href="/user_account_services?username={{ username }}" style="display: block; padding: 10px 15px; color: #333; text-decoration: none; border-bottom: 1px solid #eee; font-size: clamp(12px, 2vw, 14px);">Account Services</a>
-                        <a href="/user_history?username={{ username }}" style="display: block; padding: 10px 15px; color: #333; text-decoration: none; border-bottom: 1px solid #eee; font-size: clamp(12px, 2vw, 14px);">History/Credits</a>
-                        <a href="/user_deals?username={{ username }}" style="display: block; padding: 10px 15px; color: #333; text-decoration: none; border-bottom: 1px solid #eee; font-size: clamp(12px, 2vw, 14px);">My Deals</a>
-                        <a href="/fill_update_your_profile/?username={{ username }}" style="display: block; padding: 10px 15px; color: #333; text-decoration: none; border-bottom: 4px solid #eee; font-size: clamp(12px, 2vw, 14px);">Preferences</a>
-                        <a href="/" style="display: block; padding: 10px 15px; color: #333; text-decoration: none; font-size: clamp(12px, 2vw, 14px);">🚪 Logout</a>
-                    </div>
-                </button>
-                
-                <button onclick="window.location.href='/user_account_services?username={{ username }}'" style="background-color: #1a73e8; color: white; padding: 12px; border: none; border-radius: 4px; cursor: pointer; font-size: clamp(12px, 1.8vw, 14px); white-space: nowrap; transition: all 0.3s ease;">
-                    Account Services
-                </button>
-                
-                <button onclick="window.location.href='/tutorial?username={{ username }}'" style="background-color: #ffa726; color: white; padding: 12px; border: none; border-radius: 4px; cursor: pointer; font-size: clamp(12px, 1.8vw, 14px); white-space: nowrap; transition: all 0.3s ease;">
-                    Tutorial
-                </button>
-                
-                <button onclick="window.location.href='/b2c-ai-agents?username={{ username }}'" style="background-color: #ff6b35; color: white; padding: 12px; border: none; border-radius: 4px; cursor: pointer; font-size: clamp(12px, 1.8vw, 14px); white-space: nowrap; transition: all 0.3s ease;">
-                    AI Agents
-                </button>
-                
-                <button onclick="window.location.href='/use_credits?username={{ username }}'" style="background-color: #28a745; color: white; padding: 12px; border: none; border-radius: 4px; cursor: pointer; font-size: clamp(12px, 1.8vw, 14px); white-space: nowrap; transition: all 0.3s ease;">
-                    Use Credits
-                </button>
-                
-                <button onclick="window.location.href='/select_expert_contributions?username={{ username }}'" style="background-color: #c65381; color: white; padding: 12px; border: none; border-radius: 4px; cursor: pointer; font-size: clamp(12px, 1.8vw, 14px); white-space: nowrap; transition: all 0.3s ease;">
-                    PRO/EXPERT
-                </button>
-            </div>
-        </nav>
-        <script>
-            document.getElementById('accountMenuBtn').addEventListener('click', function(e) {
-                e.stopPropagation();
-                const dropdown = document.getElementById('accountDropdown');
-                dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
-            });
-            
-            document.addEventListener('click', function() {
-                document.getElementById('accountDropdown').style.display = 'none';
-            });
-        </script>
-    <style>
-    html {
-        background: linear-gradient(135deg, #74b9ff 0%, #0984e3 30%, #fd79a8 70%, #fdcb6e 100%);
-        background-size: cover;
-    }
-    
-    body {
-        background-color: rgba(255, 255, 255, 0.962); /* Semi-transparent white for better readability */
-        border-radius: 12px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        margin-top: 10px;
-        margin-bottom: 20px;
-    }
-</style>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Select Contribution Type</title>
 </head>
 <body>
-    <header>
-        <style>
-            header h1 {
-                color: rgb(4, 4, 68);
-                font-size: clamp(2rem, 2.5vw, 3em); /* Responsive font size that adapts to screen size */
-            }
-            header p {
-                font-size: clamp(1rem, 2.5vw, 1.5em); /* Responsive font size that adapts to screen size */
-                color: rgb(10, 10, 100);
-            }
-        </style>
-        <h1 style="margin-top: 6px; margin-bottom: 2px;">Welcome to Shaire</h1>
-        <p style="margin: 1px 0;"><em>Choose/Make/Upload a Contribution & Earn Credits</em></p>
-        <p style="margin: 1px 0; color: red;"><em>Only 1% of potential revenues is currently displayed</em></p>
-    </header>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -533,7 +444,7 @@
 
         <div style="grid-column: 1 / -1; background: linear-gradient(135deg, #90ee90, #32cd32, #228b22); padding: 8px; border-radius: 8px; margin-bottom: 0px; max-height: 60px; border: 3px solid #006400; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
         <h2 style="text-align: center; margin: 0; color: #000000; font-weight: bold; font-size: clamp(1rem, 1vw, 1.2rem); display: flex; align-items: center; justify-content: center; height: 100%;">
-            MEDIUM : AI AGENTS Services => CREDITS of $/€100-500 / Mth
+            MEDIUM : AI AGENTS => 100-500 CREDITS / Mth
         </h2>
     </div>
     <div class="contribution-scroll-container">
@@ -554,6 +465,132 @@
             </form>
         </div>
     </div>
+
+    <header>
+        <style>
+            header h1 {
+                color: rgb(4, 4, 68);
+                font-size: clamp(2rem, 2.5vw, 3em); /* Responsive font size that adapts to screen size */
+            }
+            header p {
+                font-size: clamp(1rem, 2.5vw, 1.5em); /* Responsive font size that adapts to screen size */
+                color: rgb(10, 10, 100);
+            }
+            body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f3f3;
+            padding: 20px;
+            }
+
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+
+            h1 {
+                font-size: 28px;
+                margin-bottom: 30px;
+                color: #0f1111;
+            }
+
+            .grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+            }
+
+            .card {
+                background-color: white;
+                border: 1px solid #d5d9d9;
+                border-radius: 8px;
+                padding: 30px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                text-decoration: none;
+                color: inherit;
+                display: block;
+            }
+
+            .card:hover {
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                border-color: #c7c7c7;
+            }
+
+            .card-icon {
+                font-size: 48px;
+                margin-bottom: 15px;
+            }
+
+            .card-title {
+                font-size: 18px;
+                font-weight: bold;
+                margin-bottom: 8px;
+                color: #0f1111;
+            }
+
+            .card-description {
+                font-size: 14px;
+                color: #565959;
+                line-height: 1.4;
+            }
+
+            @media (max-width: 768px) {
+                .grid {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+            }
+
+            @media (max-width: 480px) {
+                .grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
+        <div class="container">
+            <div style="display: flex; justify-content: space-between; align-items: center; max-width: 800px; margin: 0 auto; padding: 10px 15px;">
+                <div style="font-size: 24px; cursor: pointer;" onclick="window.location.href='/user_main_menu?username={{ username }}'">☰</div>
+                <h1>Your Account : {{ username }}</h1>
+            </div>
+            <div class="grid">
+                <a href="/user_account_infos?username={{ username }}" class="card">
+                    <div class="card-icon">👤</div>
+                    <div class="card-title">Account Infos</div>
+                    <div class="card-description">Edit login, name, and mobile number</div>
+                </a>
+
+                <a href="/user_account_services?username={{ username }}" class="card">
+                    <div class="card-icon">💳</div>
+                    <div class="card-title">All Services</div>
+                    <div class="card-description">Access all available services</div>
+                </a>
+
+                <a href="#" class="card">
+                    <div class="card-icon">📚</div>
+                    <div class="card-title">Tutorial</div>
+                    <div class="card-description">How to use the platform</div>
+                </a>
+
+                <a href="/b2c-ai-agents?username={{ username }}" class="card">
+                    <div class="card-icon">🤖</div>
+                    <div class="card-title">Agents</div>
+                    <div class="card-description">Configure and manage your agents</div>
+                </a>
+
+                <a href="/use_credits?username={{ username }}" class="card">
+                    <div class="card-icon">📦</div>
+                    <div class="card-title">Use Your Credits</div>
+                    <div class="card-description">Ways to utilize your credits effectively</div>
+                </a>
+
+                <a href="/select_expert_contributions?username={{ username }}" class="card">
+                    <div class="card-icon">🎓</div>
+                    <div class="card-title">PRO/EXPERT</div>
+                    <div class="card-description">Contributions for Experts</div>
+                </a>
+            </div>
+        </div>
+    </header>
+
 
     <footer style="margin-top: 30px; padding: 20px; background-color: #e4dcdc; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
         <div style="text-align: left;">
