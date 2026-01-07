@@ -172,6 +172,12 @@ def select_contribution_type():
         else:
             # Redirect back to login if no username provided
             return redirect(url_for('login_page')) 
+    else:
+        # For GET requests, get username from URL parameters
+        username = request.args.get('username')
+        print(f'username in select_contribution_type GET: {username}')
+        if username:
+            return render_template('select_contribution_type.html', username=username) # Pass username to the upload page
         
 
 """ Route to display information about no personal data collection """
@@ -196,7 +202,8 @@ def login_user():
     if user:
         # Redirect to the upload video page with username as a parameter
         # Login successful, redirect to select_contribution_type route
-        return redirect(url_for('select_contribution_type'), code=307)
+        #return redirect(url_for('select_contribution_type'), code=307)
+        return render_template('user_account_services.html', username=username)
     else:
         error_message = "Invalid credentials. Please try again."
         return render_template('login_page.html', error=error_message)
