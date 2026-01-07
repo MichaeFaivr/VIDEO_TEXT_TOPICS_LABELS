@@ -71,7 +71,7 @@
     </style>
 </head>
 <body>
-    <h1>My Gift Cards 🎁</h1>
+    <h1>{{ username }} : My Gift Cards 🎁</h1>
     
     <div class="controls">
         <label for="sortBy">Sort by:</label>
@@ -80,33 +80,56 @@
             <option value="credit">Credit Amount</option>
             <option value="brand">Brand Name</option>
         </select>
-    </div>
 
-    <div class="gift-cards-container" id="giftCardsContainer">
-        {% for card in gift_cards %}
-            <div class="gift-card {% if card.is_expired %}expired{% endif %}">
+        <label for="filterBrand">Filter by brand:</label>
+            <select id="filterBrand">
+                <option value="all">All Brands</option>
+                {% for brand in gift_cards|map(attribute='brand_name')|unique|sort %}
+                <option value="{{ brand }}">{{ brand }}</option>
+                {% endfor %}
+            </select>
+            </div>
+
+            <div class="gift-cards-container" id="giftCardsContainer">
+            {% for card in gift_cards %}
+                <div class="gift-card {% if card.is_expired %}expired{% endif %}" data-brand="{{ card.brand_name }}">
                 <div class="gift-card-brand">{{ card.brand_name }}</div>
                 <div class="gift-card-credit">${{ "%.2f"|format(card.total_credits) }}</div>
                 <div class="gift-card-expiration">
                 {% if card.is_expired %}Expired: {% else %}Issued on: {% endif %}{{ card.issue_date }}
                 </div>
+                </div>
+            {% endfor %}
             </div>
-        {% endfor %}
-    </div>
 
-    <script>
-        // Sample data - replace with actual data from backend
-        let giftCards = gift_cards;
+            <script>
+            function filterGiftCards(brand) {
+                const cards = document.querySelectorAll('.gift-card');
+                cards.forEach(card => {
+                if (brand === 'all' || card.dataset.brand === brand) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+                });
+            }
 
-        function isExpired(date) {
-            return new Date(date) < new Date();
-        }
+            document.getElementById('filterBrand').addEventListener('change', (e) => {
+                filterGiftCards(e.target.value);
+            });
 
-        function renderGiftCards(cards) {
-            const container = document.getElementById('giftCardsContainer');
-            container.innerHTML = '';
-            
-            cards.forEach(card => {
+            // Sample data - replace with actual data from backend
+            let giftCards = gift_cards;
+
+            function isExpired(date) {
+                return new Date(date) < new Date();
+            }
+
+            function renderGiftCards(cards) {
+                const container = document.getElementById('giftCardsContainer');
+                container.innerHTML = '';
+                
+                cards.forEach(card => {
                 const expired = isExpired(card.expirationDate);
                 const cardDiv = document.createElement('div');
                 cardDiv.className = `gift-card ${expired ? 'expired' : ''}`;
@@ -114,17 +137,17 @@
                     <div class="gift-card-brand">${card.brand}</div>
                     <div class="gift-card-credit">$${card.credit.toFixed(2)}</div>
                     <div class="gift-card-expiration">
-                        ${expired ? 'Expired: ' : 'Expires: '}${card.expirationDate}
+                    ${expired ? 'Expired: ' : 'Expires: '}${card.expirationDate}
                     </div>
                 `;
                 container.appendChild(cardDiv);
-            });
-        }
+                });
+            }
 
-        function sortGiftCards(sortBy) {
-            let sorted = [...giftCards];
-            
-            switch(sortBy) {
+            function sortGiftCards(sortBy) {
+                let sorted = [...giftCards];
+                
+                switch(sortBy) {
                 case 'expiration':
                     sorted.sort((a, b) => new Date(a.expirationDate) - new Date(b.expirationDate));
                     break;
@@ -134,17 +157,20 @@
                 case 'brand':
                     sorted.sort((a, b) => a.brand.localeCompare(b.brand));
                     break;
+                }
+                
+                renderGiftCards(sorted);
             }
-            
-            renderGiftCards(sorted);
-        }
 
-        document.getElementById('sortBy').addEventListener('change', (e) => {
-            sortGiftCards(e.target.value);
-        });
+            document.getElementById('sortBy').addEventListener('change', (e) => {
+                sortGiftCards(e.target.value);
+            });
 
-        // Initial render
-        sortGiftCards('expiration');
-    </script>
+            // Initial render
+            sortGiftCards('expiration');
+            </script>
+        </body>
+        </html>
+    </div>
 </body>
 </html>
