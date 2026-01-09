@@ -787,6 +787,13 @@ def light_contributions_tuto():
     username = request.args.get('username')
     return render_template('annexes/light_contributions_tuto.html', username=username)
 
+
+""" GAMING PAGES RELATED ROUTES """
+@app.route('/gaming_leisure', methods=['GET'])
+def gaming_main_menu():
+    username = request.args.get('username')
+    return render_template('gaming_leisure/gaming_main_menu.html', username=username)
+
 """ COMPANY PAGES RELATED ROUTES """
 
 @app.route('/company_contact', methods=['GET'])
