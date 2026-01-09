@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaming Space</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .games-list {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .game-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .game-item:hover {
+            transform: translateX(10px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .game-icon {
+            width: 60px;
+            height: 60px;
+            background: #667eea;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            margin-right: 20px;
+        }
+
+        .game-info {
+            flex: 1;
+        }
+
+        .game-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .game-genre {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .games-list::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .games-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .games-list::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+
+        .games-list::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Gaming Space</h1>
+        <div class="games-list">
+            <div class="game-item">
+                <div class="game-icon">🎯</div>
+                <div class="game-info">
+                    <div class="game-title">Call of Duty: Modern Warfare</div>
+                    <div class="game-genre">Action, FPS</div>
+                </div>
+            </div>
+            <div class="game-item">
+                <div class="game-icon">⚔️</div>
+                <div class="game-info">
+                    <div class="game-title">The Witcher 3: Wild Hunt</div>
+                    <div class="game-genre">RPG, Adventure</div>
+                </div>
+            </div>
+            <div class="game-item">
+                <div class="game-icon">🏎️</div>
+                <div class="game-info">
+                    <div class="game-title">Forza Horizon 5</div>
+                    <div class="game-genre">Racing, Sports</div>
+                </div>
+            </div>
+            <div class="game-item">
+                <div class="game-icon">🎲</div>
+                <div class="game-info">
+                    <div class="game-title">Minecraft</div>
+                    <div class="game-genre">Sandbox, Survival</div>
+                </div>
+            </div>
+            <div class="game-item">
+                <div class="game-icon">👾</div>
+                <div class="game-info">
+                    <div class="game-title">Among Us</div>
+                    <div class="game-genre">Multiplayer, Party</div>
+                </div>
+            </div>
+            <div class="game-item">
+                <div class="game-icon">🌟</div>
+                <div class="game-info">
+                    <div class="game-title">Elden Ring</div>
+                    <div class="game-genre">RPG, Dark Fantasy</div>
+                </div>
+            </div>
+            <div class="game-item">
+                <div class="game-icon">⚡</div>
+                <div class="game-info">
+                    <div class="game-title">Apex Legends</div>
+                    <div class="game-genre">Battle Royale, FPS</div>
+                </div>
+            </div>
+            <div class="game-item">
+                <div class="game-icon">🏹</div>
+                <div class="game-info">
+                    <div class="game-title">The Legend of Zelda: BOTW</div>
+                    <div class="game-genre">Adventure, Action</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaming Main Menu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f3f3;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 30px;
+            color: #0f1111;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            text-align: center;
+        }
+
+        .card {
+            background-color: white;
+            border: 1px solid #d5d9d9;
+            border-radius: 8px;
+            padding: 30px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-color: #c7c7c7;
+        }
+
+        .card-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #0f1111;
+            text-align: center;
+        }
+
+        .card-description {
+            font-size: 14px;
+            color: #565959;
+            line-height: 1.4;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <header style="text-align: center; padding: 20px 0; background-color: #fff; margin-bottom: 20px;">
+        <img src="/static/logo/LOGO_SHAIRE_GAMING_07Jan26.png" alt="Shaire Logo" style="max-width: 300px; height: auto;">
+    </header>
+</head>
+
+<body>
+    <div class="container">
+        <div style="display: flex; justify-content: space-between; align-items: left; max-width: 800px; margin: 0 auto; padding: 10px 15px;">
+            <h1>Your Account : {{ username }}</h1>
+            <div style="font-size: 24px; cursor: pointer;" onclick="window.location.href='/user_main_menu?username={{ username }}'">☰</div>
+        </div>
+        <div class="grid" style="grid-auto-columns: 1fr;">
+            <a href="/free_video_games?username={{ username }}" class="card">
+                <div class="card-icon">🎮</div>
+                <div class="card-title">Free Video Games</div>
+                <div class="card-description">Enjoy a variety of free games</div>
+            </a>
+            <a href="/create_video_games?username={{ username }}" class="card">
+                <div class="card-icon">🎨</div>
+                <div class="card-title">Create Video Games</div>
+                <div class="card-description">Design your own games</div>
+            </a>
+            <a href="/create_escape_games?username={{ username }}" class="card">
+                <!-- Icon container for escape game activity - displays a decorative icon representing escape room experiences -->
+                <div class="card-icon">🔓</div>
+                <div class="card-title">Create Escape Games</div>
+                <div class="card-description">Design your escape games</div>
+            </a>
+            <a href="/create_characters?username={{ username }}" class="card">
+                <div class="card-icon">🖌️</div>
+                <div class="card-title">Create Characters</div>
+                <div class="card-description">Build your own game worlds and characters</div>
+            </a>
+            <a href="/create_environments?username={{ username }}" class="card">
+                <div class="card-icon">🌄</div>
+                <div class="card-title">Create Environments</div>
+                <div class="card-description">Build your own game worlds and characters</div>
+            </a>
+            <a href="/gift_cards_history?username={{ username }}" class="card">
+                <div class="card-icon">🎁</div>
+                <div class="card-title">Gifts from CES Brands</div>
+                <div class="card-description">CES Brands are generous partners offering exclusive gifts</div>
+            </a>
+            <a href="#" class="card">
+                <div class="card-icon">🤝</div>
+                <div class="card-title">Assistant</div>
+                <div class="card-description">Assistant to help you with Gaming Incomes</div>
+            </a>
+            <a href="/b2c-ai-agents?username={{ username }}" class="card">
+                <div class="card-icon">🤖</div>
+                <div class="card-title">Gaming Agents</div>
+                <div class="card-description">Configure and manage your Game-agents</div>
+            </a>
+            <a href="/display_user_messages?username={{ username }}" class="card">
+                <div class="card-icon">✉️</div>
+                <div class="card-title">Messages</div>
+                <div class="card-description">View messages and notifications</div>
+            </a>
+            <a href="#" class="card">
+                <div class="card-icon">💡</div>
+                <div class="card-title">Your Proposals</div>
+                <div class="card-description">Submit and manage your proposals</div>
+            </a>
+            <a href="#" class="card">
+                <div class="card-icon">🚀</div>
+                <div class="card-title">Boost your profile</div>
+                <div class="card-description">Enhance your profile visibility and features</div>
+            </a>
+            <a href="#" class="card">
+                <div class="card-icon">📚</div>
+                <div class="card-title">Tutorials</div>
+                <div class="card-description">Access guides and learning resources</div>
+            </a>
+            <a href="/gaming_leisure?username={{ username }}" class="card">
+                <div class="card-icon">🎮</div>
+                <div class="card-title">Games & Leisure</div>
+                <div class="card-description">Explore games and leisure activities</div>
+            </a>
+        </div>
+    </div>
+</body>
+</html>
