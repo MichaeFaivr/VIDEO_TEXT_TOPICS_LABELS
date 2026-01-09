@@ -89,14 +89,20 @@
 <body>
     <div class="container">
         <div style="display: flex; justify-content: space-between; align-items: left; max-width: 800px; margin: 0 auto; padding: 10px 15px;">
-            <div style="font-size: 24px; cursor: pointer;" onclick="window.location.href='/user_main_menu?username={{ username }}'">☰</div>
             <h1>Your Account : {{ username }}</h1>
+            <div style="font-size: 24px; cursor: pointer;" onclick="window.location.href='/user_main_menu?username={{ username }}'">☰</div>
         </div>
         <div class="grid">
             <a href="/user_account_infos?username={{ username }}" class="card">
                 <div class="card-icon">👤</div>
                 <div class="card-title">Account Infos</div>
                 <div class="card-description">Edit login, name, and mobile number</div>
+            </a>
+
+            <a href="/select_contribution_type?username={{ username }}" class="card">
+                <div class="card-icon">🏗️</div>
+                <div class="card-title">Build Credits</div>
+                <div class="card-description">Earn credits through contributions</div>
             </a>
 
             <a href="/user_history?username={{ username }}" class="card">
@@ -171,7 +177,7 @@
                 <div class="card-description">Access guides and learning resources</div>
             </a>
 
-            <a href="#" class="card">
+            <a href="/gaming_leisure?username={{ username }}" class="card">
                 <div class="card-icon">🎮</div>
                 <div class="card-title">Games & Leisure</div>
                 <div class="card-description">Explore games and leisure activities</div>

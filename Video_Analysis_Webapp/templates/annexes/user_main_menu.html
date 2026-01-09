@@ -61,6 +61,33 @@
             width: 20px;
             display: inline-block;
         }
+
+        .back-button-container {
+            text-align: center;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+        
+        .back-button {
+            padding: clamp(0.75rem, 3vw, 1rem) clamp(1.5rem, 5vw, 2rem);
+            font-size: clamp(0.875rem, 3vw, 1rem);
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            min-height: 44px; /* Touch-friendly minimum */
+            min-width: 100px;
+        }
+        
+        .back-button:hover {
+            background-color: #5a6268;
+        }
+        
+        .back-button:active {
+            transform: translateY(1px);
+        }
     </style>
 </head>
 <body>
@@ -106,6 +133,14 @@
                 </a>
             </li>
         </ul>
+    </div>
+
+    <div class="back-button-container">
+        <form action="{{ url_for(request.endpoint) }}" method="get">
+            <input type="hidden" name="key" value="value">
+            <input type="hidden" name="username" value="{{ username }}">
+            <button type="button" onclick="history.back()" class="back-button">Go Back</button>
+        </form>
     </div>
 </body>
 </html>

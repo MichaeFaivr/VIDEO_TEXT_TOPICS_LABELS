@@ -20,89 +20,87 @@
     <title>Select Contribution Type</title>
 </head>
 <body>
-    <header>
-        <style>
-            header h1 {
-                color: rgb(4, 4, 68);
-                font-size: clamp(2rem, 2.5vw, 3em); /* Responsive font size that adapts to screen size */
-            }
-            header p {
-                font-size: clamp(1rem, 2.5vw, 1.5em); /* Responsive font size that adapts to screen size */
-                color: rgb(10, 10, 100);
-            }
+    <style>
+        header h1 {
+            color: rgb(4, 4, 68);
+            font-size: clamp(2rem, 2.5vw, 3em); /* Responsive font size that adapts to screen size */
+        }
+        header p {
+            font-size: clamp(1rem, 2.5vw, 1.5em); /* Responsive font size that adapts to screen size */
+            color: rgb(10, 10, 100);
+        }
 
-            body {
-            font-family: Arial, sans-serif;
-            background-color: #f3f3f3;
-            padding: 20px;
-            }
+        body {
+        font-family: Arial, sans-serif;
+        background-color: #f3f3f3;
+        padding: 20px;
+        }
 
-            .container {
-                max-width: 1200px;
-                margin: 0 auto;
-            }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
 
-            h1 {
-                font-size: 20px;
-                margin-bottom: 20px;
-                color: #0f1111;
-            }
+        h1 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #0f1111;
+        }
 
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .card {
+            background-color: white;
+            border: 1px solid #d5d9d9;
+            border-radius: 8px;
+            padding: 30px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-color: #c7c7c7;
+        }
+
+        .card-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #0f1111;
+        }
+
+        .card-description {
+            font-size: 14px;
+            color: #565959;
+            line-height: 1.4;
+        }
+
+        @media (max-width: 768px) {
             .grid {
-                display: grid;
-                grid-template-columns: repeat(3, 1fr);
-                gap: 20px;
+                grid-template-columns: repeat(2, 1fr);
             }
+        }
 
-            .card {
-                background-color: white;
-                border: 1px solid #d5d9d9;
-                border-radius: 8px;
-                padding: 30px;
-                cursor: pointer;
-                transition: all 0.2s ease;
-                text-decoration: none;
-                color: inherit;
-                display: block;
+        @media (max-width: 480px) {
+            .grid {
+                grid-template-columns: 1fr;
             }
+        }
+    </style>
 
-            .card:hover {
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                border-color: #c7c7c7;
-            }
-
-            .card-icon {
-                font-size: 48px;
-                margin-bottom: 15px;
-            }
-
-            .card-title {
-                font-size: 18px;
-                font-weight: bold;
-                margin-bottom: 8px;
-                color: #0f1111;
-            }
-
-            .card-description {
-                font-size: 14px;
-                color: #565959;
-                line-height: 1.4;
-            }
-
-            @media (max-width: 768px) {
-                .grid {
-                    grid-template-columns: repeat(2, 1fr);
-                }
-            }
-
-            @media (max-width: 480px) {
-                .grid {
-                    grid-template-columns: 1fr;
-                }
-            }
-        </style>
-        <h1>{{ username }} : EXPERT Contributions</h1>
-    </header>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -299,6 +297,10 @@
             border-radius: 5px; /* Optional: rounded corners */
         }
     </style>
+
+    <header style="text-align: center; padding: 20px 0; background-color: #fff; margin-bottom: 20px;">
+        <img src="/static/logo/LOGO_SHAIRE_Experts_07janv2026.png" alt="Shaire Logo" style="max-width: 300px; height: auto;">
+    </header>
 
     <div onclick="window.location.href='/light_contributions_tuto?username={{ username }}'" style="grid-column: 1 / -1; background: linear-gradient(135deg, #90ee90, #32cd32, #228b22); padding: 8px; border-radius: 8px; margin-bottom: 0px; max-height: 60px; border: 3px solid #006400; box-shadow: 0 4px 8px rgba(0,0,0,0.2); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 12px rgba(0,0,0,0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.2)'">
         <h2 style="text-align: center; margin: 0; color: #000000; font-weight: bold; font-size: clamp(1rem, 1.2vw, 1.5rem); display: flex; align-items: center; justify-content: center; height: 100%;">
@@ -503,8 +505,8 @@
         </style>
         <div class="container">
             <div style="display: flex; justify-content: space-between; align-items: center; max-width: 800px; margin: 0 auto; padding: 10px 15px;">
-                <div style="font-size: 24px; cursor: pointer;" onclick="window.location.href='/user_main_menu?username={{ username }}'">☰</div>
                 <h1>Your Account : {{ username }}</h1>
+                <div style="font-size: 24px; cursor: pointer;" onclick="window.location.href='/user_main_menu?username={{ username }}'">☰</div>
             </div>
             <div class="grid">
                 <a href="/user_account_infos?username={{ username }}" class="card">
@@ -537,10 +539,10 @@
                     <div class="card-description">Ways to utilize your credits effectively</div>
                 </a>
 
-                <a href="/select_expert_contributions?username={{ username }}" class="card">
-                    <div class="card-icon">🎓</div>
-                    <div class="card-title">PRO/EXPERT</div>
-                    <div class="card-description">Contributions for Experts</div>
+                <a href="/select_contribution_type?username={{ username }}" class="card">
+                    <div class="card-icon">✅</div>
+                    <div class="card-title">EASY/MEDIUM</div>
+                    <div class="card-description">Contributions for Anyone</div>
                 </a>
             </div>
         </div>
@@ -555,14 +557,31 @@
                 footer p {
                     font-family: 'Times New Roman', serif;
                 }
+                @media (max-width: 768px) {
+                    footer .footer-columns {
+                        flex-direction: column !important;
+                    }
+                    footer .footer-columns > div {
+                        margin-right: 0 !important;
+                        margin-bottom: 20px;
+                    }
+                }
             </style>
-            <div style="display: flex; justify-content: space-between; margin-top: 1px;">
+            <div class="footer-columns" style="display: flex; justify-content: space-between; margin-top: 1px;">
                 <div style="flex: 1; margin-right: 20px;">
                     <h4 style="color: #041122; margin-bottom: 10px; font-size: clamp(1rem, 2vw, 1.2em);">Membership</h4>
                     <ul style="list-style: none; padding: 0; margin: 0;">
                         <li style="margin-bottom: 5px; border-bottom: 1px solid #ccc; padding-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none; font-size: clamp(14px, 1.5vw, 16px); transition: font-weight 0.2s;" onmouseover="this.style.fontWeight='bold'" onmouseout="this.style.fontWeight='normal'">Join Now</a></li>
                         <li style="margin-bottom: 5px; border-bottom: 1px solid #ccc; padding-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none; font-size: clamp(14px, 1.5vw, 16px); transition: font-weight 0.2s;" onmouseover="this.style.fontWeight='bold'" onmouseout="this.style.fontWeight='normal'">Benefits</a></li>
-                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none; font-size: clamp(14px, 1.5vw, 16px); transition: font-weight 0.2s;" onmouseover="this.style.fontWeight='bold'" onmouseout="this.style.fontWeight='normal'">Pricing</a></li>
+                        <li style="margin-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none; font-size: clamp(14px, 1.5vw, 16px); transition: font-weight 0.2s;" onmouseover="this.style.fontWeight='bold'" onmouseout="this.style.fontWeight='normal'">Solutions</a></li>
+                    </ul>
+                </div>
+                <div style="flex: 1; margin-right: 20px;">
+                    <h4 style="color: #041122; margin-bottom: 10px; font-size: clamp(1rem, 2vw, 1.2em);">Policies</h4>
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <li style="margin-bottom: 5px; border-bottom: 1px solid #ccc; padding-bottom: 5px;"><a href="/terms_and_conditions" style="color: #230303; text-decoration: none; font-size: clamp(14px, 1.5vw, 16px); transition: font-weight 0.2s;" onmouseover="this.style.fontWeight='bold'" onmouseout="this.style.fontWeight='normal'">Terms of use</a></li>
+                        <li style="margin-bottom: 5px; border-bottom: 1px solid #ccc; padding-bottom: 5px;"><a href="/rgpd_compliance" style="color: #230303; text-decoration: none; font-size: clamp(14px, 1.5vw, 16px); transition: font-weight 0.2s;" onmouseover="this.style.fontWeight='bold'" onmouseout="this.style.fontWeight='normal'">RGPD</a></li>
+                        <li style="margin-bottom: 5px; border-bottom: 1px solid #ccc; padding-bottom: 5px;"><a href="/cookies_policy" style="color: #230303; text-decoration: none; font-size: clamp(14px, 1.5vw, 16px); transition: font-weight 0.2s;" onmouseover="this.style.fontWeight='bold'" onmouseout="this.style.fontWeight='normal'">Cookies</a></li>
                     </ul>
                 </div>
                 <div style="flex: 1; margin-right: 20px;">
@@ -570,7 +589,7 @@
                     <ul style="list-style: none; padding: 0; margin: 0;">
                         <li style="margin-bottom: 5px; border-bottom: 1px solid #ccc; padding-bottom: 5px;"><a href="/contact_us?username={{ username }}" style="color: #230303; text-decoration: none;  font-size: clamp(14px, 1.5vw, 16px); transition: font-weight 0.2s;" onmouseover="this.style.fontWeight='bold'" onmouseout="this.style.fontWeight='normal'">Contact Us</a></li>
                         <li style="margin-bottom: 5px; border-bottom: 1px solid #ccc; padding-bottom: 5px;"><a href="#" style="color: #230303; text-decoration: none;  font-size: clamp(14px, 1.5vw, 16px); transition: font-weight 0.2s;" onmouseover="this.style.fontWeight='bold'" onmouseout="this.style.fontWeight='normal'">Support</a></li>
-                        <li style="margin-bottom: 5px; border-bottom: 1px solid #ccc; padding-bottom: 5px;"><a href="/faq_and_bot" style="color: #230303; text-decoration: none;  font-size: clamp(14px, 1.5vw, 16px); transition: font-weight 0.2s;" onmouseover="this.style.fontWeight='bold'" onmouseout="this.style.fontWeight='normal'">FAQ</a></li>
+                        <li style="margin-bottom: 5px; border-bottom: 1px solid #ccc; padding-bottom: 5px;"><a href="/faq_and_bot?username={{ username }}" style="color: #230303; text-decoration: none;  font-size: clamp(14px, 1.5vw, 16px); transition: font-weight 0.2s;" onmouseover="this.style.fontWeight='bold'" onmouseout="this.style.fontWeight='normal'">FAQ</a></li>
                         <li style="margin-bottom: 5px;"><a href="/specifications" style="color: #230303; text-decoration: none;  font-size: clamp(14px, 1.5vw, 16px); transition: font-weight 0.2s;" onmouseover="this.style.fontWeight='bold'" onmouseout="this.style.fontWeight='normal'">Specifications</a></li>
                     </ul>
                 </div>
