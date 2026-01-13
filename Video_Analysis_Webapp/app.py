@@ -455,8 +455,11 @@ def use_credits():
     for credit in brand_credits:
         brand_credits_dict[credit.brand_name] = credit.credit
 
+    # Instruction message
+    instruction = "No brand showing yet in your credits." if not brand_credits_dict else "Click on a brand row to create a gift card."
+
     print(f'username in use_credits: {username}')
-    return render_template('brands_deals/use_credits.html', username=username, contributions=contributions, total_credits=current_credits, total_valid_contributions=total_valid_contributions, currency=currency, brand_credits_dict=brand_credits_dict)
+    return render_template('brands_deals/use_credits.html', username=username, contributions=contributions, total_credits=current_credits, total_valid_contributions=total_valid_contributions, currency=currency, brand_credits_dict=brand_credits_dict, instruction=instruction)
 
 
 """ Route for accessing Pro/Expert contributions page """
