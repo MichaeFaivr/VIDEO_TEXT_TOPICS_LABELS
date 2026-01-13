@@ -1012,7 +1012,11 @@ def result():
         save_video_analysis_to_db_sqlalchemy(username, video_file.filename, payment, currency, brand_names)
 
         # Calculate equity share based on payment
-        equity_share = User.compute_equity_share(username)
+        # 0 additional equity share if the contribution is not validated
+        if compliance_result == 'Not Compliant':
+            equity_share = 0.0
+        else:
+            equity_share = User.compute_equity_share(username)
         
         # Render results page
         """
@@ -1026,13 +1030,14 @@ def result():
 
         """ Display only the validation results page """
         # NB: at this stage, compliance_dict contains compliance_metrics, result, payment, currency (3 int/float values and 1 string value)
+        # Do not display the added equity share info, since it would at least require a disclaimer about the non gurantee of equity shares computation
+        # for this specific contribution only.
         return render_template('display_video_validation.html',
                             username=username,
                             video_path=video_path,
                             compliance_metrics=compliance_metrics,
                             compliance_result=compliance_result,
                             payment=payment,
-                            equity_share=equity_share,
                             compliance_dict=analysis_results.get('compliance_dict', {}))
     
     except Exception as e:
