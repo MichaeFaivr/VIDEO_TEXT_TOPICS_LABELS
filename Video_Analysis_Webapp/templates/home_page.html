@@ -3,6 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        if (performance.navigation.type === 2) {
+            location.reload(true);
+        }
+    </script>
+    <script>
+        // Clear navigation history when landing on this page
+        if (window.history && window.history.replaceState) {
+            window.history.replaceState(null, null, window.location.href);
+        }
+    </script>
     <title>Video Analysis Platform - Home</title>
     <style>
         * {
