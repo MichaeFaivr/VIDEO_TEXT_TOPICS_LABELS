@@ -1,5 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
+<script>
+    // Prevent navigation backward by pushing current state again
+    // Disable browser back button
+    (function(global) {
+        if(typeof(global.history.pushState) == 'function') {
+            global.history.pushState(null, null, global.location.href);
+            global.addEventListener('popstate', function() {
+                global.history.pushState(null, null, global.location.href);
+            }, false);
+        }
+    })(window);
+    history.pushState(null, null, location.href);
+    window.onpopstate = function() {
+        history.pushState(null, null, location.href);
+    };
+
+    // Prevent navigation backward by pushing current state again
+    // Disable browser back button
+    (function(global) {
+        if(typeof(global.history.pushState) == 'function') {
+            global.history.pushState(null, null, global.location.href);
+            global.addEventListener('popstate', function() {
+                global.history.pushState(null, null, global.location.href);
+            }, false);
+        }
+    })(window);
+    history.pushState(null, null, location.href);
+    window.onpopstate = function() {
+        history.pushState(null, null, location.href);
+    };
+
+    // Forward navigation prevention not beyond one step
+    // Prevent forward navigation
+    window.addEventListener('beforeunload', function() {
+        history.pushState(null, null, location.href);
+    });
+    
+    // Clear forward history on page load
+    if (window.history && window.history.pushState) {
+        window.history.pushState(null, null, window.location.href);
+        window.history.forward();
+    }
+</script>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -187,6 +231,11 @@
                 <div class="card-icon">⚙️</div>
                 <div class="card-title">Settings</div>
                 <div class="card-description">Manage your account settings</div>
+            </a>
+            <a href="/" class="card">
+                <div class="card-icon">🚪</div>
+                <div class="card-title">Logout</div>
+                <div class="card-description">Sign out of your account</div>
             </a>
         </div>
     </div>
