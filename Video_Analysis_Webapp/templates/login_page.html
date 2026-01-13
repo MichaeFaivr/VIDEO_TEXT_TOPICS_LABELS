@@ -133,7 +133,22 @@
         </a>
         <!-- Lien vers la page de presentation du Deal -->
 
-        <form action="{{ url_for('login_user') }}" method="post">
+        <form action="{{ url_for('login_user') }}" method="post" onload="this.reset();">
+            <script>
+                // Clear form fields when page loads or when navigating back
+                window.addEventListener('load', function() {
+                    document.getElementById('username').value = '';
+                    document.getElementById('password').value = '';
+                });
+                
+                // Also clear on pageshow (handles back button navigation)
+                window.addEventListener('pageshow', function(event) {
+                    if (event.persisted) {
+                        document.getElementById('username').value = '';
+                        document.getElementById('password').value = '';
+                    }
+                });
+            </script>
             <div class="input-wrapper">
                 <label class="field-label" for="username">Username</label>
                 <input class="input-field" type="text" id="username" name="username" required>

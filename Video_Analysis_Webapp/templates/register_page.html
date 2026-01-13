@@ -166,6 +166,21 @@
     </head>
     <body>
         <div class="registration-card">
+            <script>
+                (function() {
+                    // When navigating away from the register page, replace the current history entry
+                    // so the user cannot go back to it using the back button.
+                    window.addEventListener('popstate', function(event) {
+                        // Check if the current page is the register page
+                        if (window.location.pathname === '/register') {
+                            // Redirect to a safe page (e.g., home)
+                            window.history.replaceState(null, '', '/');
+                            window.location.replace('/');
+                        }
+                    });
+                })();
+            </script>
+
             <div class="card-header">
                 <h2 class="card-title">Join Our Platform</h2>
             </div>
